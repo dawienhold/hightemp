@@ -46,8 +46,12 @@ function metarRows(id, hours) {
   return rows;
 }
 
-global.fetch = async (url) => {
+global.fetch = async (url, init) => {
   const u = String(url);
+  if (u.includes("ntfy.sh")) {
+    console.log("[mock push]", init && init.headers && init.headers.Title, "|", init && init.body);
+    return { ok: true, status: 200, json: async () => ({}), text: async () => "" };
+  }
   const id = u.match(/stations\/(K\w{3})/)?.[1] || q(u, "ids")?.split(",")[0];
   if (fail.size) {
     for (const f of fail) {

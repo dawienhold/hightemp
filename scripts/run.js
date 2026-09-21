@@ -96,10 +96,85 @@ async function archiveMetars() {
   return added;
 }
 
+// ------------------------------------------------------------ phone alerts
+/* Push notifications through ntfy (https://ntfy.sh): free, no account. The
+   channel name lives in the repository secret NTFY_TOPIC so it never appears in
+   this public code. With no secret set, alerts are skipped and nothing else
+   changes. Every alert is recorded in state.alerts, so a re-run never repeats it. */
+const NTFY_TOPIC = (process.env.NTFY_TOPIC || "").trim();
+async function push(title, body, { priority = 3, tags = "" } = {}) {
+  if (!NTFY_TOPIC) return false;
+  const r = await fetch("https://ntfy.sh/" + encodeURIComponent(NTFY_TOPIC), {
+    method: "POST", body,
+    headers: { Title: title, Priority: String(priority), Tags: tags,
+               Click: "https://dawienhold.github.io/hightemp/" },
+    signal: AbortSignal.timeout(20000),
+  });
+  if (!r.ok) throw new Error("ntfy HTTP " + r.status);
+  return true;
+}
+const ZONE = { KNYC: ["America/New_York", "ET"], KMIA: ["America/New_York", "ET"],
+               KMDW: ["America/Chicago", "CT"], KLAX: ["America/Los_Angeles", "PT"],
+               KSFO: ["America/Los_Angeles", "PT"] };
+const hh = h => { const x = ((Math.round(h) % 24) + 24) % 24; return (x % 12 === 0 ? 12 : x % 12) + (x < 12 ? " AM" : " PM"); };
+const flow = c => !c || c.onshore == null ? "" : c.onshore > 0.45 ? "onshore flow" : c.onshore < -0.45 ? "offshore flow" : "cross-shore flow";
+const obsShort = t => {
+  if (t.obsMax == null) return "no reading yet";
+  if (t.obsSettles && t.obsSettles[0] !== t.obsSettles[1]) return `${t.obsSettles[0]}-${t.obsSettles[1]} so far`;
+  return `${Math.round(t.obsMax)} so far`;
+};
+
+async function sendAlerts(snap, morning, now) {
+  const sent = [];
+  state.alerts = state.alerts || {};
+  const once = async (key, title, body, opt) => {
+    if (state.alerts[key]) return;
+    if (await push(title, body, opt)) { state.alerts[key] = new Date().toISOString(); sent.push(key); }
+  };
+  const good = snap.stations.filter(s => !s.error && !s.stale && s.today);
+
+  // Morning call: the five numbers, once per day.
+  if (morning && good.length) {
+    const line = good.map(s => `${s.station.slice(1)} ${s.today.point} (${s.today.i80[0]}-${s.today.i80[1]})`).join(" · ");
+    const p = snap.priorDay;
+    const prior = p && p.n ? `\nYesterday: MAE ${p.mae}F, ${Math.round((p.cover80 || 0) * p.n)}/${p.n} in band` : "";
+    await once(`${snap.meta.lastMorningDate}|morning`, "7am high-temp calls", line + prior, { tags: "sunrise" });
+  }
+
+  for (const s of good) {
+    const t = s.today, [tz, abbr] = ZONE[s.station] || ["America/New_York", "ET"];
+    const localH = HT.localHour(now, tz);
+    // Watch window: 2h before the expected peak. When the models' warmest hour
+    // is overnight, the afternoon can still edge above it -- watch from 12.
+    const peak = t.peakH >= 10 ? t.peakH : 14;
+    const c = t.conditions || {};
+    const base = `${t.point} (${t.i80[0]}-${t.i80[1]}), ${obsShort(t)}`;
+    if (!t.settled && localH >= peak - 2 && localH < peak + 1) {
+      const up = t.upside != null ? `, ${t.upside.toFixed(1)}F upside` : "";
+      const note = t.peakH < 10 ? ` · models' warmest hour was overnight` : "";
+      await once(`${t.date}|${s.station}|watch`, `${s.station} peak ~${hh(peak)} ${abbr}`,
+                 `${base}${up}${flow(c) ? " · " + flow(c) : ""}${note}`, { priority: 4, tags: "thermometer" });
+    }
+    if (t.settled) {
+      await once(`${t.date}|${s.station}|locked`, `${s.station} locked in: ${t.point}`,
+                 `${t.obsMaxLabel || base}. Range ${t.i80[0]}-${t.i80[1]}.`, { tags: "lock" });
+    }
+  }
+
+  // Keep three days of alert history.
+  const cutoff = new Date(now.getTime() - 3 * 86400e3).toISOString().slice(0, 10);
+  for (const k of Object.keys(state.alerts)) if (k.slice(0, 10) < cutoff) delete state.alerts[k];
+  return sent;
+}
+
 // ------------------------------------------------------------------- the pass
 async function main() {
   const t0 = Date.now();
   const now = new Date();
+  if (String(process.env.TEST_PUSH || "").toLowerCase() === "true") {
+    const ok = await push("hightemp test", "Alerts are working. You'll get peak-window, lock-in and failure alerts here.", { tags: "white_check_mark" });
+    console.log(ok ? "test push sent" : "NTFY_TOPIC secret not set - no push sent");
+  }
   const etDate = HT.localDate(now, "America/New_York");
   const etHour = HT.localHour(now, "America/New_York");
 
@@ -146,6 +221,9 @@ async function main() {
     climateDay: "midnight to midnight local standard time (NWS CLI convention)",
   };
 
+  let alertsSent = [], alertErr = null;
+  try { alertsSent = await sendAlerts(snap, morning, now); } catch (e) { alertErr = String(e.message || e); }
+
   // ---- persist, in dependency order: state and stats before the snapshot
   if (morning) { state.lastMorningDate = etDate; if (state.missedMorning === etDate) delete state.missedMorning; }
   const cacheEntries = [...cliCache.entries()].slice(-600);
@@ -191,7 +269,7 @@ async function main() {
   const run = {
     at: snap.ranAt, ok: true, morning, durationS: Math.round((Date.now() - t0) / 1000), gapMin,
     scored: out.scoredCount, pending: out.pendingCount, queueWasEmpty: out.queueWasEmpty,
-    errors, archived, archiveErr,
+    errors, archived, archiveErr, alertsSent, alertErr,
   };
   appendLine(F.runs, run);
   writeJSON(F.status, {
@@ -208,15 +286,20 @@ async function main() {
   }
 }
 
-main().catch(e => {
+main().catch(async e => {
   const at = new Date().toISOString();
   const msg = String((e && e.stack) || e);
   console.error(msg);
   const status = readJSON(F.status, {});
   try {
     appendLine(F.runs, { at, ok: false, error: String(e.message || e) });
+    const fails = (status.consecutiveFailures || 0) + 1;
     writeJSON(F.status, { ...status, lastRunAt: at, lastOk: false, lastError: String(e.message || e),
-                          consecutiveFailures: (status.consecutiveFailures || 0) + 1 }, true);
+                          consecutiveFailures: fails }, true);
+    if (fails === 2 || fails % 9 === 0) {
+      await push("hightemp run failing", `${fails} runs in a row have failed: ${String(e.message || e).slice(0, 180)}`,
+                 { priority: 4, tags: "warning" });
+    }
   } catch (e2) { /* nothing more to do */ }
   process.exit(1);                     // fails the workflow -> GitHub emails the owner
 });
