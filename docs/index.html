@@ -1,0 +1,959 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>High-Temp Desk</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>/* High-Temp desk — instrument panel: cool steel housing, hot reading. */
+:root{
+  --bg:#EDF1F3; --surface:#FFFFFF; --surface-2:#F5F8F9;
+  --line:#D5DEE3; --line-soft:#E5EBEF;
+  --ink:#14212A; --ink-2:#43555F; --mut:#6C7F8A;
+  --obs:#C2410C; --mod:#0A7EA4;
+  --obs-fill:rgba(194,65,12,.12); --mod-fill:rgba(10,126,164,.13);
+  --good:#0F766E; --good-bg:#E2F1EE;
+  --warn:#B45309; --warn-bg:#FBEEDD;
+  --bad:#B3261E;  --bad-bg:#FBE7E5;
+  --shadow:0 1px 2px rgba(20,33,42,.06), 0 8px 20px -14px rgba(20,33,42,.28);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E151A; --surface:#162027; --surface-2:#1C2831;
+    --line:#2A3A45; --line-soft:#21303A;
+    --ink:#E4EDF3; --ink-2:#B0C2CD; --mut:#8298A5;
+    --obs:#DD7530; --mod:#2C9AC9;
+    --obs-fill:rgba(221,117,48,.18); --mod-fill:rgba(44,154,201,.18);
+    --good:#2DD4BF; --good-bg:#10312F;
+    --warn:#FBBF24; --warn-bg:#33270D;
+    --bad:#F87171;  --bad-bg:#3A1B1A;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 26px -18px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E151A; --surface:#162027; --surface-2:#1C2831;
+  --line:#2A3A45; --line-soft:#21303A;
+  --ink:#E4EDF3; --ink-2:#B0C2CD; --mut:#8298A5;
+  --obs:#DD7530; --mod:#2C9AC9;
+  --obs-fill:rgba(221,117,48,.18); --mod-fill:rgba(44,154,201,.18);
+  --good:#2DD4BF; --good-bg:#10312F;
+  --warn:#FBBF24; --warn-bg:#33270D;
+  --bad:#F87171;  --bad-bg:#3A1B1A;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 26px -18px rgba(0,0,0,.8);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font:15px/1.55 "IBM Plex Sans","Segoe UI",system-ui,-apple-system,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px; margin:0 auto; padding-inline:16px; padding-block:22px 56px}
+h1,h2,h3,h4{margin:0; font-family:"IBM Plex Sans Condensed","IBM Plex Sans",system-ui,sans-serif; text-wrap:balance}
+p{margin:0}
+.small{font-size:12.5px}
+.muted{color:var(--mut)}
+.mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+
+/* ------------------------------------------------------------ masthead */
+.masthead{display:flex; flex-wrap:wrap; gap:14px 20px; align-items:flex-end; justify-content:space-between; margin-bottom:6px}
+.masthead h1{font-size:25px; font-weight:600; letter-spacing:-.015em}
+.kicker{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--mut); margin-bottom:3px}
+.status{display:flex; align-items:center; gap:10px; font-size:12.5px; color:var(--ink-2)}
+.dot{width:7px; height:7px; border-radius:50%; background:var(--good); flex:none}
+.dot.stale{background:var(--warn)} .dot.bad{background:var(--bad)}
+button{
+  font:inherit; font-size:13px; color:var(--ink); background:var(--surface);
+  border:1px solid var(--line); border-radius:7px; padding:6px 13px; cursor:pointer;
+}
+button:hover{background:var(--surface-2)}
+button:focus-visible{outline:2px solid var(--mod); outline-offset:2px}
+button[disabled]{opacity:.5; cursor:default}
+
+/* ------------------------------------------------------------- summary */
+.summary{
+  display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:1px;
+  background:var(--line-soft); border:1px solid var(--line); border-radius:11px;
+  overflow:hidden; margin:18px 0 26px;
+}
+.sm{background:var(--surface); padding:12px 8px; text-align:center; display:flex; flex-direction:column; gap:1px}
+.smid{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.1em; color:var(--mut)}
+.smval{font-size:25px; font-weight:600; font-variant-numeric:tabular-nums; color:var(--obs); line-height:1.15}
+.smrng{font-size:11px; color:var(--mut); font-variant-numeric:tabular-nums}
+.sm.bad .smval{color:var(--bad); font-size:19px}
+
+/* --------------------------------------------------------------- cards */
+.grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:18px; align-items:start}
+.card{
+  background:var(--surface); border:1px solid var(--line); border-radius:13px;
+  padding:18px 18px 14px; box-shadow:var(--shadow); min-width:0;
+}
+.chead{display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:12px}
+.st{font-family:"IBM Plex Mono",monospace; font-size:16px; font-weight:600; letter-spacing:.04em}
+.site{font-size:12.5px; color:var(--mut); margin-top:1px}
+.cad{
+  font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.05em;
+  color:var(--good); background:var(--good-bg); border-radius:20px; padding:3px 9px; white-space:nowrap; flex:none;
+}
+.cad.slow{color:var(--warn); background:var(--warn-bg)}
+
+.hero{display:flex; align-items:center; gap:16px; padding-bottom:14px; border-bottom:1px solid var(--line-soft); margin-bottom:12px}
+.big{display:flex; align-items:baseline; gap:2px; flex:none}
+.bignum{font-size:54px; font-weight:600; line-height:.94; letter-spacing:-.03em; color:var(--obs); font-variant-numeric:tabular-nums}
+.deg{font-size:15px; color:var(--mut); font-weight:500}
+.herometa{min-width:0; display:flex; flex-direction:column; gap:3px}
+.pill{
+  display:inline-block; align-self:flex-start; font-size:11.5px; font-weight:500;
+  padding:3px 9px; border-radius:20px; letter-spacing:.01em;
+}
+.pill.good{color:var(--good); background:var(--good-bg)}
+.pill.warn{color:var(--warn); background:var(--warn-bg)}
+.pill.bad{color:var(--bad); background:var(--bad-bg)}
+.rng{font-size:12.5px; color:var(--ink-2); font-variant-numeric:tabular-nums}
+.obsline{font-size:12.5px; color:var(--mut); font-variant-numeric:tabular-nums}
+.err{color:var(--bad); font-size:13px}
+
+/* --------------------------------------------------------------- chart */
+.chartwrap{margin:2px 0 6px}
+.chart{width:100%; height:auto; display:block; overflow:visible}
+.grid-line,.grid{stroke:var(--line-soft); stroke-width:1}
+.tick{fill:var(--mut); font-family:"IBM Plex Mono",monospace; font-size:9px}
+.obs-line{fill:none; stroke:var(--obs); stroke-width:2; stroke-linejoin:round; stroke-linecap:round}
+.inf-line{fill:none; stroke:var(--obs); stroke-width:1.5; stroke-dasharray:3 3; opacity:.72}
+.obs-dot{fill:var(--obs); stroke:var(--surface); stroke-width:2}
+.now-dot{fill:var(--surface); stroke:var(--obs); stroke-width:2}
+.obs-label{fill:var(--obs); font-size:9.5px; font-weight:600; font-family:"IBM Plex Mono",monospace}
+.fc-band{fill:var(--mod-fill)}
+.fc-line{stroke:var(--mod); stroke-width:1.5; stroke-dasharray:5 4; fill:none}
+.fc-label{fill:var(--mod); font-size:10.5px; font-weight:600; font-family:"IBM Plex Mono",monospace}
+.legend{display:flex; flex-wrap:wrap; gap:6px 15px; font-size:11.5px; color:var(--mut); margin-top:2px}
+.lg{display:inline-flex; align-items:center; gap:6px}
+.sw{width:13px; height:3px; border-radius:2px; flex:none}
+.sw-obs{background:var(--obs)}
+.sw-inf{background:linear-gradient(90deg,var(--obs) 50%,transparent 50%); background-size:6px 3px}
+.sw-fc{background:var(--mod)}
+
+/* --------------------------------------------------------- probability */
+.sec{font-size:11px; letter-spacing:.11em; text-transform:uppercase; color:var(--mut); font-weight:600; margin:14px 0 8px}
+.probs{display:flex; flex-direction:column; gap:4px}
+.prow{display:grid; grid-template-columns:34px 1fr 38px; align-items:center; gap:9px}
+.pf{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-2); font-variant-numeric:tabular-nums; text-align:right}
+.ptrack{height:9px; background:var(--surface-2); border-radius:3px; overflow:hidden}
+.pfill{display:block; height:100%; background:var(--mod); opacity:.45; border-radius:3px}
+.prow.modal .pfill{opacity:1}
+.prow.modal .pf{color:var(--ink); font-weight:600}
+.pp{font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--mut); font-variant-numeric:tabular-nums}
+
+/* ------------------------------------------------------------ tomorrow */
+.tomorrow{
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  margin-top:14px; padding:10px 13px; background:var(--surface-2);
+  border-radius:9px; border:1px solid var(--line-soft);
+}
+.tleft{display:flex; flex-direction:column}
+.tlab{font-size:11px; letter-spacing:.11em; text-transform:uppercase; color:var(--mut); font-weight:600}
+.tdate{font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--mut)}
+.tright{display:flex; flex-direction:column; align-items:flex-end}
+.tnum{font-size:21px; font-weight:600; color:var(--ink); font-variant-numeric:tabular-nums; line-height:1.1}
+.trng{font-size:11.5px; color:var(--mut); font-variant-numeric:tabular-nums}
+
+/* -------------------------------------------------------------- detail */
+.detail{margin-top:13px; border-top:1px solid var(--line-soft); padding-top:10px}
+.detail summary{font-size:12.5px; color:var(--ink-2); cursor:pointer; list-style:none; display:flex; align-items:center; gap:6px}
+.detail summary::-webkit-details-marker{display:none}
+.detail summary::before{content:"›"; display:inline-block; transition:transform .15s; font-size:15px; color:var(--mut)}
+.detail[open] summary::before{transform:rotate(90deg)}
+.detail summary:focus-visible{outline:2px solid var(--mod); outline-offset:3px; border-radius:3px}
+.detbody{padding-top:8px}
+.caveat{font-size:12.5px; color:var(--ink-2); background:var(--warn-bg); border-radius:8px; padding:9px 11px; margin-bottom:4px}
+.tbl{width:100%; border-collapse:collapse; font-size:12.5px}
+.tbl caption{caption-side:bottom; text-align:left; color:var(--mut); font-size:11px; padding-top:5px}
+.tbl td{padding:3px 0; border-bottom:1px solid var(--line-soft)}
+.mname{color:var(--ink-2); font-family:"IBM Plex Mono",monospace; font-size:11.5px}
+.mnum{text-align:right; font-variant-numeric:tabular-nums; font-family:"IBM Plex Mono",monospace; width:64px}
+.mbias{text-align:right; font-variant-numeric:tabular-nums; font-family:"IBM Plex Mono",monospace; width:56px; color:var(--mut); font-size:11.5px}
+.mbias.up{color:var(--obs)} .mbias.dn{color:var(--mod)}
+.merr{text-align:right; font-variant-numeric:tabular-nums; font-family:"IBM Plex Mono",monospace; width:44px; font-weight:600}
+.merr.ok{color:var(--good)} .merr.near{color:var(--ink-2)} .merr.off{color:var(--bad)}
+
+/* --------------------------------------------------------------- notes */
+.notes{margin-top:30px; background:var(--surface); border:1px solid var(--line); border-radius:13px; padding:18px}
+.notes h2{font-size:16px; font-weight:600; margin-bottom:10px}
+.notes p{font-size:13px; color:var(--ink-2); margin-bottom:9px; max-width:74ch}
+.notes code{font-family:"IBM Plex Mono",monospace; font-size:12px; background:var(--surface-2); padding:1px 5px; border-radius:4px}
+
+@media (max-width:640px){
+  .summary{grid-template-columns:repeat(5,1fr)}
+  .smval{font-size:19px}
+  .sm{padding:10px 2px}
+  .bignum{font-size:44px}
+  .hero{gap:12px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important; animation:none!important}}
+
+/* refinements */
+.status{flex-wrap:wrap; row-gap:8px}
+.status > span{white-space:nowrap}
+#morning .tbl{max-width:460px}
+#morning .mname{width:62px}
+#priorDay .tbl{max-width:560px}
+#priorDay .mname{width:62px}
+#priorDay .mnum{width:58px}
+.stale-note{
+  margin-top:14px; padding:10px 13px; border-radius:9px; font-size:12.5px;
+  color:var(--warn); background:var(--warn-bg); border:1px solid transparent; max-width:74ch;
+}
+
+/* ---------------------------------------------------------- conditions */
+.cond{display:flex; flex-wrap:wrap; gap:1px; background:var(--line-soft);
+      border:1px solid var(--line-soft); border-radius:9px; overflow:hidden; margin:2px 0 12px}
+.cx{flex:1 1 0; min-width:62px; background:var(--surface-2); padding:7px 6px; text-align:center;
+    display:flex; flex-direction:column; gap:1px}
+.cxv{font-family:"IBM Plex Mono",monospace; font-size:12.5px; font-weight:600; color:var(--ink);
+     font-variant-numeric:tabular-nums; white-space:nowrap}
+.cxl{font-size:9.5px; letter-spacing:.07em; text-transform:uppercase; color:var(--mut)}
+.cx.hot .cxv{color:var(--obs)}
+.cx.cool .cxv{color:var(--mod)}
+
+/* ----------------------------------------------------------- scorecard */
+.analog{margin-bottom:6px}
+.analog p{margin-bottom:3px}
+.tscroll{overflow-x:auto; -webkit-overflow-scrolling:touch; margin-bottom:6px}
+.tbl.wide{min-width:420px}
+.tbl th{text-align:right; font-weight:600; font-size:10.5px; letter-spacing:.07em;
+        text-transform:uppercase; color:var(--mut); padding:3px 0 5px; border-bottom:1px solid var(--line)}
+.tbl th:first-child{text-align:left}
+.relrow{display:grid; grid-template-columns:58px 1fr 38px; align-items:center; gap:9px}
+.ptrack.rel{position:relative; height:11px}
+.relfill{display:block; height:100%; background:var(--mod); opacity:.5; border-radius:3px}
+.relstated{position:absolute; top:-2px; width:2px; height:15px; background:var(--ink); border-radius:1px}
+.pp.ok{color:var(--good)} .pp.over{color:var(--bad)} .pp.under{color:var(--warn)}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <div>
+      <p class="kicker">KNYC · KMIA · KMDW · KLAX · KSFO</p>
+      <h1>High-Temp Desk</h1>
+    </div>
+    <div class="status">
+      <span class="dot stale" id="statusDot"></span>
+      <span id="statusText">waiting for a pass</span>
+      <span class="muted">·</span>
+      <span class="mono" id="ranAt">—</span>
+    </div>
+  </header>
+
+  <p class="stale-note" id="staleNote" hidden></p>
+
+  <section id="empty">
+    <div class="card" style="margin-top:20px">
+      <h2 class="st" style="font-family:'IBM Plex Sans Condensed',sans-serif;font-size:17px;letter-spacing:0">Nothing stored yet</h2>
+      <p class="muted small" id="emptyText" style="margin-top:8px">Loading the last completed pass…</p>
+      <p class="muted small" style="margin-top:12px">This page shows the most recent forecast pass. A scheduled job runs every 20 minutes, fetches the stations and the models, scores whatever has settled, and commits the result to this site. The time stamp at the top says how old the numbers are.</p>
+    </div>
+  </section>
+
+  <div id="live" hidden>
+    <div id="summary"></div>
+
+    <section class="notes" id="priorWrap" style="margin-top:0;margin-bottom:26px" hidden>
+      <h2>Yesterday, graded</h2>
+      <div id="priorDay"></div>
+    </section>
+
+    <section class="notes" id="morningWrap" style="margin-top:0;margin-bottom:26px" hidden>
+      <h2>Morning call</h2>
+      <div id="morning"></div>
+    </section>
+
+    <main class="grid" id="grid"></main>
+
+    <div id="scoring"></div>
+
+    <section class="notes">
+      <h2>How this number is built</h2>
+      <p><strong>Settlement truth is the CLI daily climate report</strong> each station's NWS office issues overnight — the MAXIMUM line, in whole °F. Everything here aims at that number, not at a grid cell near the station.</p>
+      <p><strong>Two calibrations, doing different jobs.</strong> The <em>bias</em> term is the station's reported high minus each model's own analysis over the trailing month, which captures the offset between the grid and the actual sensor. The <em>skill</em> term comes from what each model really forecast a day ahead, and it alone sets the width of the confidence interval — analysis error would understate the spread badly, because the analysis has already seen the weather.</p>
+      <p><strong>Intraday the observations take over.</strong> Each model's running error against today's readings is carried forward with a three-hour decay, the forecast can never fall below what has already been reported, and the interval narrows on both how little heating day is left and how much rise the models still expect. A day locks in only once the temperature is falling and no model still reaches above the observed maximum.</p>
+      <p><strong>Feed cadence.</strong> KMIA, KMDW, KLAX and KSFO transmit every ~5 minutes in whole °C, so a single reading carries about ±0.9°F of slack; the hourly METAR tenths and the 6-hourly remark group pin it precisely, and both are used when present. KNYC transmits hourly only — its card carries the note.</p>
+      <p><strong>Which day a reading belongs to.</strong> The CLI's climate day runs midnight to midnight <em>local standard time</em>. While daylight time is in force that is 1:00 AM to 1:00 AM on the wall clock, so a reading at 12:30 AM belongs to the previous day's report. Every observed maximum on this page is filed that way. Only a <em>final</em> CLI (issued after the day closes) settles a call; the afternoon preliminary report never does.</p>
+      <p>Sources: <code>api.weather.gov</code>, <code>aviationweather.gov</code> and <code>open-meteo.com</code>. Raw METARs, every call and every settlement are archived in the repository's <code>docs/data</code> folder.</p>
+    </section>
+  </div>
+
+</div>
+<script>/* =========================================================================
+   Shared rendering for the High-Temp desk: charts, cards, tables.
+   Consumes HT.snapshot() output so the local engine and the hosted mirror
+   draw exactly the same thing.
+   ====================================================================== */
+const UI = (() => {
+"use strict";
+
+const SVGNS = "http://www.w3.org/2000/svg";
+const el = (tag, cls, txt) => { const n = document.createElement(tag); if (cls) n.className = cls; if (txt != null) n.textContent = txt; return n; };
+const svg = (tag, attrs) => { const n = document.createElementNS(SVGNS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); return n; };
+const f1 = v => v == null ? "–" : (Math.round(v * 10) / 10).toFixed(1);
+const pct = v => v == null ? "–" : Math.round(v * 100) + "%";
+
+const CONF_TONE = { "Very high":"good", "High":"good", "Moderate":"warn", "Low":"bad", "Very low":"bad" };
+
+/* ---------------------------------------------------------------- charts */
+
+/**
+ * Today's curve: what the station has reported, against the band the models
+ * span, with the forecast high and its 80% interval marked on the right.
+ */
+function dayChart(s) {
+  const W = 382, H = 168, P = { t: 15, r: 46, b: 21, l: 25 };
+  const d0 = s.today;
+  const wrap = el("div", "chartwrap");
+  const node = svg("svg", { viewBox: `0 0 ${W} ${H}`, class: "chart", role: "img",
+    "aria-label": `Observed temperature at ${s.station} today against model guidance` });
+
+  const unwrap = arr => { let prev = -1; return arr.map(p => { if (prev >= 0 && p.x < prev - 12) p.x += 24; prev = p.x; return p; }); };
+  const obs = unwrap((s.curve || []).map(([hm, v]) => ({ x: hm2h(hm), y: v, kind: "obs" })));
+  const inf = unwrap((s.inferredCurve || []).map(([hm, v]) => ({ x: hm2h(hm), y: v, kind: "inf" })));
+  const all = obs.concat(inf);
+  if (!all.length || !d0) { wrap.appendChild(el("p", "muted small", "No observations yet today.")); return wrap; }
+
+  const xs = [Math.min(4, Math.floor(Math.min(...all.map(p => p.x)))), Math.max(23, Math.ceil(Math.max(...all.map(p => p.x))))];
+  const lo = Math.min(...all.map(p => p.y), d0.i80[0]) - 2;
+  const hi = Math.max(...all.map(p => p.y), d0.i80[1]) + 2;
+  const X = h => P.l + (h - xs[0]) / (xs[1] - xs[0]) * (W - P.l - P.r);
+  const Y = v => P.t + (hi - v) / (hi - lo) * (H - P.t - P.b);
+
+  // grid + axes ----------------------------------------------------------
+  const g = svg("g", {});
+  const step = (hi - lo) > 26 ? 10 : 5;
+  for (let v = Math.ceil(lo / step) * step; v <= hi; v += step) {
+    g.appendChild(svg("line", { x1: P.l, x2: W - P.r, y1: Y(v), y2: Y(v), class: "grid" }));
+    const tx = svg("text", { x: P.l - 5, y: Y(v) + 3.2, class: "tick", "text-anchor": "end" });
+    tx.textContent = v; g.appendChild(tx);
+  }
+  for (let h = Math.ceil(xs[0] / 3) * 3; h <= xs[1]; h += 3) {
+    const tx = svg("text", { x: X(h), y: H - 6, class: "tick", "text-anchor": "middle" });
+    const hh = h % 24; tx.textContent = (hh % 12 === 0 ? 12 : hh % 12) + (hh < 12 ? "a" : "p"); g.appendChild(tx);
+  }
+  node.appendChild(g);
+
+  // 80% interval for the day's high, on the right margin -------------------
+  const bandX = X(xs[1]) - 1;
+  node.appendChild(svg("rect", { x: bandX, y: Y(d0.i80[1]), width: W - bandX - 2,
+    height: Math.max(2, Y(d0.i80[0]) - Y(d0.i80[1])), class: "fc-band" }));
+  node.appendChild(svg("line", { x1: P.l, x2: W - 2, y1: Y(d0.point), y2: Y(d0.point), class: "fc-line" }));
+  const flab = svg("text", { x: W - 2, y: Y(d0.point) - 6, class: "fc-label", "text-anchor": "end" });
+  flab.textContent = d0.point + "°";
+  node.appendChild(flab);
+
+  // observed line ---------------------------------------------------------
+  const line = pts => pts.map((p, i) => (i ? "L" : "M") + X(p.x).toFixed(1) + " " + Y(p.y).toFixed(1)).join(" ");
+  if (inf.length) node.appendChild(svg("path", { d: line(inf), class: "inf-line" }));
+  node.appendChild(svg("path", { d: line(obs), class: "obs-line" }));
+
+  // the observed maximum so far
+  if (d0.obsMax != null) {
+    let peak = obs[0];
+    for (const p of obs) if (p.y > peak.y) peak = p;
+    node.appendChild(svg("circle", { cx: X(peak.x), cy: Y(peak.y), r: 4.5, class: "obs-dot" }));
+    const anchorX = Math.min(X(peak.x), X(xs[1]) - 26);
+    const t2 = svg("text", { x: anchorX, y: Y(peak.y) - 11, class: "obs-label", "text-anchor": "middle" });
+    t2.textContent = Math.round(peak.y) + "° so far";
+    node.appendChild(t2);
+  }
+  // last reading
+  const last = all.sort((a, b) => a.x - b.x)[all.length - 1];
+  node.appendChild(svg("circle", { cx: X(last.x), cy: Y(last.y), r: 3.5, class: "now-dot" }));
+
+  wrap.appendChild(node);
+
+  const leg = el("div", "legend");
+  leg.appendChild(swatch("obs", "Reported" + (inf.length ? " (Central Park)" : "")));
+  if (inf.length) leg.appendChild(swatch("inf", "Inferred between readings"));
+  leg.appendChild(swatch("fc", "Forecast high · 80%"));
+  wrap.appendChild(leg);
+  return wrap;
+}
+
+function swatch(kind, label) {
+  const s = el("span", "lg");
+  s.appendChild(el("i", "sw sw-" + kind));
+  s.appendChild(el("span", null, label));
+  return s;
+}
+function hm2h(hm) { const [a, b] = hm.split(":").map(Number); return a + b / 60; }
+
+/** Probability of each whole degree being the reported high. */
+function probBars(d) {
+  const box = el("div", "probs");
+  if (!d || !d.top || !d.top.length) return box;
+  const shown = d.top.filter(x => x.p >= 0.005);
+  const max = Math.max(...shown.map(b => b.p), 0.01);
+  for (const b of shown) {
+    const row = el("div", "prow" + (b.f === d.modal ? " modal" : ""));
+    row.appendChild(el("span", "pf", b.f + "°"));
+    const track = el("span", "ptrack");
+    const fill = el("span", "pfill");
+    fill.style.width = Math.max(2, (b.p / max) * 100) + "%";
+    track.appendChild(fill);
+    row.appendChild(track);
+    row.appendChild(el("span", "pp", Math.round(b.p * 100) + "%"));
+    box.appendChild(row);
+  }
+  return box;
+}
+
+/* ----------------------------------------------------------------- cards */
+
+function stationCard(s, opts = {}) {
+  const card = el("article", "card");
+  if (s.error) {
+    card.appendChild(el("h2", "st", s.station));
+    card.appendChild(el("p", "err", "Could not load: " + s.error));
+    return card;
+  }
+  const d0 = s.today, d1 = s.tomorrow;
+
+  const head = el("header", "chead");
+  const idwrap = el("div", "idwrap");
+  idwrap.appendChild(el("h2", "st", s.station));
+  idwrap.appendChild(el("p", "site", s.site + " · " + s.localClock + " local"));
+  head.appendChild(idwrap);
+
+  const cad = el("span", "cad" + (s.obsCadenceMin && s.obsCadenceMin > 30 ? " slow" : ""));
+  cad.textContent = s.obsCadenceMin ? `${s.obsCadenceMin} min feed` : "no feed";
+  head.appendChild(cad);
+  card.appendChild(head);
+  if (s.stale) {
+    card.appendChild(el("p", "caveat",
+      "Feeds for this station failed on the latest pass (" + (s.staleError || "error") + "). Showing the last good pass, from " +
+      new Date(s.staleSince || Date.now()).toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) + "."));
+  }
+
+  // headline -------------------------------------------------------------
+  const hero = el("div", "hero");
+  const big = el("div", "big");
+  big.appendChild(el("span", "bignum", d0 ? String(d0.point) : "–"));
+  big.appendChild(el("span", "deg", "°F"));
+  hero.appendChild(big);
+
+  const meta = el("div", "herometa");
+  if (d0) {
+    const pill = el("span", "pill " + (CONF_TONE[d0.conf] || "warn"));
+    pill.textContent = d0.settled ? "Locked in" : d0.conf + " confidence";
+    meta.appendChild(pill);
+    meta.appendChild(el("p", "rng", `80% between ${d0.i80[0]}° and ${d0.i80[1]}°  ·  σ ${d0.sigma.toFixed(1)}°`));
+    const obsLine = d0.obsMax == null ? "no reading yet today"
+      : `${f1(d0.obsMax)}° reported so far${d0.obsPrecise ? "" : " (whole °C feed, ±0.9°)"}`;
+    meta.appendChild(el("p", "obsline", obsLine));
+    if (d0.current != null) {
+      const arrow = d0.trend == null ? "" : d0.trend > 0.4 ? " ↑" : d0.trend < -0.4 ? " ↓" : " →";
+      const line = el("p", "obsline",
+        `now ${f1(d0.current)}°${arrow}${d0.upside ? `  ·  ${f1(d0.upside)}° of upside left` : ""}`);
+      meta.appendChild(line);
+      // Between hourly readings this figure is carried on the neighbours'
+      // movement, not sent by the station. Say so: a warm neighbour can put it
+      // several degrees above anything this station has actually reported.
+      if (d0.currentInferred) {
+        meta.appendChild(el("p", "muted small",
+          "Latest reading is inferred from neighbouring stations — the station's own maximum is above."));
+      }
+    }
+  }
+  hero.appendChild(meta);
+  card.appendChild(hero);
+
+  card.appendChild(conditionsStrip(d0));
+  card.appendChild(dayChart(s));
+
+  // probability ----------------------------------------------------------
+  const ptitle = el("h3", "sec", "Chance each degree is the reported high");
+  card.appendChild(ptitle);
+  card.appendChild(probBars(d0));
+
+  // tomorrow -------------------------------------------------------------
+  if (d1) {
+    const tm = el("div", "tomorrow");
+    const l = el("div", "tleft");
+    l.appendChild(el("span", "tlab", "Tomorrow"));
+    l.appendChild(el("span", "tdate", d1.date));
+    tm.appendChild(l);
+    const r = el("div", "tright");
+    r.appendChild(el("span", "tnum", d1.point + "°"));
+    r.appendChild(el("span", "trng", `${d1.i80[0]}–${d1.i80[1]}° · ${d1.conf.toLowerCase()}`));
+    tm.appendChild(r);
+    card.appendChild(tm);
+  }
+
+  // detail ---------------------------------------------------------------
+  const det = el("details", "detail");
+  det.appendChild(el("summary", null, "Models, calibration and recent settlement"));
+  const body = el("div", "detbody");
+
+  if (s.caveat) body.appendChild(el("p", "caveat", s.caveat));
+
+  body.appendChild(el("h4", "sec", "Regime adjustment"));
+  body.appendChild(analogNote(d0));
+
+  if (d0 && d0.models) {
+    body.appendChild(el("h4", "sec", "Model calls for today, after station bias"));
+    const tbl = el("table", "tbl");
+    const tb = el("tbody");
+    for (const m of d0.models) {
+      const tr = el("tr");
+      tr.appendChild(el("td", "mname", m.m || "model"));
+      tr.appendChild(el("td", "mnum", m.v.toFixed(1) + "°"));
+      const bcell = el("td", "mbias" + (m.b > 0 ? " up" : m.b < 0 ? " dn" : ""));
+      bcell.textContent = (m.b > 0 ? "+" : "") + m.b.toFixed(1) + "°";
+      tr.appendChild(bcell);
+      tb.appendChild(tr);
+    }
+    tbl.appendChild(tb);
+    const cap = el("caption", null, "value → bias applied");
+    tbl.appendChild(cap);
+    body.appendChild(tbl);
+  }
+
+  if (s.backtest && s.backtest.length) {
+    const hd = el("h4", "sec", "Day-ahead backtest vs the station's own CLI report");
+    body.appendChild(hd);
+    const sub = el("p", "muted small",
+      `Mean absolute error ${s.mae}°F over ${s.backtest.length} days · within 1°F ${pct(s.within1)} · within 2°F ${pct(s.within2)}`);
+    body.appendChild(sub);
+    const tbl = el("table", "tbl bt");
+    const tb = el("tbody");
+    for (const b of s.backtest.slice(0, 10)) {
+      const tr = el("tr");
+      tr.appendChild(el("td", "mname", b.date.slice(5)));
+      tr.appendChild(el("td", "mnum", b.called == null ? "–" : b.called + "°"));
+      tr.appendChild(el("td", "mnum", b.actual + "°"));
+      const e = el("td", "merr " + (b.err === 0 ? "ok" : Math.abs(b.err) <= 1 ? "near" : "off"));
+      e.textContent = b.err == null ? "–" : (b.err > 0 ? "+" : "") + b.err;
+      tr.appendChild(e);
+      tb.appendChild(tr);
+    }
+    tbl.appendChild(tb);
+    tbl.appendChild(el("caption", null, "date · called · reported · error"));
+    body.appendChild(tbl);
+  }
+
+  if (s.skillDays) {
+    body.appendChild(el("p", "muted small",
+      `Confidence width is set from ${s.skillDays} day-ahead forecast errors at this station (σ ${s.skillSd}°F), not from model agreement alone.`));
+  }
+  if (s.memoryDays != null) {
+    body.appendChild(el("p", "muted small",
+      s.memoryDays
+        ? `Regime memory: ${s.memoryDays} of this system's own scored day-ahead calls kept for this station.`
+        : "Regime memory: empty so far. It gains one scored day-ahead call per day."));
+  }
+  det.appendChild(body);
+  card.appendChild(det);
+  return card;
+}
+
+
+/* ------------------------------------------------------------ conditions */
+
+const DIRS = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
+const compass = deg => DIRS[Math.round(((deg % 360) / 22.5)) % 16];
+
+/** Flow label: the single most useful thing about wind at these five stations. */
+function flowLabel(onshore) {
+  if (onshore == null) return null;
+  if (onshore > 0.45) return { text: "onshore", tone: "cool" };
+  if (onshore < -0.45) return { text: "offshore", tone: "hot" };
+  return { text: "cross-shore", tone: "" };
+}
+
+/** The physical drivers behind the number, in the units a forecaster reads. */
+function conditionsStrip(d) {
+  const c = d && d.conditions;
+  const box = el("div", "cond");
+  if (!c) return box;
+  const cell = (label, value, cls) => {
+    const w = el("div", "cx" + (cls ? " " + cls : ""));
+    w.appendChild(el("span", "cxv", value));
+    w.appendChild(el("span", "cxl", label));
+    box.appendChild(w);
+  };
+  if (c.cloud != null) cell("cloud", c.cloud + "%", c.cloud >= 70 ? "cool" : c.cloud <= 20 ? "hot" : "");
+  if (c.rad != null) cell("sun", c.rad + " W", c.rad >= 600 ? "hot" : c.rad <= 300 ? "cool" : "");
+  if (c.windDir != null) {
+    const fl = flowLabel(c.onshore);
+    cell(fl ? fl.text : "wind", compass(c.windDir) + " " + Math.round(c.windSpd), fl ? fl.tone : "");
+  }
+  if (c.dew != null) cell("dew", c.dew + "°", "");
+  if (c.blh != null) cell("mixing", (c.blh >= 1000 ? (c.blh / 1000).toFixed(1) + "km" : c.blh + "m"),
+                          c.blh >= 1500 ? "hot" : c.blh <= 700 ? "cool" : "");
+  if (c.precip != null && c.precip > 0.2) cell("rain", c.precip.toFixed(1) + "mm", "cool");
+  return box;
+}
+
+/** What the analog term did, and on what evidence. */
+function analogNote(d) {
+  const a = d && d.analog;
+  const box = el("div", "analog");
+  if (!a) return box;
+  const provenance = a.pool
+    ? `${a.pool} comparable past day${a.pool === 1 ? "" : "s"} available` +
+      (a.fromMemory ? `, ${a.fromMemory} of them from this system's own record` : ", all from the archives")
+    : null;
+
+  if (!d.regimeAdj) {
+    box.appendChild(el("p", "muted small",
+      "Analog term: no adjustment" + (a.reason ? " — " + a.reason : " on this regime") + "." +
+      (a.wet && a.wetPool === 0
+        ? ` Today is a ${a.wet} day and the record holds none to compare it with, so it stands down rather than borrow a bias from drier days.`
+        : "")));
+    if (provenance) box.appendChild(el("p", "muted small", provenance + "."));
+    else box.appendChild(el("p", "muted small",
+      "It abstains rather than guess. The pool grows by one day-ahead call per station per day, so this fills in over the coming weeks."));
+    return box;
+  }
+  const sign = d.regimeAdj > 0 ? "+" : "";
+  const p = el("p", "small");
+  p.appendChild(el("strong", null, `Analog term ${sign}${d.regimeAdj.toFixed(1)}°F`));
+  const dims = (a.dims && a.dims.length) ? a.dims.length : 2;
+  // State the wet-class overlap as a count. Saying it matched "only wet days"
+  // when one of seven was wet would overstate what the pool actually holds.
+  const wetNote = (a.wet && a.wetPool != null && a.n)
+    ? (a.wetPool === 1 ? `, one of them also a ${a.wet} day`
+                       : `, ${a.wetPool} of them also ${a.wet} days`)
+    : "";
+  p.appendChild(el("span", "muted",
+    ` — on the ${a.n} past days whose regime most resembled today (matched on ${dims} measures${
+      wetNote}), the day-ahead blend ran ${
+      a.raw > 0 ? "cold" : "warm"} by ${Math.abs(a.raw).toFixed(1)}°F (median). Shrunk for sample size.`));
+  box.appendChild(p);
+  // When the adjustment was held back, say by how much and why: an abstention
+  // on a regime with no precedent is a finding, not a missing number.
+  if (a.trust != null && a.trust < 0.999 && a.shrunk != null) {
+    box.appendChild(el("p", "muted small",
+      `Held back to ${Math.round(a.trust * 100)}% of the ${a.shrunk > 0 ? "+" : ""}${a.shrunk}°F the analogs implied` +
+      (a.reason ? ` — ${a.reason}` : "") + "."));
+  }
+  if (provenance) box.appendChild(el("p", "muted small", provenance + "."));
+  if (a.days && a.days.length) {
+    const t = el("p", "muted small mono");
+    t.textContent = "closest: " + a.days.map(x => `${x.d.slice(5)} ${x.err > 0 ? "+" : ""}${x.err}${x.src === "memory" ? "*" : ""}`).join("  ");
+    box.appendChild(t);
+  }
+  if (d.pointBase != null && d.pointBase !== d.point) {
+    box.appendChild(el("p", "muted small",
+      `Without it this call would be ${d.pointBase}°F. Both are logged, and the scorecard settles which is better.`));
+  }
+  return box;
+}
+
+/* ------------------------------------------------------------- scorecard */
+
+function pctCell(v) { return v == null ? "–" : Math.round(v * 100) + "%"; }
+
+/**
+ * The reliability panel. This is the part that decides whether the stated
+ * confidence can be traded on: a stated 30% has to come true about 30% of the
+ * time, or the intervals are decoration.
+ */
+function scorecard(agg) {
+  const wrap = el("section", "notes");
+  wrap.appendChild(el("h2", null, "Scorecard"));
+  if (!agg || !agg.overall || !agg.overall.n) {
+    wrap.appendChild(el("p", "muted small",
+      "No settled calls yet. Every pass logs its full distribution, and each morning the calls for the previous day are scored against that station's CLI report. Useful signal needs roughly a month; a trustworthy reliability curve, about a hundred days."));
+    return wrap;
+  }
+  const o = agg.overall;
+  wrap.appendChild(el("p", "small muted",
+    `${o.n} scored calls over ${agg.days} day${agg.days === 1 ? "" : "s"}. Mean absolute error ${o.mae}°F, bias ${o.bias > 0 ? "+" : ""}${o.bias}°F.`));
+
+  const mk = (title, rows, cols) => {
+    const h = el("h4", "sec", title);
+    wrap.appendChild(h);
+    const scroller = el("div", "tscroll");
+    const t = el("table", "tbl wide");
+    const thead = el("thead"), hr = el("tr");
+    for (const c of cols) hr.appendChild(el("th", c.cls || null, c.h));
+    thead.appendChild(hr); t.appendChild(thead);
+    const tb = el("tbody");
+    for (const r of rows) {
+      const tr = el("tr");
+      for (const c of cols) tr.appendChild(el("td", c.cls || null, c.get(r)));
+      tb.appendChild(tr);
+    }
+    t.appendChild(tb); scroller.appendChild(t); wrap.appendChild(scroller);
+  };
+
+  const statCols = [
+    { h: "", get: r => r.k, cls: "mname" },
+    { h: "n", get: r => String(r.v.n), cls: "mnum" },
+    { h: "MAE", get: r => r.v.mae + "°", cls: "mnum" },
+    { h: "bias", get: r => (r.v.bias > 0 ? "+" : "") + r.v.bias, cls: "mnum" },
+    { h: "±1°", get: r => pctCell(r.v.within1), cls: "mnum" },
+    { h: "80% band", get: r => pctCell(r.v.cover80), cls: "mnum" },
+    { h: "Brier", get: r => String(r.v.brier), cls: "mnum" },
+  ];
+  const toRows = obj => Object.entries(obj).map(([k, v]) => ({ k, v }));
+  mk("By station", toRows(agg.byStation), statCols);
+  mk("By lead time", toRows(agg.byLead), statCols);
+
+  // reliability — stated vs realised
+  const rel = (agg.reliability || []).filter(r => r.n > 0);
+  if (rel.length) {
+    wrap.appendChild(el("h4", "sec", "Reliability — is a stated probability honest?"));
+    const box = el("div", "probs");
+    for (const r of rel) {
+      const row = el("div", "relrow");
+      row.appendChild(el("span", "pf", Math.round(r.lo * 100) + "–" + Math.round(Math.min(r.hi, 1) * 100) + "%"));
+      const track = el("span", "ptrack rel");
+      const stated = el("span", "relstated"); stated.style.left = Math.min(100, r.stated * 100) + "%";
+      const actual = el("span", "relfill"); actual.style.width = Math.min(100, r.actual * 100) + "%";
+      track.appendChild(actual); track.appendChild(stated);
+      row.appendChild(track);
+      const gap = r.actual - r.stated;
+      const g = el("span", "pp " + (Math.abs(gap) <= 0.08 ? "ok" : gap < 0 ? "over" : "under"));
+      g.textContent = (gap > 0 ? "+" : "") + Math.round(gap * 100);
+      row.appendChild(g);
+      box.appendChild(row);
+    }
+    wrap.appendChild(box);
+    wrap.appendChild(el("p", "muted small",
+      "Bar is what actually happened, tick is what was claimed, number is the gap in points. Negative means overconfident — the interval is too narrow and should not be sized on."));
+  }
+
+  if (o.maeBase != null) {
+    const better = o.mae < o.maeBase;
+    const p = el("p", "small");
+    p.appendChild(el("strong", null, "Analog term: "));
+    p.appendChild(el("span", null,
+      `${o.mae}°F with it against ${o.maeBase}°F without, improving ${pctCell(o.regimeHelped)} of calls. ` +
+      (better ? "Earning its place so far." : "Not yet earning its place — treat the base call as the honest one.")));
+    wrap.appendChild(p);
+  }
+  return wrap;
+}
+
+/* --------------------------------------------------------------- summary */
+
+function summaryRow(snap) {
+  const box = el("div", "summary");
+  for (const s of snap.stations) {
+    const c = el("div", "sm" + (s.error ? " bad" : ""));
+    c.appendChild(el("span", "smid", s.station.replace(/^K/, "")));
+    c.appendChild(el("span", "smval", s.error ? "–" : s.today.point + "°"));
+    c.appendChild(el("span", "smrng", s.error ? "error"
+      : (s.today.settled ? "locked in"
+         : s.today.i80[0] === s.today.i80[1] ? "firm" : `${s.today.i80[0]}–${s.today.i80[1]}`)));
+    box.appendChild(c);
+  }
+  return box;
+}
+
+/* -------------------------------------------------- yesterday, graded ---- */
+/**
+ * The previous morning's calls against what the stations actually reported.
+ *
+ * Shows the signed miss rather than the absolute one, because a run of misses
+ * in the same direction is a different problem from a run of scatter, and only
+ * the sign distinguishes them. The analog verdict is here too: a term that
+ * moved a call and made it worse is the thing worth seeing early.
+ */
+function priorDayPanel(p) {
+  const box = el("div");
+  if (!p || !p.rows || !p.rows.length) return box;
+
+  const graded = p.rows.filter(r => r.actual != null);
+  const head = el("p", "muted small");
+  head.textContent = p.forDate
+    ? `Calls made ${p.at ? new Date(p.at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit", timeZone: "America/New_York" }) + " Eastern " : ""}on ${p.forDate}, against the CLI maximum each office went on to publish.`
+    : "Calls against the CLI maximum each office went on to publish.";
+  box.appendChild(head);
+
+  const tbl = el("table", "tbl"), tb = el("tbody");
+  for (const r of p.rows) {
+    const tr = el("tr");
+    tr.appendChild(el("td", "mname", r.station));
+    tr.appendChild(el("td", "mnum", r.call == null ? "\u2013" : r.call + "\u00b0"));
+    tr.appendChild(el("td", "mnum muted", r.i80 ? r.i80.join("\u2013") : "\u2013"));
+    tr.appendChild(el("td", "mnum", r.actual == null ? "\u2013" : r.actual + "\u00b0"));
+    const e = el("td", "merr " + (r.actual == null ? "" : r.absErr === 0 ? "ok" : r.absErr <= 1 ? "near" : "off"));
+    e.textContent = r.actual == null ? "awaiting"
+                  : (r.err > 0 ? "+" : "") + r.err + (r.inside80 === false ? "!" : "");
+    tr.appendChild(e);
+    tb.appendChild(tr);
+  }
+  tbl.appendChild(tb);
+  tbl.appendChild(el("caption", null,
+    "station \u00b7 call \u00b7 80% band \u00b7 reported \u00b7 miss (! = outside the band)"));
+  box.appendChild(tbl);
+
+  if (graded.length) {
+    const inBand = graded.filter(r => r.inside80).length;
+    const s = el("p", "small");
+    s.appendChild(el("strong", null,
+      `${inBand} of ${graded.length} inside the 80% band`));
+    s.appendChild(el("span", "muted",
+      ` \u2014 mean miss ${p.mae}\u00b0F, ${p.bias > 0 ? "running hot" : p.bias < 0 ? "running cold" : "no net lean"}` +
+      (p.bias ? ` by ${Math.abs(p.bias)}\u00b0F` : "") +
+      (p.exact ? `, ${p.exact} exact` : "") + "."));
+    box.appendChild(s);
+  }
+  if (p.awaiting && p.awaiting.length) {
+    box.appendChild(el("p", "muted small",
+      "Awaiting settlement: " + p.awaiting.join(", ") +
+      " \u2014 the CLI report for those had not posted when this ran, so they are not counted above."));
+  }
+
+  // The analog term on trial.
+  if (p.analogMoved) {
+    const hurt = p.analogMoved - (p.analogHelped || 0);
+    const a = el("p", "small");
+    a.appendChild(el("strong", null, "Analog term"));
+    a.appendChild(el("span", "muted",
+      ` moved ${p.analogMoved} of these calls and improved ${p.analogHelped || 0}` +
+      (hurt > 0 ? `, made ${hurt} worse` : "") + "."));
+    box.appendChild(a);
+  } else if (graded.length) {
+    box.appendChild(el("p", "muted small",
+      "The analog term did not move any of these calls by a whole degree."));
+  }
+  const withReason = p.rows.filter(r => r.analogReason);
+  if (withReason.length) {
+    box.appendChild(el("p", "muted small",
+      withReason.map(r => `${r.station}: ${r.analogReason}`).join(" \u00b7 ")));
+  }
+
+  // The trail, when there is one worth showing.
+  if (p.history && p.history.length > 1) {
+    const h = el("p", "muted small mono");
+    h.textContent = "trail: " + p.history.slice(-10)
+      .map(x => `${String(x.d).slice(5)} ${x.mae == null ? "\u2013" : x.mae}`).join("  ");
+    box.appendChild(h);
+  }
+  return box;
+}
+
+return { stationCard, summaryRow, dayChart, probBars, conditionsStrip, analogNote,
+         priorDayPanel, scorecard, compass, flowLabel, el, f1, pct, CONF_TONE };
+})();
+</script>
+<script>/* Hosted mirror: draws whatever the last completed engine pass wrote. */
+(() => {
+"use strict";
+const $ = id => document.getElementById(id);
+
+function ago(iso) {
+  const m = Math.round((Date.now() - new Date(iso)) / 60000);
+  if (m < 1) return "just now";
+  if (m < 60) return m + " min ago";
+  const h = Math.floor(m / 60);
+  if (h < 24) return h + (h === 1 ? " hour ago" : " hours ago");
+  return Math.floor(h / 24) + " days ago";
+}
+
+function render(snap) {
+  if (!snap || !snap.stations) return;
+  $("empty").hidden = true;
+  $("live").hidden = false;
+  $("summary").replaceChildren(UI.summaryRow(snap));
+  const grid = $("grid");
+  grid.textContent = "";
+  for (const st of snap.stations) grid.appendChild(UI.stationCard(st));
+
+  const age = (Date.now() - new Date(snap.ranAt)) / 60000;
+  $("statusText").textContent = "last pass " + ago(snap.ranAt);
+  $("statusDot").className = "dot" + (age > 150 ? " bad" : age > 75 ? " stale" : "");
+  $("ranAt").textContent = new Date(snap.ranAt).toLocaleString([], {
+    month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+  $("ranAt").dataset.iso = snap.ranAt;
+
+  const stale = $("staleNote");
+  if (age > 90) {
+    stale.hidden = false;
+    stale.textContent = "This is a stored pass, not a live reading. Anything that has happened at these stations in the last "
+      + ago(snap.ranAt).replace(" ago", "") + " is not in these numbers.";
+  } else {
+    stale.hidden = true;
+  }
+
+  if (snap.scorecard) {
+    document.getElementById("scoring").replaceChildren(UI.scorecard(snap.scorecard));
+  }
+
+  if (snap.priorDay && snap.priorDay.rows && snap.priorDay.rows.length) {
+    $("priorWrap").hidden = false;
+    $("priorDay").replaceChildren(
+      UI.priorDayPanel({ ...snap.priorDay, history: snap.priorDayHistory || null }));
+  } else {
+    $("priorWrap").hidden = true;
+  }
+
+  if (snap.morning) {
+    $("morningWrap").hidden = false;
+    const box = $("morning");
+    box.textContent = "";
+    box.appendChild(UI.el("p", "muted small", "Frozen at " +
+      new Date(snap.morning.at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit", timeZone: "America/New_York" }) +
+      " Eastern. Drift is the move since."));
+    const tbl = UI.el("table", "tbl"), tb = UI.el("tbody");
+    for (const c of snap.morning.calls) {
+      const live = snap.stations.find(x => x.station === c.station);
+      const now = live && !live.error ? live.today.point : null;
+      const drift = (now != null && c.point != null) ? now - c.point : null;
+      const tr = UI.el("tr");
+      tr.appendChild(UI.el("td", "mname", c.station));
+      tr.appendChild(UI.el("td", "mnum", c.point == null ? "–" : c.point + "°"));
+      tr.appendChild(UI.el("td", "mnum", now == null ? "–" : now + "°"));
+      const d = UI.el("td", "merr " + (drift === 0 ? "ok" : Math.abs(drift) <= 1 ? "near" : "off"));
+      d.textContent = drift == null ? "–" : (drift > 0 ? "+" : "") + drift;
+      tr.appendChild(d);
+      tb.appendChild(tr);
+    }
+    tbl.appendChild(tb);
+    tbl.appendChild(UI.el("caption", null, "station · 7am call · this pass · drift"));
+    box.appendChild(tbl);
+  }
+}
+
+async function getJSON(p) {
+  const r = await fetch(p + "?t=" + Date.now(), { cache: "no-store" });
+  if (!r.ok) throw new Error(p + " HTTP " + r.status);
+  return r.json();
+}
+async function load() {
+  let snap = null;
+  try { snap = await getJSON("data/latest.json"); }
+  catch (e) { $("emptyText").textContent = "Could not read the latest pass: " + String(e.message || e); }
+  if (snap && snap.stations) render(snap);
+  let st = null;
+  try { st = await getJSON("data/status.json"); } catch (e) { /* first deploy: no status yet */ }
+  const note = $("staleNote");
+  if (st && st.lastOk === false) {
+    note.hidden = false;
+    note.textContent = `The most recent run failed (${st.consecutiveFailures || 1} in a row): ${st.lastError}. ` +
+      (st.lastOkAt ? `Numbers below are from the last successful pass, ${ago(st.lastOkAt)}.` : "");
+    $("statusDot").className = "dot bad";
+  } else if (snap && snap.meta && snap.meta.missedMorning && note.hidden) {
+    note.hidden = false;
+    note.textContent = `No 7 AM call was made on ${snap.meta.missedMorning} — the first run of the day came after 10 AM Eastern, so the morning table shows the last one made.`;
+  }
+}
+(async () => {
+  await load();
+  setInterval(load, 2 * 60000);
+  setInterval(() => {
+    const t = $("ranAt").dataset.iso;
+    if (t) $("statusText").textContent = "last pass " + ago(t);
+  }, 60000);
+})();
+})();
+</script>
+</body>
+</html>
