@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>NFL Rain Watch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#EDF1F3; --surface:#FFFFFF; --surface-2:#F5F8F9;
+  --line:#D5DEE3; --line-soft:#E5EBEF;
+  --ink:#14212A; --ink-2:#43555F; --mut:#6C7F8A;
+  --mod:#0A7EA4;
+  --r-any:#9CCFE6; --r-mod:#2C8FC0; --r-heavy:#123F73; --r-track:#E7EEF2;
+  --good:#0F766E; --good-bg:#E2F1EE;
+  --warn:#B45309; --warn-bg:#FBEEDD;
+  --bad:#B3261E;  --bad-bg:#FBE7E5;
+  --shadow:0 1px 2px rgba(20,33,42,.06), 0 8px 20px -14px rgba(20,33,42,.28);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E151A; --surface:#162027; --surface-2:#1C2831;
+    --line:#2A3A45; --line-soft:#21303A;
+    --ink:#E4EDF3; --ink-2:#B0C2CD; --mut:#8298A5;
+    --mod:#2C9AC9;
+    --r-any:#2F5F78; --r-mod:#3E9BD0; --r-heavy:#A9D8F5; --r-track:#1F2D37;
+    --good:#2DD4BF; --good-bg:#10312F;
+    --warn:#FBBF24; --warn-bg:#33270D;
+    --bad:#F87171;  --bad-bg:#3A1B1A;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 26px -18px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E151A; --surface:#162027; --surface-2:#1C2831;
+  --line:#2A3A45; --line-soft:#21303A;
+  --ink:#E4EDF3; --ink-2:#B0C2CD; --mut:#8298A5;
+  --mod:#2C9AC9;
+  --r-any:#2F5F78; --r-mod:#3E9BD0; --r-heavy:#A9D8F5; --r-track:#1F2D37;
+  --good:#2DD4BF; --good-bg:#10312F;
+  --warn:#FBBF24; --warn-bg:#33270D;
+  --bad:#F87171;  --bad-bg:#3A1B1A;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 26px -18px rgba(0,0,0,.8);
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--bg); color:var(--ink);
+  font:15px/1.55 "IBM Plex Sans","Segoe UI",system-ui,-apple-system,sans-serif; -webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px; margin:0 auto; padding-inline:16px; padding-block:14px 56px}
+h1,h2,h3{margin:0; font-family:"IBM Plex Sans Condensed","IBM Plex Sans",system-ui,sans-serif; text-wrap:balance}
+p{margin:0}
+.muted{color:var(--mut)} .small{font-size:12.5px}
+.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+
+.topnav{display:flex; gap:4px; margin-bottom:14px; font-size:13px}
+.topnav a{color:var(--ink-2); text-decoration:none; padding:5px 11px; border-radius:7px; border:1px solid transparent}
+.topnav a:hover{background:var(--surface)}
+.topnav a[aria-current="page"]{color:var(--ink); background:var(--surface); border-color:var(--line); font-weight:500}
+
+.masthead{display:flex; flex-wrap:wrap; gap:10px 20px; align-items:flex-end; justify-content:space-between; margin-bottom:6px}
+.masthead h1{font-size:25px; font-weight:600; letter-spacing:-.015em}
+.kicker{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--mut); margin-bottom:3px}
+.status{display:flex; align-items:center; gap:10px; font-size:12.5px; color:var(--ink-2)}
+.dot{width:7px; height:7px; border-radius:50%; background:var(--good); flex:none}
+.dot.stale{background:var(--warn)} .dot.bad{background:var(--bad)}
+.banner{margin:14px 0 0; padding:10px 14px; border-radius:10px; font-size:13px; background:var(--warn-bg); color:var(--warn)}
+.banner.bad{background:var(--bad-bg); color:var(--bad)}
+
+.key{display:flex; flex-wrap:wrap; gap:6px 16px; font-size:12px; color:var(--mut); margin:18px 0 4px}
+.lg{display:inline-flex; align-items:center; gap:6px}
+.sw{width:12px; height:8px; border-radius:2px; flex:none}
+
+.day{margin-top:26px}
+.day h2{font-size:12px; font-family:"IBM Plex Mono",monospace; letter-spacing:.12em; text-transform:uppercase; color:var(--mut); font-weight:600; margin-bottom:10px}
+.list{display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:14px}
+.game{background:var(--surface); border:1px solid var(--line); border-radius:13px; padding:15px 16px 14px; box-shadow:var(--shadow); min-width:0; display:flex; flex-direction:column; gap:10px}
+.ghead{display:flex; justify-content:space-between; gap:10px; align-items:flex-start}
+.teams{font-family:"IBM Plex Sans Condensed",sans-serif; font-size:18px; font-weight:600; line-height:1.2}
+.teams .at{color:var(--mut); font-weight:500; margin:0 4px}
+.kick{font-family:"IBM Plex Mono",monospace; font-size:12.5px; color:var(--ink-2); white-space:nowrap; text-align:right}
+.kick .live{color:var(--bad); font-weight:600}
+.where{font-size:12.5px; color:var(--mut); margin-top:2px}
+.pill{display:inline-block; font-size:11px; font-weight:500; padding:2px 8px; border-radius:20px; white-space:nowrap}
+.pill.dome{color:var(--good); background:var(--good-bg)}
+.pill.roof{color:var(--warn); background:var(--warn-bg)}
+.pill.open{color:var(--ink-2); background:var(--surface-2); border:1px solid var(--line-soft)}
+
+.wx{border-top:1px solid var(--line-soft); padding-top:10px}
+.wxrow{display:flex; align-items:baseline; gap:14px}
+.bigp{font-size:34px; font-weight:600; line-height:1; letter-spacing:-.02em; font-variant-numeric:tabular-nums; color:var(--mod); flex:none}
+.bigp small{font-size:14px; color:var(--mut); font-weight:500}
+.bigl{font-size:12px; color:var(--mut); line-height:1.3}
+.bar{position:relative; height:10px; border-radius:5px; background:var(--r-track); overflow:hidden; margin:10px 0 8px}
+.bar span{position:absolute; left:0; top:0; bottom:0; border-radius:5px}
+.cats{display:grid; grid-template-columns:repeat(3,1fr); gap:6px}
+.cat{background:var(--surface-2); border-radius:8px; padding:6px 8px}
+.cat b{display:block; font-size:16px; font-variant-numeric:tabular-nums; font-weight:600}
+.cat i{font-style:normal; font-size:11px; color:var(--mut); display:flex; align-items:center; gap:5px}
+.extra{font-size:12px; color:var(--mut); margin-top:8px; display:flex; flex-wrap:wrap; gap:4px 12px}
+.snow{color:var(--mod); font-weight:500}
+.indoor{font-size:13px; color:var(--ink-2)}
+.pill.early{color:var(--mut); background:transparent; border:1px dashed var(--line)}
+.game.early .bigp{color:var(--ink-2)}
+.game.early .bar{opacity:.6}
+
+.empty{margin-top:24px; background:var(--surface); border:1px solid var(--line); border-radius:13px; padding:18px}
+.notes{margin-top:34px; background:var(--surface); border:1px solid var(--line); border-radius:13px; padding:18px}
+.notes h2{font-size:16px; font-weight:600; margin-bottom:10px}
+.notes p{font-size:13px; color:var(--ink-2); margin-bottom:9px; max-width:74ch}
+@media (max-width:640px){
+  .list{grid-template-columns:1fr}
+  .masthead h1{font-size:22px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="topnav" aria-label="Pages">
+    <a href="./">High-Temp Desk</a>
+    <a href="nfl.html" aria-current="page">NFL Rain Watch</a>
+  </nav>
+
+  <header class="masthead">
+    <div>
+      <p class="kicker">This NFL week · game-time rain</p>
+      <h1>NFL Rain Watch</h1>
+    </div>
+    <div class="status">
+      <span class="dot stale" id="dot"></span>
+      <span id="statusText">loading…</span>
+    </div>
+  </header>
+  <p class="banner" id="banner" hidden></p>
+
+  <div class="key" aria-label="Legend">
+    <span class="lg"><span class="sw" style="background:var(--r-any)"></span>Any rain</span>
+    <span class="lg"><span class="sw" style="background:var(--r-mod)"></span>Moderate or heavier</span>
+    <span class="lg"><span class="sw" style="background:var(--r-heavy)"></span>Heavy</span>
+    <span>Kickoff times Eastern</span>
+  </div>
+
+  <main id="games"></main>
+
+  <section class="notes">
+    <h2>How the numbers are made</h2>
+    <p>The page covers the current NFL week, through Monday night. Games more than 5 days away are marked <em>Early look</em>, because forecasts that far out are much less reliable, and they sharpen as the game gets closer. A scheduled job pulls the schedule from ESPN every three hours and checks the forecast for each outdoor stadium over the game window, from kickoff to 3½ hours later. The forecast comes from two ensembles, GFS (31 runs) and ECMWF (51 runs). Each percentage is the share of those runs that show that much rain during the game.</p>
+    <p><strong>Any rain</strong>: at least 0.01 in during the game, the same bar the NWS uses for "chance of rain". <strong>Moderate or heavier</strong>: at least one hour at 0.10 in/hr or more. <strong>Heavy</strong>: at least one hour at 0.30 in/hr or more.</p>
+    <p>These models step every 3 hours, so a short downpour gets spread out and the heavy figure tends to read low. Domes and SoFi Stadium's fixed roof show as indoor. Retractable roofs still get a forecast because the team decides on game day whether to close it. At 34°F or colder, precipitation may be snow.</p>
+  </section>
+</div>
+
+<script>
+"use strict";
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const ET = "America/New_York";
+const dayFmt = new Intl.DateTimeFormat("en-US", { timeZone: ET, weekday: "long", month: "short", day: "numeric" });
+const timeFmt = new Intl.DateTimeFormat("en-US", { timeZone: ET, hour: "numeric", minute: "2-digit" });
+
+function ago(iso) {
+  const m = Math.round((Date.now() - Date.parse(iso)) / 60000);
+  if (m < 1) return "just now";
+  if (m < 60) return m + " min ago";
+  const h = Math.round(m / 60);
+  return h < 48 ? h + " h ago" : Math.round(h / 24) + " days ago";
+}
+
+function roofPill(roof) {
+  if (roof === "dome") return '<span class="pill dome">Dome</span>';
+  if (roof === "covered") return '<span class="pill dome">Fixed roof</span>';
+  if (roof === "retractable") return '<span class="pill roof">Roof may close</span>';
+  if (roof === "open") return '<span class="pill open">Open air</span>';
+  return "";
+}
+
+function rainBlock(g) {
+  const r = g.rain;
+  if (r === null) return '<div class="wx"><p class="indoor">Indoors. Rain won\'t reach the field.</p></div>';
+  if (!r || r.error) return `<div class="wx"><p class="small muted">Forecast unavailable${r && r.error ? ": " + esc(r.error) : ""}.</p></div>`;
+  const light = Math.max(0, r.anyRain - r.moderate);
+  const extra = [];
+  if (r.tempF != null) extra.push(`${r.tempF}°F at game time`);
+  if (r.anyRain > 0 && r.meanTotalIn != null) extra.push(`avg ${r.meanTotalIn.toFixed(2)} in over the game`);
+  extra.push(`${r.members} model runs`);
+  const snow = r.snowRisk && r.anyRain > 0 ? '<span class="snow">Cold enough for snow</span>' : "";
+  return `<div class="wx">
+    <div class="wxrow">
+      <div class="bigp">${r.anyRain}<small>%</small></div>
+      <div class="bigl">chance of rain<br>during the game</div>
+    </div>
+    <div class="bar" role="img" aria-label="Any rain ${r.anyRain}%, moderate or heavier ${r.moderate}%, heavy ${r.heavy}%">
+      <span style="width:${r.anyRain}%;background:var(--r-any)"></span>
+      <span style="width:${r.moderate}%;background:var(--r-mod)"></span>
+      <span style="width:${r.heavy}%;background:var(--r-heavy)"></span>
+    </div>
+    <div class="cats">
+      <div class="cat"><b>${light}%</b><i><span class="sw" style="background:var(--r-any)"></span>Light only</i></div>
+      <div class="cat"><b>${r.moderate}%</b><i><span class="sw" style="background:var(--r-mod)"></span>Moderate+</i></div>
+      <div class="cat"><b>${r.heavy}%</b><i><span class="sw" style="background:var(--r-heavy)"></span>Heavy</i></div>
+    </div>
+    <div class="extra">${snow}${extra.map((x) => `<span>${esc(x)}</span>`).join("")}</div>
+  </div>`;
+}
+
+function card(g) {
+  const k = new Date(g.kickoff);
+  const kick = g.state === "in"
+    ? `<span class="live">LIVE</span><br><span class="muted">${esc(g.detail)}</span>`
+    : `${esc(timeFmt.format(k))} ET${g.tv ? `<br><span class="muted">${esc(g.tv)}</span>` : ""}`;
+  const v = g.venue || {};
+  return `<article class="game${g.early ? " early" : ""}">
+    <div class="ghead">
+      <div style="min-width:0">
+        <h3 class="teams">${esc(g.away.short || g.away.abbr)}<span class="at">at</span>${esc(g.home.short || g.home.abbr)}</h3>
+        <p class="where">${esc(v.name)}${v.city ? " · " + esc(v.city) : ""}${v.approx ? " (approx.)" : ""}</p>
+      </div>
+      <div class="kick">${kick}</div>
+    </div>
+    <div>${roofPill(v.roof)}${g.neutral ? ' <span class="pill open">Neutral site</span>' : ""}${g.early && g.rain ? ' <span class="pill early" title="More than 5 days before kickoff">Early look · 5+ days out</span>' : ""}</div>
+    ${rainBlock(g)}
+  </article>`;
+}
+
+function render(doc) {
+  const age = (Date.now() - Date.parse(doc.generatedAt)) / 3600e3;
+  $("statusText").textContent = "updated " + ago(doc.generatedAt);
+  $("dot").className = "dot" + (age > 7 ? " bad" : age > 4 ? " stale" : "");
+  if (age > 7) {
+    $("banner").hidden = false;
+    $("banner").textContent = `These numbers are ${ago(doc.generatedAt).replace(" ago", "")} old. The scheduled job may be failing. Check Actions → nfl-rain on GitHub.`;
+  }
+  const games = (doc.games || []).filter((g) => Date.parse(g.kickoff) + 4 * 3600e3 > Date.now());
+  if (!games.length) {
+    $("games").innerHTML = '<div class="empty"><p>No games scheduled between now and Monday night.</p></div>';
+    return;
+  }
+  const days = new Map();
+  for (const g of games) {
+    const d = dayFmt.format(new Date(g.kickoff));
+    if (!days.has(d)) days.set(d, []);
+    days.get(d).push(g);
+  }
+  $("games").innerHTML = [...days].map(([d, gs]) =>
+    `<section class="day"><h2>${esc(d)}</h2><div class="list">${gs.map(card).join("")}</div></section>`).join("");
+}
+
+fetch("data/nfl.json?t=" + Date.now())
+  .then((r) => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+  .then(render)
+  .catch((e) => {
+    $("statusText").textContent = "no data yet";
+    $("dot").className = "dot bad";
+    $("games").innerHTML = `<div class="empty"><p>The first run hasn't written <span class="mono">data/nfl.json</span> yet. Start it from GitHub: Actions → nfl-rain → Run workflow.</p><p class="small muted" style="margin-top:8px">${esc(e.message)}</p></div>`;
+  });
+</script>
+</body>
+</html>

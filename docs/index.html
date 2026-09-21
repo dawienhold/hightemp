@@ -58,6 +58,12 @@ p{margin:0}
 .muted{color:var(--mut)}
 .mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
 
+/* ------------------------------------------------------------- page nav */
+.topnav{display:flex; gap:4px; margin-bottom:14px; font-size:13px}
+.topnav a{color:var(--ink-2); text-decoration:none; padding:5px 11px; border-radius:7px; border:1px solid transparent}
+.topnav a:hover{background:var(--surface)}
+.topnav a[aria-current="page"]{color:var(--ink); background:var(--surface); border-color:var(--line); font-weight:500}
+
 /* ------------------------------------------------------------ masthead */
 .masthead{display:flex; flex-wrap:wrap; gap:14px 20px; align-items:flex-end; justify-content:space-between; margin-bottom:6px}
 .masthead h1{font-size:25px; font-weight:600; letter-spacing:-.015em}
@@ -236,6 +242,11 @@ button[disabled]{opacity:.5; cursor:default}
 </head>
 <body>
 <div class="wrap">
+
+  <nav class="topnav" aria-label="Pages">
+    <a href="./" aria-current="page">High-Temp Desk</a>
+    <a href="nfl.html">NFL Rain Watch</a>
+  </nav>
 
   <header class="masthead">
     <div>
