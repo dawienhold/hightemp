@@ -142,12 +142,12 @@ async function main() {
   snap.meta = {
     source: "github-actions", modelVersion: HT.MODEL_VERSION, morningRun: morning,
     lastMorningDate: morning ? etDate : (state.lastMorningDate || null),
-    missedMorning: state.missedMorning === etDate ? etDate : null,
+    missedMorning: (!morning && state.lastMorningDate !== etDate && state.missedMorning === etDate) ? etDate : null,
     climateDay: "midnight to midnight local standard time (NWS CLI convention)",
   };
 
   // ---- persist, in dependency order: state and stats before the snapshot
-  if (morning) state.lastMorningDate = etDate;
+  if (morning) { state.lastMorningDate = etDate; if (state.missedMorning === etDate) delete state.missedMorning; }
   const cacheEntries = [...cliCache.entries()].slice(-600);
   state.cliCache = Object.fromEntries(cacheEntries);
   state.updated = new Date().toISOString();

@@ -42,7 +42,7 @@ const HT = (() => {
 "use strict";
 
 /** Bumped whenever the forecast logic changes, so the scorecard can say so. */
-const MODEL_VERSION = "3.8";
+const MODEL_VERSION = "3.8.1";
 
 // ---------------------------------------------------------------- stations
 const STATIONS = [
@@ -134,6 +134,16 @@ function climDate(d, tz) {
   const off = STD_OFFSET_H[tz];
   if (off == null) return localDate(d, tz);
   return new Date(d.getTime() + off * 3600e3).toISOString().slice(0, 10);
+}
+
+/** 1 while daylight time is in force on `ymd`, else 0: how many wall-clock hours
+ *  the climate day is shifted (it then runs 1 AM to 1 AM local). */
+function dstShiftH(ymd, tz) {
+  const off = STD_OFFSET_H[tz];
+  if (off == null) return 0;
+  const probe = new Date(ymd + "T17:00:00Z");
+  const stdHour = (17 + off + 24) % 24;
+  return Math.round(localHour(probe, tz) - stdHour + 24) % 24 === 1 ? 1 : 0;
 }
 
 function addDays(ymd, n) {
@@ -1255,7 +1265,8 @@ function forecastDay(st, ctx, dayOffset) {
 
   let sEns = null; const ensMaxes = [];
   if (ens) {
-    const ei = hourIndex(ens.time, date);
+    const shiftE = dstShiftH(date, st.tz);
+    const ei = hourIndex(ens.time, date).filter(i => +ens.time[i].slice(11, 13) >= shiftE);
     for (const mem of ens.members) {
       const arr = ens.data[mem]; let mx = null;
       for (const i of ei) { const v = num(arr[i]); if (v != null && (mx == null || v > mx)) mx = v; }
@@ -1267,7 +1278,9 @@ function forecastDay(st, ctx, dayOffset) {
 
   // --- how much of the day is still undecided ------------------------------
   let peakH = 15, peakVal = -Infinity;
+  const shiftH = dstShiftH(date, st.tz);
   for (const i of hIdx) {
+    if (+hourly.time[i].slice(11, 13) < shiftH) continue;     // that hour closed the previous climate day
     const vs = models.map(m => num(hourly.byModel[m][i])).filter(v => v != null);
     if (!vs.length) continue;
     const avg = vs.reduce((s, x) => s + x, 0) / vs.length;
