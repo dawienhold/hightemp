@@ -11,6 +11,10 @@ on:
         description: "Force this run to be the 7am call"
         type: boolean
         default: false
+      test_push:
+        description: "Send a test notification to your phone"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -33,6 +37,8 @@ jobs:
       - name: Run the forecast pass
         env:
           FORCE_MORNING: ${{ inputs.morning }}
+          TEST_PUSH: ${{ inputs.test_push }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
         run: node scripts/run.js
 
       - name: Commit results
