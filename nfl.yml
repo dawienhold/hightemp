@@ -1,0 +1,46 @@
+name: nfl-rain
+
+# NFL game-time rain outlook for the next 5 days. Completely separate from the
+# forecast-pass job: its own schedule, its own concurrency group, and it only
+# ever writes docs/data/nfl.json. If it fails, the high-temp forecasts are
+# unaffected.
+
+on:
+  schedule:
+    # Every 3 hours at :37, clear of forecast-pass's :04/:24/:44 runs.
+    - cron: "37 */3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nfl-rain
+  cancel-in-progress: false
+
+jobs:
+  nfl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build the rain outlook
+        run: node scripts/nfl.js
+
+      - name: Commit nfl.json
+        run: |
+          git config user.name "hightemp-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data/nfl.json
+          if git diff --cached --quiet; then echo "nothing to commit"; exit 0; fi
+          git commit -q -m "nfl $(date -u +%Y-%m-%dT%H:%MZ)"
+          for i in 1 2 3 4 5; do
+            git pull -q --rebase origin "${GITHUB_REF_NAME}" && git push -q origin "HEAD:${GITHUB_REF_NAME}" && exit 0
+            sleep 8
+          done
+          echo "push failed after 5 attempts"; exit 1
