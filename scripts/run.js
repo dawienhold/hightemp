@@ -124,6 +124,50 @@ const obsShort = t => {
   return `${Math.round(t.obsMax)} so far`;
 };
 
+/* Scoring checkpoints. Every pass writes to history/, but only a few calls a
+   day per station go into the scorecard: the 7am call, the first call after
+   local noon, and the first call inside the 2-hour pre-peak window. Scoring all
+   ~70 intraday passes would drown the scorecard in near-certain late calls and
+   make it look far better than the calls you would actually trade on. */
+function keepCheckpoints(snap, morning, now) {
+  state.logged = state.logged || {};
+  const fresh = new Set(), keep = new Set();
+  for (const s of snap.stations) {
+    if (s.error || s.stale || !s.today) continue;
+    const t = s.today, [tz] = ZONE[s.station] || ["America/New_York"];
+    const localH = HT.localHour(now, tz);
+    const peak = t.peakH >= 10 ? t.peakH : 14;
+    const slots = [];
+    if (morning) slots.push("morning");
+    if (localH >= peak - 2) slots.push("prepeak");
+    else if (localH >= 12) slots.push("midday");
+    for (const slot of slots) {
+      const key = `${t.date}|${s.station}|${slot}`;
+      if (!state.logged[key]) { state.logged[key] = snap.ranAt; keep.add(s.station); break; }
+    }
+  }
+  const before = state.pending.length;
+  state.pending = state.pending.filter(r => r.at !== snap.ranAt || keep.has(r.station));
+  const cutoff = new Date(now.getTime() - 4 * 86400e3).toISOString().slice(0, 10);
+  for (const k of Object.keys(state.logged)) if (k.slice(0, 10) < cutoff) delete state.logged[k];
+
+  // One-time cleanup of the every-20-minute rows queued before this change:
+  // keep the earliest (morning) call per station and date, drop the rest.
+  if (!state.checkpointV1) {
+    const seen = new Set();
+    state.pending = state.pending
+      .slice().sort((a, b) => String(a.at).localeCompare(String(b.at)))
+      .filter(r => {
+        if (r._scored || r.at < "2026-09-21T13:50") return true;   // already scored, or pre-GitHub history
+        const k = r.station + "|" + r.date;
+        if (seen.has(k)) return r.at === snap.ranAt && keep.has(r.station);
+        seen.add(k); return true;
+      });
+    state.checkpointV1 = new Date().toISOString();
+  }
+  return { logged: [...keep], dropped: before - state.pending.length };
+}
+
 async function sendAlerts(snap, morning, now) {
   const sent = [];
   state.alerts = state.alerts || {};
@@ -221,6 +265,7 @@ async function main() {
     climateDay: "midnight to midnight local standard time (NWS CLI convention)",
   };
 
+  const checkpoints = keepCheckpoints(snap, morning, now);
   let alertsSent = [], alertErr = null;
   try { alertsSent = await sendAlerts(snap, morning, now); } catch (e) { alertErr = String(e.message || e); }
 
@@ -268,8 +313,8 @@ async function main() {
   const gapMin = status.lastRunAt ? Math.round((t0 - new Date(status.lastRunAt)) / 60000) : null;
   const run = {
     at: snap.ranAt, ok: true, morning, durationS: Math.round((Date.now() - t0) / 1000), gapMin,
-    scored: out.scoredCount, pending: out.pendingCount, queueWasEmpty: out.queueWasEmpty,
-    errors, archived, archiveErr, alertsSent, alertErr,
+    scored: out.scoredCount, pending: state.pending.length, queueWasEmpty: out.queueWasEmpty,
+    errors, archived, archiveErr, alertsSent, alertErr, checkpoints: checkpoints.logged,
   };
   appendLine(F.runs, run);
   writeJSON(F.status, {
