@@ -99,6 +99,25 @@ p{margin:0}
 .extra{font-size:12px; color:var(--mut); margin-top:8px; display:flex; flex-wrap:wrap; gap:4px 12px}
 .snow{color:var(--mod); font-weight:500}
 .indoor{font-size:13px; color:var(--ink-2)}
+.pill.surf{color:var(--ink-2); background:var(--surface-2); border:1px solid var(--line-soft)}
+.pill.surf.turf{border-style:dashed}
+.wind{display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:10px}
+.wtile{background:var(--surface-2); border-radius:8px; padding:7px 9px; min-width:0}
+.wtile .wl{font-size:11px; color:var(--mut); display:block}
+.wtile .wv{font-size:16px; font-weight:600; font-variant-numeric:tabular-nums}
+.wtile .wv small{font-size:11px; color:var(--mut); font-weight:500}
+.lvl{display:inline-block; font-size:10.5px; font-weight:600; letter-spacing:.02em; padding:1px 7px; border-radius:20px; margin-left:4px; vertical-align:2px}
+.lvl.negligible{color:var(--good); background:var(--good-bg)}
+.lvl.mild{color:var(--ink-2); background:var(--line-soft)}
+.lvl.significant{color:var(--warn); background:var(--warn-bg)}
+.lvl.severe{color:var(--bad); background:var(--bad-bg)}
+.wsub{font-size:11px; color:var(--mut); margin-top:3px}
+.rush{border-top:1px solid var(--line-soft); padding-top:9px; display:grid; grid-template-columns:auto 1fr 1fr; gap:4px 12px; align-items:baseline; font-size:12.5px}
+.rush .rl{font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--mut); font-weight:600}
+.rush .rt{min-width:0}
+.rush .rk{font-weight:600; font-variant-numeric:tabular-nums}
+.rush .rk.top{color:var(--good)} .rush .rk.bot{color:var(--bad)}
+.rush .rs{color:var(--mut); font-variant-numeric:tabular-nums}
 .pill.early{color:var(--mut); background:transparent; border:1px dashed var(--line)}
 .game.early .bigp{color:var(--ink-2)}
 .game.early .bar{opacity:.6}
@@ -122,7 +141,7 @@ p{margin:0}
 
   <header class="masthead">
     <div>
-      <p class="kicker">This NFL week · game-time rain</p>
+      <p class="kicker">This NFL week · rain, wind, field, run defense</p>
       <h1>NFL Rain Watch</h1>
     </div>
     <div class="status">
@@ -138,6 +157,13 @@ p{margin:0}
     <span class="lg"><span class="sw" style="background:var(--r-heavy)"></span>Heavy</span>
     <span>Kickoff times Eastern</span>
   </div>
+  <div class="key" style="margin-top:6px" aria-label="Wind scale">
+    <span>Wind:</span>
+    <span><span class="lvl negligible">Negligible</span> under 10 mph</span>
+    <span><span class="lvl mild">Mild</span> 10–14</span>
+    <span><span class="lvl significant">Significant</span> 15–19</span>
+    <span><span class="lvl severe">Severe</span> 20+</span>
+  </div>
 
   <main id="games"></main>
 
@@ -146,6 +172,8 @@ p{margin:0}
     <p>The page covers the current NFL week, through Monday night. Games more than 5 days away are marked <em>Early look</em>, because forecasts that far out are much less reliable, and they sharpen as the game gets closer. A scheduled job pulls the schedule from ESPN every three hours and checks the forecast for each outdoor stadium over the game window, from kickoff to 3½ hours later. The forecast comes from two ensembles, GFS (31 runs) and ECMWF (51 runs). Each percentage is the share of those runs that show that much rain during the game.</p>
     <p><strong>Any rain</strong>: at least 0.01 in during the game, the same bar the NWS uses for "chance of rain". <strong>Moderate or heavier</strong>: at least one hour at 0.10 in/hr or more. <strong>Heavy</strong>: at least one hour at 0.30 in/hr or more.</p>
     <p>These models step every 3 hours, so a short downpour gets spread out and the heavy figure tends to read low. Domes and SoFi Stadium's fixed roof show as indoor. Retractable roofs still get a forecast because the team decides on game day whether to close it. At 34°F or colder, precipitation may be snow.</p>
+    <p><strong>Wind</strong> comes from the same 82 runs. For each run, the page takes the strongest hour of sustained wind and the strongest gust during the game (10 m above ground, the standard measuring height). The number shown is the middle run's value. The percentage underneath is the share of runs that reach 15 mph or more. Wind inside the stadium bowl is often lighter than this, but swirling.</p>
+    <p><strong>Field</strong> is ESPN's grass/turf flag for that game. <strong>Run D</strong> ranks all 32 defenses by EPA allowed per opponent carry this season (1 = hardest to run on), from nflverse's free weekly team stats, which update the day after games. Yards per carry allowed is shown alongside. Early in the season a single game swings these a lot, so treat rankings as rough until about week 5 or 6.</p>
   </section>
 </div>
 
@@ -198,8 +226,30 @@ function rainBlock(g) {
       <div class="cat"><b>${r.moderate}%</b><i><span class="sw" style="background:var(--r-mod)"></span>Moderate+</i></div>
       <div class="cat"><b>${r.heavy}%</b><i><span class="sw" style="background:var(--r-heavy)"></span>Heavy</i></div>
     </div>
+    ${windBlock(r)}
     <div class="extra">${snow}${extra.map((x) => `<span>${esc(x)}</span>`).join("")}</div>
   </div>`;
+}
+
+const LVL = { negligible: "Negligible", mild: "Mild", significant: "Significant", severe: "Severe" };
+function windBlock(r) {
+  const w = r && r.wind;
+  if (!w) return "";
+  const tile = (label, x) => x ? `<div class="wtile"><span class="wl">${label}</span>
+      <span class="wv">${x.mph}<small> mph</small><span class="lvl ${x.level}">${LVL[x.level]}</span></span>
+      <div class="wsub">${x.sig}% chance of 15+ mph</div></div>` : "";
+  return `<div class="wind">${tile("Sustained wind", w.sustained)}${tile("Gusts", w.gust)}</div>`;
+}
+
+function rushBlock(g) {
+  const cell = (t) => {
+    const d = t.rushD;
+    if (!d) return `<div class="rt"><span class="rs">${esc(t.abbr)} –</span></div>`;
+    const cls = d.rank <= 8 ? " top" : d.rank > d.of - 8 ? " bot" : "";
+    return `<div class="rt" title="EPA per carry allowed: ${d.epaPerCarry} · ${d.ypg} rush yds/game · ${d.games} game${d.games === 1 ? "" : "s"}">${esc(t.abbr)} <span class="rk${cls}">#${d.rank}</span> <span class="rs">· ${d.ypc} ypc</span></div>`;
+  };
+  if (!g.away.rushD && !g.home.rushD) return "";
+  return `<div class="rush"><span class="rl">Run D</span>${cell(g.away)}${cell(g.home)}</div>`;
 }
 
 function card(g) {
@@ -216,8 +266,9 @@ function card(g) {
       </div>
       <div class="kick">${kick}</div>
     </div>
-    <div>${roofPill(v.roof)}${g.neutral ? ' <span class="pill open">Neutral site</span>' : ""}${g.early && g.rain ? ' <span class="pill early" title="More than 5 days before kickoff">Early look · 5+ days out</span>' : ""}</div>
+    <div>${roofPill(v.roof)}${v.surface ? ` <span class="pill surf ${v.surface}">${v.surface === "grass" ? "Grass" : "Turf"}</span>` : ""}${g.neutral ? ' <span class="pill open">Neutral site</span>' : ""}${g.early && g.rain ? ' <span class="pill early" title="More than 5 days before kickoff">Early look · 5+ days out</span>' : ""}</div>
     ${rainBlock(g)}
+    ${rushBlock(g)}
   </article>`;
 }
 
