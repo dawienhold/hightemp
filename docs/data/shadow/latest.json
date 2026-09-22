@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "mode": "PAPER_ONLY",
-  "generatedAt": "2026-09-22T23:31:10.944Z",
+  "generatedAt": "2026-09-22T23:39:37.376Z",
   "transport": "Unauthenticated Polymarket US REST snapshots; no WebSocket",
   "liveOrdersPossible": false,
   "config": {
@@ -17,7 +17,7 @@
       "KSFO"
     ],
     "pollSeconds": 60,
-    "sessionSeconds": 150,
+    "sessionSeconds": 240,
     "discoverySeconds": 300,
     "cliRefreshSeconds": 120,
     "maxWeatherCheckAgeSeconds": 180,
@@ -37,9 +37,9 @@
     "feeScheduleReviewedOn": "2026-09-21",
     "feeReviewAfterDays": 30,
     "discoveryPageSize": 50,
-    "discoveryMaxPages": 4,
-    "maxMarketsPerCycle": 40,
-    "bookArchiveLevels": 10,
+    "discoveryMaxPages": 6,
+    "maxMarketsPerCycle": 100,
+    "bookArchiveLevels": 50,
     "eventSlugs": []
   },
   "summary": {
@@ -108,258 +108,147 @@
   ],
   "markets": [
     {
-      "slug": "tc-temp-laxhigh-2026-09-22-gte75lt76f",
-      "question": "Highest temperature in Los Angeles on September 22?",
-      "url": "https://polymarket.us/event/temp-laxhigh-2026-09-22",
-      "station": "KLAX",
+      "slug": "tc-temp-nychigh-2026-09-22-gte63lt64f",
+      "question": "Highest temperature in NYC on September 22?",
+      "url": "https://polymarket.us/event/temp-nychigh-2026-09-22",
+      "station": "KNYC",
       "date": "2026-09-22",
       "band": {
-        "low": 75,
-        "high": 76
+        "low": 63,
+        "high": 64
       },
-      "rulesHash": "f04c2e26d6d56d9ad0601569a41f36d008fcd41951d2687cc539c7ee5bf03280",
+      "rulesHash": "c40ac88948d88672c0eb41b3c1427f16f03a520647566d7d791005fb68a2c477",
       "validRules": true,
       "ruleIssues": [],
-      "status": "RANGE_NOT_ELIMINATED",
-      "detail": null,
-      "evidence": {
-        "id": "d73b41e14b553fdb1341b190b6ffeb993cf6dfd57a2ab4d3d2ac72955febacff",
-        "kind": "ASOS_SIX_HOUR",
-        "floorF": 74,
-        "issuedAt": null,
-        "observedAt": "2026-09-22T17:53:00.000Z",
-        "firstSeenAt": "2026-09-22T17:55:19.844Z",
-        "sourceUrl": "https://aviationweather.gov/api/data/metar?ids=KLAX&format=json&hours=30"
-      },
-      "weatherConflict": false,
-      "book": {
-        "asOf": "2026-09-22T23:29:31.434Z",
-        "receivedAt": "2026-09-22T23:30:59.695Z",
-        "ageSeconds": 88.261,
-        "noAsk": null,
-        "state": "MARKET_STATE_OPEN",
-        "valid": true,
-        "reasons": [],
-        "topNoAsks": []
-      },
-      "signal": null,
-      "quoteCapacity": null
-    },
-    {
-      "slug": "tc-temp-laxhigh-2026-09-22-gte77lt78f",
-      "question": "Highest temperature in Los Angeles on September 22?",
-      "url": "https://polymarket.us/event/temp-laxhigh-2026-09-22",
-      "station": "KLAX",
-      "date": "2026-09-22",
-      "band": {
-        "low": 77,
-        "high": 78
-      },
-      "rulesHash": "cc8e58bc3afab20121cb1699d9e6c529040bcc7d884db7512f05e10d73a60c9c",
-      "validRules": true,
-      "ruleIssues": [],
-      "status": "RANGE_NOT_ELIMINATED",
-      "detail": null,
-      "evidence": {
-        "id": "d73b41e14b553fdb1341b190b6ffeb993cf6dfd57a2ab4d3d2ac72955febacff",
-        "kind": "ASOS_SIX_HOUR",
-        "floorF": 74,
-        "issuedAt": null,
-        "observedAt": "2026-09-22T17:53:00.000Z",
-        "firstSeenAt": "2026-09-22T17:55:19.844Z",
-        "sourceUrl": "https://aviationweather.gov/api/data/metar?ids=KLAX&format=json&hours=30"
-      },
-      "weatherConflict": false,
-      "book": {
-        "asOf": "2026-09-22T23:26:46.777Z",
-        "receivedAt": "2026-09-22T23:30:59.931Z",
-        "ageSeconds": 253.154,
-        "noAsk": 0.01,
-        "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
+      "status": "BOOK_UNUSABLE",
+      "detail": "Book timestamp too old for simulation",
+      "diagnostic": {
+        "evidenceEliminated": true,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 178.377,
+        "quoteReceiptAgeSeconds": 0.246,
+        "bookReasons": [
           "Book timestamp too old for simulation"
         ],
-        "topNoAsks": [
-          {
-            "priceU": 10000,
-            "qty": 101022
-          },
-          {
-            "priceU": 20000,
-            "qty": 1962
-          },
-          {
-            "priceU": 40000,
-            "qty": 250
-          },
-          {
-            "priceU": 70000,
-            "qty": 5
-          },
-          {
-            "priceU": 110000,
-            "qty": 70
-          }
-        ]
+        "ruleIssues": [],
+        "weatherFresh": true,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
       },
-      "signal": null,
-      "quoteCapacity": null
-    },
-    {
-      "slug": "tc-temp-laxhigh-2026-09-22-gte79lt80f",
-      "question": "Highest temperature in Los Angeles on September 22?",
-      "url": "https://polymarket.us/event/temp-laxhigh-2026-09-22",
-      "station": "KLAX",
-      "date": "2026-09-22",
-      "band": {
-        "low": 79,
-        "high": 80
-      },
-      "rulesHash": "cd9e52a0e9461baa03946dad8fe38e9c8a2f650b50ae99d458566b1e588180bf",
-      "validRules": true,
-      "ruleIssues": [],
-      "status": "RANGE_NOT_ELIMINATED",
-      "detail": null,
       "evidence": {
-        "id": "d73b41e14b553fdb1341b190b6ffeb993cf6dfd57a2ab4d3d2ac72955febacff",
-        "kind": "ASOS_SIX_HOUR",
-        "floorF": 74,
-        "issuedAt": null,
-        "observedAt": "2026-09-22T17:53:00.000Z",
-        "firstSeenAt": "2026-09-22T17:55:19.844Z",
-        "sourceUrl": "https://aviationweather.gov/api/data/metar?ids=KLAX&format=json&hours=30"
+        "id": "8461374be1873c242dd7271b4cfbafc041298179959f1e48216e43a787ef41d6",
+        "kind": "CLI_PRELIMINARY",
+        "floorF": 68,
+        "issuedAt": "2026-09-22T20:37:00.000Z",
+        "observedAt": null,
+        "firstSeenAt": "2026-09-22T20:46:01.689Z",
+        "sourceUrl": "https://api.weather.gov/products/31d1b306-f104-41be-b79f-1ae70d09fb94"
       },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-09-22T23:29:34.935Z",
-        "receivedAt": "2026-09-22T23:31:00.186Z",
-        "ageSeconds": 85.251,
-        "noAsk": null,
-        "state": "MARKET_STATE_OPEN",
-        "valid": true,
-        "reasons": [],
-        "topNoAsks": []
-      },
-      "signal": null,
-      "quoteCapacity": null
-    },
-    {
-      "slug": "tc-temp-laxhigh-2026-09-22-gte81lt82f",
-      "question": "Highest temperature in Los Angeles on September 22?",
-      "url": "https://polymarket.us/event/temp-laxhigh-2026-09-22",
-      "station": "KLAX",
-      "date": "2026-09-22",
-      "band": {
-        "low": 81,
-        "high": 82
-      },
-      "rulesHash": "0796c24068a55debed28d21bf69be10f02ca934e45d6e58d6a7901fbfc3e8f75",
-      "validRules": true,
-      "ruleIssues": [],
-      "status": "RANGE_NOT_ELIMINATED",
-      "detail": null,
-      "evidence": {
-        "id": "d73b41e14b553fdb1341b190b6ffeb993cf6dfd57a2ab4d3d2ac72955febacff",
-        "kind": "ASOS_SIX_HOUR",
-        "floorF": 74,
-        "issuedAt": null,
-        "observedAt": "2026-09-22T17:53:00.000Z",
-        "firstSeenAt": "2026-09-22T17:55:19.844Z",
-        "sourceUrl": "https://aviationweather.gov/api/data/metar?ids=KLAX&format=json&hours=30"
-      },
-      "weatherConflict": false,
-      "book": {
-        "asOf": "2026-09-22T23:24:07.162Z",
-        "receivedAt": "2026-09-22T23:31:00.433Z",
-        "ageSeconds": 413.271,
+        "asOf": "2026-09-22T23:36:22.006Z",
+        "receivedAt": "2026-09-22T23:39:20.383Z",
+        "ageSeconds": 178.377,
         "noAsk": null,
         "state": "MARKET_STATE_OPEN",
         "valid": false,
         "reasons": [
           "Book timestamp too old for simulation"
         ],
+        "sourceAgeSeconds": 178.377,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:20.349Z",
+          "receivedAt": "2026-09-22T23:39:20.383Z",
+          "durationMs": 34,
+          "httpDate": "Tue, 22 Sep 2026 23:39:20 GMT",
+          "httpAge": "9",
+          "cacheControl": "public, max-age=30"
+        },
         "topNoAsks": []
       },
-      "signal": null,
+      "signal": {
+        "firstSeenAt": "2026-09-22T17:53:26.124Z",
+        "evidenceId": "12ba2f22bcadd5315e6b8e31ef45d2ab27633c4fe07c3e40eb23a40e7a9ef395",
+        "rulesHash": "c40ac88948d88672c0eb41b3c1427f16f03a520647566d7d791005fb68a2c477",
+        "firstBookAt": "2026-09-22T17:53:25.815Z",
+        "firstNoAsk": null
+      },
       "quoteCapacity": null
     },
     {
-      "slug": "tc-temp-laxhigh-2026-09-22-gte83f",
-      "question": "Highest temperature in Los Angeles on September 22?",
-      "url": "https://polymarket.us/event/temp-laxhigh-2026-09-22",
-      "station": "KLAX",
+      "slug": "tc-temp-miahigh-2026-09-22-gte83lt84f",
+      "question": "Highest temperature in Miami on September 22?",
+      "url": "https://polymarket.us/event/temp-miahigh-2026-09-22",
+      "station": "KMIA",
       "date": "2026-09-22",
-      "band": null,
-      "rulesHash": "4b4aed2ba2a4aa9a43f3238658962eaed58c37dff582314ededfc375b0ed42f3",
-      "validRules": false,
-      "ruleIssues": [
-        "Unsupported or ambiguous temperature band"
-      ],
-      "status": "RULES_REVIEW",
-      "detail": "Unsupported or ambiguous temperature band",
+      "band": {
+        "low": 83,
+        "high": 84
+      },
+      "rulesHash": "1af24d3791e3f25db3e59b58cfbda9030e10ebd4d7f34760b4a32788a748e676",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "BOOK_UNUSABLE",
+      "detail": "Book timestamp too old for simulation",
+      "diagnostic": {
+        "evidenceEliminated": true,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 179.134,
+        "quoteReceiptAgeSeconds": 0.3,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": true,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
       "evidence": {
-        "id": "d73b41e14b553fdb1341b190b6ffeb993cf6dfd57a2ab4d3d2ac72955febacff",
-        "kind": "ASOS_SIX_HOUR",
-        "floorF": 74,
-        "issuedAt": null,
-        "observedAt": "2026-09-22T17:53:00.000Z",
-        "firstSeenAt": "2026-09-22T17:55:19.844Z",
-        "sourceUrl": "https://aviationweather.gov/api/data/metar?ids=KLAX&format=json&hours=30"
+        "id": "e95e8a31aa23ab9628933ae5a91828b37f4ca5c1158e1ca5675fa3ff01cbd4ac",
+        "kind": "CLI_PRELIMINARY",
+        "floorF": 89,
+        "issuedAt": "2026-09-22T20:25:00.000Z",
+        "observedAt": null,
+        "firstSeenAt": "2026-09-22T20:27:12.433Z",
+        "sourceUrl": "https://api.weather.gov/products/32968b41-1de5-4bd2-a3a5-7ef94d408380"
       },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-09-22T23:26:47.107Z",
-        "receivedAt": "2026-09-22T23:31:00.683Z",
-        "ageSeconds": 253.576,
+        "asOf": "2026-09-22T23:36:21.742Z",
+        "receivedAt": "2026-09-22T23:39:20.876Z",
+        "ageSeconds": 179.134,
         "noAsk": null,
         "state": "MARKET_STATE_OPEN",
         "valid": false,
         "reasons": [
           "Book timestamp too old for simulation"
         ],
+        "sourceAgeSeconds": 179.134,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:20.849Z",
+          "receivedAt": "2026-09-22T23:39:20.876Z",
+          "durationMs": 27,
+          "httpDate": "Tue, 22 Sep 2026 23:39:20 GMT",
+          "httpAge": null,
+          "cacheControl": "public, max-age=30"
+        },
         "topNoAsks": []
       },
-      "signal": null,
-      "quoteCapacity": null
-    },
-    {
-      "slug": "tc-temp-laxhigh-2026-09-22-lt75f",
-      "question": "Highest temperature in Los Angeles on September 22?",
-      "url": "https://polymarket.us/event/temp-laxhigh-2026-09-22",
-      "station": "KLAX",
-      "date": "2026-09-22",
-      "band": null,
-      "rulesHash": "307293e4459d3daae605ba1c3c8f3a58ee58b191e8f180279c05c9779b239b78",
-      "validRules": false,
-      "ruleIssues": [
-        "Unsupported or ambiguous temperature band"
-      ],
-      "status": "RULES_REVIEW",
-      "detail": "Unsupported or ambiguous temperature band",
-      "evidence": {
-        "id": "d73b41e14b553fdb1341b190b6ffeb993cf6dfd57a2ab4d3d2ac72955febacff",
-        "kind": "ASOS_SIX_HOUR",
-        "floorF": 74,
-        "issuedAt": null,
-        "observedAt": "2026-09-22T17:53:00.000Z",
-        "firstSeenAt": "2026-09-22T17:55:19.844Z",
-        "sourceUrl": "https://aviationweather.gov/api/data/metar?ids=KLAX&format=json&hours=30"
+      "signal": {
+        "firstSeenAt": "2026-09-22T18:00:26.719Z",
+        "evidenceId": "8e9a1bbcf3ecd966a218971fd90334682d7247cd8d5079575a4253c03eb21916",
+        "rulesHash": "1af24d3791e3f25db3e59b58cfbda9030e10ebd4d7f34760b4a32788a748e676",
+        "firstBookAt": "2026-09-22T18:00:26.452Z",
+        "firstNoAsk": null
       },
-      "weatherConflict": false,
-      "book": {
-        "asOf": "2026-09-22T23:26:46.773Z",
-        "receivedAt": "2026-09-22T23:31:00.930Z",
-        "ageSeconds": 254.157,
-        "noAsk": null,
-        "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "topNoAsks": []
-      },
-      "signal": null,
       "quoteCapacity": null
     },
     {
@@ -377,6 +266,23 @@
       "ruleIssues": [],
       "status": "BOOK_UNUSABLE",
       "detail": "Book timestamp too old for simulation",
+      "diagnostic": {
+        "evidenceEliminated": true,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 719.714,
+        "quoteReceiptAgeSeconds": 0.262,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": true,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
       "evidence": {
         "id": "c7368dfba822139e22641f9e2a12b557beb534e65eac7ea4eade0bb9bf547496",
         "kind": "CLI_PRELIMINARY",
@@ -389,14 +295,23 @@
       "weatherConflict": false,
       "book": {
         "asOf": "2026-09-22T23:27:21.655Z",
-        "receivedAt": "2026-09-22T23:31:01.183Z",
-        "ageSeconds": 219.528,
+        "receivedAt": "2026-09-22T23:39:21.369Z",
+        "ageSeconds": 719.714,
         "noAsk": null,
         "state": "MARKET_STATE_OPEN",
         "valid": false,
         "reasons": [
           "Book timestamp too old for simulation"
         ],
+        "sourceAgeSeconds": 719.714,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:21.350Z",
+          "receivedAt": "2026-09-22T23:39:21.369Z",
+          "durationMs": 19,
+          "httpDate": "Tue, 22 Sep 2026 23:39:21 GMT",
+          "httpAge": "8",
+          "cacheControl": "public, max-age=30"
+        },
         "topNoAsks": []
       },
       "signal": {
@@ -404,6 +319,278 @@
         "evidenceId": "c7368dfba822139e22641f9e2a12b557beb534e65eac7ea4eade0bb9bf547496",
         "rulesHash": "2764524c171e4299cb1b9f8bfe127a1728d294e9aee0a1c77ad4a4c96015e495",
         "firstBookAt": "2026-09-22T21:44:51.355Z",
+        "firstNoAsk": null
+      },
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-laxhigh-2026-09-22-gte75lt76f",
+      "question": "Highest temperature in Los Angeles on September 22?",
+      "url": "https://polymarket.us/event/temp-laxhigh-2026-09-22",
+      "station": "KLAX",
+      "date": "2026-09-22",
+      "band": {
+        "low": 75,
+        "high": 76
+      },
+      "rulesHash": "f04c2e26d6d56d9ad0601569a41f36d008fcd41951d2687cc539c7ee5bf03280",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "RANGE_NOT_ELIMINATED",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 179.57,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": true,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": {
+        "id": "d73b41e14b553fdb1341b190b6ffeb993cf6dfd57a2ab4d3d2ac72955febacff",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 74,
+        "issuedAt": null,
+        "observedAt": "2026-09-22T17:53:00.000Z",
+        "firstSeenAt": "2026-09-22T17:55:19.844Z",
+        "sourceUrl": "https://aviationweather.gov/api/data/metar?ids=KLAX&format=json&hours=30"
+      },
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:36:22.295Z",
+        "receivedAt": "2026-09-22T23:39:21.865Z",
+        "ageSeconds": 179.57,
+        "noAsk": null,
+        "state": "MARKET_STATE_OPEN",
+        "valid": false,
+        "reasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "sourceAgeSeconds": 179.57,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:21.848Z",
+          "receivedAt": "2026-09-22T23:39:21.865Z",
+          "durationMs": 17,
+          "httpDate": "Tue, 22 Sep 2026 23:39:21 GMT",
+          "httpAge": "10",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": []
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-sfohigh-2026-09-22-gte68lt69f",
+      "question": "Highest temperature in San Francisco on September 22?",
+      "url": "https://polymarket.us/event/temp-sfohigh-2026-09-22",
+      "station": "KSFO",
+      "date": "2026-09-22",
+      "band": {
+        "low": 68,
+        "high": 69
+      },
+      "rulesHash": "8effd49270dfe236005fb339e80fef73194a0e4c77e9fa64e0665422750bef09",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "RANGE_NOT_ELIMINATED",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 519.989,
+        "quoteReceiptAgeSeconds": 0.001,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": true,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": {
+        "id": "cc0e3a69181b066fb7ddc790247339a7e50105cde7e18d3e6311476bacb874e8",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 63,
+        "issuedAt": null,
+        "observedAt": "2026-09-22T17:56:00.000Z",
+        "firstSeenAt": "2026-09-22T18:00:23.423Z",
+        "sourceUrl": "https://aviationweather.gov/api/data/metar?ids=KSFO&format=json&hours=30"
+      },
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:30:42.128Z",
+        "receivedAt": "2026-09-22T23:39:22.117Z",
+        "ageSeconds": 519.989,
+        "noAsk": null,
+        "state": "MARKET_STATE_OPEN",
+        "valid": false,
+        "reasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "sourceAgeSeconds": 519.989,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:22.099Z",
+          "receivedAt": "2026-09-22T23:39:22.117Z",
+          "durationMs": 18,
+          "httpDate": "Tue, 22 Sep 2026 23:39:22 GMT",
+          "httpAge": "24",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": []
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-nychigh-2026-09-22-gte65lt66f",
+      "question": "Highest temperature in NYC on September 22?",
+      "url": "https://polymarket.us/event/temp-nychigh-2026-09-22",
+      "station": "KNYC",
+      "date": "2026-09-22",
+      "band": {
+        "low": 65,
+        "high": 66
+      },
+      "rulesHash": "de9a362fb40cdc3baa6bbf5ee2085b2346725946581f521ff9ea26275acb2d35",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "NO_NO_ASK_LIQUIDITY",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": true,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 76.646,
+        "quoteReceiptAgeSeconds": 0.264,
+        "bookReasons": [],
+        "ruleIssues": [],
+        "weatherFresh": true,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": {
+        "id": "8461374be1873c242dd7271b4cfbafc041298179959f1e48216e43a787ef41d6",
+        "kind": "CLI_PRELIMINARY",
+        "floorF": 68,
+        "issuedAt": "2026-09-22T20:37:00.000Z",
+        "observedAt": null,
+        "firstSeenAt": "2026-09-22T20:46:01.689Z",
+        "sourceUrl": "https://api.weather.gov/products/31d1b306-f104-41be-b79f-1ae70d09fb94"
+      },
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:38:05.720Z",
+        "receivedAt": "2026-09-22T23:39:22.366Z",
+        "ageSeconds": 76.646,
+        "noAsk": null,
+        "state": "MARKET_STATE_OPEN",
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 76.646,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:22.350Z",
+          "receivedAt": "2026-09-22T23:39:22.366Z",
+          "durationMs": 16,
+          "httpDate": "Tue, 22 Sep 2026 23:39:22 GMT",
+          "httpAge": "17",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": []
+      },
+      "signal": {
+        "firstSeenAt": "2026-09-22T17:53:26.624Z",
+        "evidenceId": "12ba2f22bcadd5315e6b8e31ef45d2ab27633c4fe07c3e40eb23a40e7a9ef395",
+        "rulesHash": "de9a362fb40cdc3baa6bbf5ee2085b2346725946581f521ff9ea26275acb2d35",
+        "firstBookAt": "2026-09-22T17:53:26.293Z",
+        "firstNoAsk": null
+      },
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-miahigh-2026-09-22-gte85lt86f",
+      "question": "Highest temperature in Miami on September 22?",
+      "url": "https://polymarket.us/event/temp-miahigh-2026-09-22",
+      "station": "KMIA",
+      "date": "2026-09-22",
+      "band": {
+        "low": 85,
+        "high": 86
+      },
+      "rulesHash": "e1caea56daed2ba6fccce7aa95dbf3821136dffbff0cf0d820df0fff055b18b0",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "BOOK_UNUSABLE",
+      "detail": "Book timestamp too old for simulation",
+      "diagnostic": {
+        "evidenceEliminated": true,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 710.502,
+        "quoteReceiptAgeSeconds": 0.268,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": true,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": {
+        "id": "e95e8a31aa23ab9628933ae5a91828b37f4ca5c1158e1ca5675fa3ff01cbd4ac",
+        "kind": "CLI_PRELIMINARY",
+        "floorF": 89,
+        "issuedAt": "2026-09-22T20:25:00.000Z",
+        "observedAt": null,
+        "firstSeenAt": "2026-09-22T20:27:12.433Z",
+        "sourceUrl": "https://api.weather.gov/products/32968b41-1de5-4bd2-a3a5-7ef94d408380"
+      },
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:27:32.365Z",
+        "receivedAt": "2026-09-22T23:39:22.867Z",
+        "ageSeconds": 710.502,
+        "noAsk": null,
+        "state": "MARKET_STATE_OPEN",
+        "valid": false,
+        "reasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "sourceAgeSeconds": 710.502,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:22.851Z",
+          "receivedAt": "2026-09-22T23:39:22.867Z",
+          "durationMs": 16,
+          "httpDate": "Tue, 22 Sep 2026 23:39:22 GMT",
+          "httpAge": "2",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": []
+      },
+      "signal": {
+        "firstSeenAt": "2026-09-22T18:00:27.235Z",
+        "evidenceId": "8e9a1bbcf3ecd966a218971fd90334682d7247cd8d5079575a4253c03eb21916",
+        "rulesHash": "e1caea56daed2ba6fccce7aa95dbf3821136dffbff0cf0d820df0fff055b18b0",
+        "firstBookAt": "2026-09-22T18:00:26.955Z",
         "firstNoAsk": null
       },
       "quoteCapacity": null
@@ -423,6 +610,23 @@
       "ruleIssues": [],
       "status": "RANGE_NOT_ELIMINATED",
       "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 6,
+        "displayedNoContracts": 35169,
+        "noPriceWithinCap": true,
+        "noPriceWithinCapAfterBuffer": true,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 181.363,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": true,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
       "evidence": {
         "id": "c7368dfba822139e22641f9e2a12b557beb534e65eac7ea4eade0bb9bf547496",
         "kind": "CLI_PRELIMINARY",
@@ -434,15 +638,24 @@
       },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-09-22T23:26:47.419Z",
-        "receivedAt": "2026-09-22T23:31:01.679Z",
-        "ageSeconds": 254.26,
+        "asOf": "2026-09-22T23:36:22.004Z",
+        "receivedAt": "2026-09-22T23:39:23.367Z",
+        "ageSeconds": 181.363,
         "noAsk": 0.01,
         "state": "MARKET_STATE_OPEN",
         "valid": false,
         "reasons": [
           "Book timestamp too old for simulation"
         ],
+        "sourceAgeSeconds": 181.363,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:23.351Z",
+          "receivedAt": "2026-09-22T23:39:23.367Z",
+          "durationMs": 16,
+          "httpDate": "Tue, 22 Sep 2026 23:39:23 GMT",
+          "httpAge": "23",
+          "cacheControl": "public, max-age=30"
+        },
         "topNoAsks": [
           {
             "priceU": 10000,
@@ -470,354 +683,86 @@
       "quoteCapacity": null
     },
     {
-      "slug": "tc-temp-mdwhigh-2026-09-22-gte66lt67f",
-      "question": "Highest temperature in Chicago on September 22?",
-      "url": "https://polymarket.us/event/temp-mdwhigh-2026-09-22",
-      "station": "KMDW",
+      "slug": "tc-temp-laxhigh-2026-09-22-gte77lt78f",
+      "question": "Highest temperature in Los Angeles on September 22?",
+      "url": "https://polymarket.us/event/temp-laxhigh-2026-09-22",
+      "station": "KLAX",
       "date": "2026-09-22",
       "band": {
-        "low": 66,
-        "high": 67
+        "low": 77,
+        "high": 78
       },
-      "rulesHash": "78dc1c4c8819cf49712606e9a2932dbef79c486701a10468f58f3c74304c3279",
+      "rulesHash": "cc8e58bc3afab20121cb1699d9e6c529040bcc7d884db7512f05e10d73a60c9c",
       "validRules": true,
       "ruleIssues": [],
       "status": "RANGE_NOT_ELIMINATED",
       "detail": null,
-      "evidence": {
-        "id": "c7368dfba822139e22641f9e2a12b557beb534e65eac7ea4eade0bb9bf547496",
-        "kind": "CLI_PRELIMINARY",
-        "floorF": 64,
-        "issuedAt": "2026-09-22T21:38:00.000Z",
-        "observedAt": null,
-        "firstSeenAt": "2026-09-22T21:44:49.701Z",
-        "sourceUrl": "https://api.weather.gov/products/4e1f79f5-84d0-484a-a56d-9f8edfd641eb"
-      },
-      "weatherConflict": false,
-      "book": {
-        "asOf": "2026-09-22T23:14:07.987Z",
-        "receivedAt": "2026-09-22T23:31:01.931Z",
-        "ageSeconds": 1013.944,
-        "noAsk": null,
-        "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 10,
+        "displayedNoContracts": 103334,
+        "noPriceWithinCap": true,
+        "noPriceWithinCapAfterBuffer": true,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 181.326,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [
           "Book timestamp too old for simulation"
         ],
-        "topNoAsks": []
+        "ruleIssues": [],
+        "weatherFresh": true,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
       },
-      "signal": null,
-      "quoteCapacity": null
-    },
-    {
-      "slug": "tc-temp-mdwhigh-2026-09-22-gte68lt69f",
-      "question": "Highest temperature in Chicago on September 22?",
-      "url": "https://polymarket.us/event/temp-mdwhigh-2026-09-22",
-      "station": "KMDW",
-      "date": "2026-09-22",
-      "band": {
-        "low": 68,
-        "high": 69
-      },
-      "rulesHash": "fe938fd519fe777c3dbeeb8e8f5d0ba3620790eeb8d952cd8e692f3ecd8d086f",
-      "validRules": true,
-      "ruleIssues": [],
-      "status": "RANGE_NOT_ELIMINATED",
-      "detail": null,
       "evidence": {
-        "id": "c7368dfba822139e22641f9e2a12b557beb534e65eac7ea4eade0bb9bf547496",
-        "kind": "CLI_PRELIMINARY",
-        "floorF": 64,
-        "issuedAt": "2026-09-22T21:38:00.000Z",
-        "observedAt": null,
-        "firstSeenAt": "2026-09-22T21:44:49.701Z",
-        "sourceUrl": "https://api.weather.gov/products/4e1f79f5-84d0-484a-a56d-9f8edfd641eb"
+        "id": "d73b41e14b553fdb1341b190b6ffeb993cf6dfd57a2ab4d3d2ac72955febacff",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 74,
+        "issuedAt": null,
+        "observedAt": "2026-09-22T17:53:00.000Z",
+        "firstSeenAt": "2026-09-22T17:55:19.844Z",
+        "sourceUrl": "https://aviationweather.gov/api/data/metar?ids=KLAX&format=json&hours=30"
       },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-09-22T23:29:56.109Z",
-        "receivedAt": "2026-09-22T23:31:02.185Z",
-        "ageSeconds": 66.076,
-        "noAsk": null,
-        "state": "MARKET_STATE_OPEN",
-        "valid": true,
-        "reasons": [],
-        "topNoAsks": []
-      },
-      "signal": null,
-      "quoteCapacity": null
-    },
-    {
-      "slug": "tc-temp-mdwhigh-2026-09-22-gte70f",
-      "question": "Highest temperature in Chicago on September 22?",
-      "url": "https://polymarket.us/event/temp-mdwhigh-2026-09-22",
-      "station": "KMDW",
-      "date": "2026-09-22",
-      "band": null,
-      "rulesHash": "482267c204270c3de937e4b7bf91fddbb35af1559ea2fd2eff3e840649234681",
-      "validRules": false,
-      "ruleIssues": [
-        "Unsupported or ambiguous temperature band"
-      ],
-      "status": "RULES_REVIEW",
-      "detail": "Unsupported or ambiguous temperature band",
-      "evidence": {
-        "id": "c7368dfba822139e22641f9e2a12b557beb534e65eac7ea4eade0bb9bf547496",
-        "kind": "CLI_PRELIMINARY",
-        "floorF": 64,
-        "issuedAt": "2026-09-22T21:38:00.000Z",
-        "observedAt": null,
-        "firstSeenAt": "2026-09-22T21:44:49.701Z",
-        "sourceUrl": "https://api.weather.gov/products/4e1f79f5-84d0-484a-a56d-9f8edfd641eb"
-      },
-      "weatherConflict": false,
-      "book": {
-        "asOf": "2026-09-22T23:26:47.414Z",
-        "receivedAt": "2026-09-22T23:31:02.432Z",
-        "ageSeconds": 255.018,
-        "noAsk": null,
-        "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "topNoAsks": []
-      },
-      "signal": null,
-      "quoteCapacity": null
-    },
-    {
-      "slug": "tc-temp-mdwhigh-2026-09-22-lt62f",
-      "question": "Highest temperature in Chicago on September 22?",
-      "url": "https://polymarket.us/event/temp-mdwhigh-2026-09-22",
-      "station": "KMDW",
-      "date": "2026-09-22",
-      "band": null,
-      "rulesHash": "8334722c7eadb0a05e878015d147103eeef81e731e6baa7d28ea693afc044f3e",
-      "validRules": false,
-      "ruleIssues": [
-        "Unsupported or ambiguous temperature band"
-      ],
-      "status": "RULES_REVIEW",
-      "detail": "Unsupported or ambiguous temperature band",
-      "evidence": {
-        "id": "c7368dfba822139e22641f9e2a12b557beb534e65eac7ea4eade0bb9bf547496",
-        "kind": "CLI_PRELIMINARY",
-        "floorF": 64,
-        "issuedAt": "2026-09-22T21:38:00.000Z",
-        "observedAt": null,
-        "firstSeenAt": "2026-09-22T21:44:49.701Z",
-        "sourceUrl": "https://api.weather.gov/products/4e1f79f5-84d0-484a-a56d-9f8edfd641eb"
-      },
-      "weatherConflict": false,
-      "book": {
-        "asOf": "2026-09-22T23:26:47.805Z",
-        "receivedAt": "2026-09-22T23:31:02.682Z",
-        "ageSeconds": 254.877,
-        "noAsk": null,
-        "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "topNoAsks": []
-      },
-      "signal": null,
-      "quoteCapacity": null
-    },
-    {
-      "slug": "tc-temp-miahigh-2026-09-22-gte83lt84f",
-      "question": "Highest temperature in Miami on September 22?",
-      "url": "https://polymarket.us/event/temp-miahigh-2026-09-22",
-      "station": "KMIA",
-      "date": "2026-09-22",
-      "band": {
-        "low": 83,
-        "high": 84
-      },
-      "rulesHash": "1af24d3791e3f25db3e59b58cfbda9030e10ebd4d7f34760b4a32788a748e676",
-      "validRules": true,
-      "ruleIssues": [],
-      "status": "BOOK_UNUSABLE",
-      "detail": "Book timestamp too old for simulation",
-      "evidence": {
-        "id": "e95e8a31aa23ab9628933ae5a91828b37f4ca5c1158e1ca5675fa3ff01cbd4ac",
-        "kind": "CLI_PRELIMINARY",
-        "floorF": 89,
-        "issuedAt": "2026-09-22T20:25:00.000Z",
-        "observedAt": null,
-        "firstSeenAt": "2026-09-22T20:27:12.433Z",
-        "sourceUrl": "https://api.weather.gov/products/32968b41-1de5-4bd2-a3a5-7ef94d408380"
-      },
-      "weatherConflict": false,
-      "book": {
-        "asOf": "2026-09-22T23:26:47.109Z",
-        "receivedAt": "2026-09-22T23:31:02.936Z",
-        "ageSeconds": 255.827,
-        "noAsk": null,
-        "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "topNoAsks": []
-      },
-      "signal": {
-        "firstSeenAt": "2026-09-22T18:00:26.719Z",
-        "evidenceId": "8e9a1bbcf3ecd966a218971fd90334682d7247cd8d5079575a4253c03eb21916",
-        "rulesHash": "1af24d3791e3f25db3e59b58cfbda9030e10ebd4d7f34760b4a32788a748e676",
-        "firstBookAt": "2026-09-22T18:00:26.452Z",
-        "firstNoAsk": null
-      },
-      "quoteCapacity": null
-    },
-    {
-      "slug": "tc-temp-miahigh-2026-09-22-gte85lt86f",
-      "question": "Highest temperature in Miami on September 22?",
-      "url": "https://polymarket.us/event/temp-miahigh-2026-09-22",
-      "station": "KMIA",
-      "date": "2026-09-22",
-      "band": {
-        "low": 85,
-        "high": 86
-      },
-      "rulesHash": "e1caea56daed2ba6fccce7aa95dbf3821136dffbff0cf0d820df0fff055b18b0",
-      "validRules": true,
-      "ruleIssues": [],
-      "status": "BOOK_UNUSABLE",
-      "detail": "Book timestamp too old for simulation",
-      "evidence": {
-        "id": "e95e8a31aa23ab9628933ae5a91828b37f4ca5c1158e1ca5675fa3ff01cbd4ac",
-        "kind": "CLI_PRELIMINARY",
-        "floorF": 89,
-        "issuedAt": "2026-09-22T20:25:00.000Z",
-        "observedAt": null,
-        "firstSeenAt": "2026-09-22T20:27:12.433Z",
-        "sourceUrl": "https://api.weather.gov/products/32968b41-1de5-4bd2-a3a5-7ef94d408380"
-      },
-      "weatherConflict": false,
-      "book": {
-        "asOf": "2026-09-22T23:27:32.365Z",
-        "receivedAt": "2026-09-22T23:31:03.435Z",
-        "ageSeconds": 211.07,
-        "noAsk": null,
-        "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "topNoAsks": []
-      },
-      "signal": {
-        "firstSeenAt": "2026-09-22T18:00:27.235Z",
-        "evidenceId": "8e9a1bbcf3ecd966a218971fd90334682d7247cd8d5079575a4253c03eb21916",
-        "rulesHash": "e1caea56daed2ba6fccce7aa95dbf3821136dffbff0cf0d820df0fff055b18b0",
-        "firstBookAt": "2026-09-22T18:00:26.955Z",
-        "firstNoAsk": null
-      },
-      "quoteCapacity": null
-    },
-    {
-      "slug": "tc-temp-miahigh-2026-09-22-gte87lt88f",
-      "question": "Highest temperature in Miami on September 22?",
-      "url": "https://polymarket.us/event/temp-miahigh-2026-09-22",
-      "station": "KMIA",
-      "date": "2026-09-22",
-      "band": {
-        "low": 87,
-        "high": 88
-      },
-      "rulesHash": "65087340d66353689c6000275fb4aa98ff47ae4054aaf94860aa664adea28672",
-      "validRules": true,
-      "ruleIssues": [],
-      "status": "BOOK_UNUSABLE",
-      "detail": "Book timestamp too old for simulation",
-      "evidence": {
-        "id": "e95e8a31aa23ab9628933ae5a91828b37f4ca5c1158e1ca5675fa3ff01cbd4ac",
-        "kind": "CLI_PRELIMINARY",
-        "floorF": 89,
-        "issuedAt": "2026-09-22T20:25:00.000Z",
-        "observedAt": null,
-        "firstSeenAt": "2026-09-22T20:27:12.433Z",
-        "sourceUrl": "https://api.weather.gov/products/32968b41-1de5-4bd2-a3a5-7ef94d408380"
-      },
-      "weatherConflict": false,
-      "book": {
-        "asOf": "2026-09-22T23:27:49.273Z",
-        "receivedAt": "2026-09-22T23:31:03.931Z",
-        "ageSeconds": 194.658,
-        "noAsk": null,
-        "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "topNoAsks": []
-      },
-      "signal": {
-        "firstSeenAt": "2026-09-22T20:27:16.877Z",
-        "evidenceId": "e95e8a31aa23ab9628933ae5a91828b37f4ca5c1158e1ca5675fa3ff01cbd4ac",
-        "rulesHash": "65087340d66353689c6000275fb4aa98ff47ae4054aaf94860aa664adea28672",
-        "firstBookAt": "2026-09-22T20:27:16.549Z",
-        "firstNoAsk": null
-      },
-      "quoteCapacity": null
-    },
-    {
-      "slug": "tc-temp-miahigh-2026-09-22-gte89lt90f",
-      "question": "Highest temperature in Miami on September 22?",
-      "url": "https://polymarket.us/event/temp-miahigh-2026-09-22",
-      "station": "KMIA",
-      "date": "2026-09-22",
-      "band": {
-        "low": 89,
-        "high": 90
-      },
-      "rulesHash": "6f167804eb10abf4d5f7b371f28ada8c55ba535b995f8e67d8dd8924bbbc7693",
-      "validRules": true,
-      "ruleIssues": [],
-      "status": "RANGE_NOT_ELIMINATED",
-      "detail": null,
-      "evidence": {
-        "id": "e95e8a31aa23ab9628933ae5a91828b37f4ca5c1158e1ca5675fa3ff01cbd4ac",
-        "kind": "CLI_PRELIMINARY",
-        "floorF": 89,
-        "issuedAt": "2026-09-22T20:25:00.000Z",
-        "observedAt": null,
-        "firstSeenAt": "2026-09-22T20:27:12.433Z",
-        "sourceUrl": "https://api.weather.gov/products/32968b41-1de5-4bd2-a3a5-7ef94d408380"
-      },
-      "weatherConflict": false,
-      "book": {
-        "asOf": "2026-09-22T23:26:47.113Z",
-        "receivedAt": "2026-09-22T23:31:04.442Z",
-        "ageSeconds": 257.329,
+        "asOf": "2026-09-22T23:36:22.297Z",
+        "receivedAt": "2026-09-22T23:39:23.623Z",
+        "ageSeconds": 181.326,
         "noAsk": 0.01,
         "state": "MARKET_STATE_OPEN",
         "valid": false,
         "reasons": [
           "Book timestamp too old for simulation"
         ],
+        "sourceAgeSeconds": 181.326,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:23.601Z",
+          "receivedAt": "2026-09-22T23:39:23.623Z",
+          "durationMs": 22,
+          "httpDate": "Tue, 22 Sep 2026 23:39:23 GMT",
+          "httpAge": "1",
+          "cacheControl": "public, max-age=30"
+        },
         "topNoAsks": [
           {
             "priceU": 10000,
-            "qty": 35856
+            "qty": 101013
           },
           {
             "priceU": 20000,
-            "qty": 2000
+            "qty": 1962
+          },
+          {
+            "priceU": 40000,
+            "qty": 250
           },
           {
             "priceU": 70000,
             "qty": 5
           },
           {
-            "priceU": 120000,
-            "qty": 45
-          },
-          {
-            "priceU": 540000,
-            "qty": 1
+            "priceU": 110000,
+            "qty": 70
           }
         ]
       },
@@ -825,173 +770,69 @@
       "quoteCapacity": null
     },
     {
-      "slug": "tc-temp-miahigh-2026-09-22-gte91f",
-      "question": "Highest temperature in Miami on September 22?",
-      "url": "https://polymarket.us/event/temp-miahigh-2026-09-22",
-      "station": "KMIA",
+      "slug": "tc-temp-sfohigh-2026-09-22-gte70lt71f",
+      "question": "Highest temperature in San Francisco on September 22?",
+      "url": "https://polymarket.us/event/temp-sfohigh-2026-09-22",
+      "station": "KSFO",
       "date": "2026-09-22",
-      "band": null,
-      "rulesHash": "bd316f2c41532c8b31175b6130f7d321c236887abe4d678e193664a39ded4938",
-      "validRules": false,
-      "ruleIssues": [
-        "Unsupported or ambiguous temperature band"
-      ],
-      "status": "RULES_REVIEW",
-      "detail": "Unsupported or ambiguous temperature band",
+      "band": {
+        "low": 70,
+        "high": 71
+      },
+      "rulesHash": "227f2f9a41f10a5ef4d8097b0d7e58cb5d3df65a760a6b8395ed16d8575774bd",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "RANGE_NOT_ELIMINATED",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 1566.153,
+        "quoteReceiptAgeSeconds": 0.001,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": true,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
       "evidence": {
-        "id": "e95e8a31aa23ab9628933ae5a91828b37f4ca5c1158e1ca5675fa3ff01cbd4ac",
-        "kind": "CLI_PRELIMINARY",
-        "floorF": 89,
-        "issuedAt": "2026-09-22T20:25:00.000Z",
-        "observedAt": null,
-        "firstSeenAt": "2026-09-22T20:27:12.433Z",
-        "sourceUrl": "https://api.weather.gov/products/32968b41-1de5-4bd2-a3a5-7ef94d408380"
+        "id": "cc0e3a69181b066fb7ddc790247339a7e50105cde7e18d3e6311476bacb874e8",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 63,
+        "issuedAt": null,
+        "observedAt": "2026-09-22T17:56:00.000Z",
+        "firstSeenAt": "2026-09-22T18:00:23.423Z",
+        "sourceUrl": "https://aviationweather.gov/api/data/metar?ids=KSFO&format=json&hours=30"
       },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-09-22T23:28:03.825Z",
-        "receivedAt": "2026-09-22T23:31:04.685Z",
-        "ageSeconds": 180.86,
+        "asOf": "2026-09-22T23:13:17.713Z",
+        "receivedAt": "2026-09-22T23:39:23.866Z",
+        "ageSeconds": 1566.153,
         "noAsk": null,
         "state": "MARKET_STATE_OPEN",
         "valid": false,
         "reasons": [
           "Book timestamp too old for simulation"
         ],
+        "sourceAgeSeconds": 1566.153,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:23.851Z",
+          "receivedAt": "2026-09-22T23:39:23.866Z",
+          "durationMs": 15,
+          "httpDate": "Tue, 22 Sep 2026 23:39:23 GMT",
+          "httpAge": "28",
+          "cacheControl": "public, max-age=30"
+        },
         "topNoAsks": []
       },
       "signal": null,
-      "quoteCapacity": null
-    },
-    {
-      "slug": "tc-temp-miahigh-2026-09-22-lt83f",
-      "question": "Highest temperature in Miami on September 22?",
-      "url": "https://polymarket.us/event/temp-miahigh-2026-09-22",
-      "station": "KMIA",
-      "date": "2026-09-22",
-      "band": null,
-      "rulesHash": "ecb759839a3950d62512ab9fc45971846c45a895302a5509a5d43f9e9eaa6b45",
-      "validRules": false,
-      "ruleIssues": [
-        "Unsupported or ambiguous temperature band"
-      ],
-      "status": "RULES_REVIEW",
-      "detail": "Unsupported or ambiguous temperature band",
-      "evidence": {
-        "id": "e95e8a31aa23ab9628933ae5a91828b37f4ca5c1158e1ca5675fa3ff01cbd4ac",
-        "kind": "CLI_PRELIMINARY",
-        "floorF": 89,
-        "issuedAt": "2026-09-22T20:25:00.000Z",
-        "observedAt": null,
-        "firstSeenAt": "2026-09-22T20:27:12.433Z",
-        "sourceUrl": "https://api.weather.gov/products/32968b41-1de5-4bd2-a3a5-7ef94d408380"
-      },
-      "weatherConflict": false,
-      "book": {
-        "asOf": "2026-09-22T23:26:47.107Z",
-        "receivedAt": "2026-09-22T23:31:04.934Z",
-        "ageSeconds": 257.827,
-        "noAsk": null,
-        "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "topNoAsks": []
-      },
-      "signal": null,
-      "quoteCapacity": null
-    },
-    {
-      "slug": "tc-temp-nychigh-2026-09-22-gte63lt64f",
-      "question": "Highest temperature in NYC on September 22?",
-      "url": "https://polymarket.us/event/temp-nychigh-2026-09-22",
-      "station": "KNYC",
-      "date": "2026-09-22",
-      "band": {
-        "low": 63,
-        "high": 64
-      },
-      "rulesHash": "c40ac88948d88672c0eb41b3c1427f16f03a520647566d7d791005fb68a2c477",
-      "validRules": true,
-      "ruleIssues": [],
-      "status": "BOOK_UNUSABLE",
-      "detail": "Book timestamp too old for simulation",
-      "evidence": {
-        "id": "8461374be1873c242dd7271b4cfbafc041298179959f1e48216e43a787ef41d6",
-        "kind": "CLI_PRELIMINARY",
-        "floorF": 68,
-        "issuedAt": "2026-09-22T20:37:00.000Z",
-        "observedAt": null,
-        "firstSeenAt": "2026-09-22T20:46:01.689Z",
-        "sourceUrl": "https://api.weather.gov/products/31d1b306-f104-41be-b79f-1ae70d09fb94"
-      },
-      "weatherConflict": false,
-      "book": {
-        "asOf": "2026-09-22T23:26:47.423Z",
-        "receivedAt": "2026-09-22T23:31:05.188Z",
-        "ageSeconds": 257.765,
-        "noAsk": null,
-        "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "topNoAsks": []
-      },
-      "signal": {
-        "firstSeenAt": "2026-09-22T17:53:26.124Z",
-        "evidenceId": "12ba2f22bcadd5315e6b8e31ef45d2ab27633c4fe07c3e40eb23a40e7a9ef395",
-        "rulesHash": "c40ac88948d88672c0eb41b3c1427f16f03a520647566d7d791005fb68a2c477",
-        "firstBookAt": "2026-09-22T17:53:25.815Z",
-        "firstNoAsk": null
-      },
-      "quoteCapacity": null
-    },
-    {
-      "slug": "tc-temp-nychigh-2026-09-22-gte65lt66f",
-      "question": "Highest temperature in NYC on September 22?",
-      "url": "https://polymarket.us/event/temp-nychigh-2026-09-22",
-      "station": "KNYC",
-      "date": "2026-09-22",
-      "band": {
-        "low": 65,
-        "high": 66
-      },
-      "rulesHash": "de9a362fb40cdc3baa6bbf5ee2085b2346725946581f521ff9ea26275acb2d35",
-      "validRules": true,
-      "ruleIssues": [],
-      "status": "BOOK_UNUSABLE",
-      "detail": "Book timestamp too old for simulation",
-      "evidence": {
-        "id": "8461374be1873c242dd7271b4cfbafc041298179959f1e48216e43a787ef41d6",
-        "kind": "CLI_PRELIMINARY",
-        "floorF": 68,
-        "issuedAt": "2026-09-22T20:37:00.000Z",
-        "observedAt": null,
-        "firstSeenAt": "2026-09-22T20:46:01.689Z",
-        "sourceUrl": "https://api.weather.gov/products/31d1b306-f104-41be-b79f-1ae70d09fb94"
-      },
-      "weatherConflict": false,
-      "book": {
-        "asOf": "2026-09-22T23:15:16.654Z",
-        "receivedAt": "2026-09-22T23:31:05.692Z",
-        "ageSeconds": 949.038,
-        "noAsk": null,
-        "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "topNoAsks": []
-      },
-      "signal": {
-        "firstSeenAt": "2026-09-22T17:53:26.624Z",
-        "evidenceId": "12ba2f22bcadd5315e6b8e31ef45d2ab27633c4fe07c3e40eb23a40e7a9ef395",
-        "rulesHash": "de9a362fb40cdc3baa6bbf5ee2085b2346725946581f521ff9ea26275acb2d35",
-        "firstBookAt": "2026-09-22T17:53:26.293Z",
-        "firstNoAsk": null
-      },
       "quoteCapacity": null
     },
     {
@@ -1009,6 +850,23 @@
       "ruleIssues": [],
       "status": "RANGE_NOT_ELIMINATED",
       "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 7,
+        "displayedNoContracts": 22376,
+        "noPriceWithinCap": true,
+        "noPriceWithinCapAfterBuffer": true,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 756.693,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": true,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
       "evidence": {
         "id": "8461374be1873c242dd7271b4cfbafc041298179959f1e48216e43a787ef41d6",
         "kind": "CLI_PRELIMINARY",
@@ -1021,14 +879,23 @@
       "weatherConflict": false,
       "book": {
         "asOf": "2026-09-22T23:26:47.427Z",
-        "receivedAt": "2026-09-22T23:31:06.201Z",
-        "ageSeconds": 258.774,
+        "receivedAt": "2026-09-22T23:39:24.120Z",
+        "ageSeconds": 756.693,
         "noAsk": 0.01,
         "state": "MARKET_STATE_OPEN",
         "valid": false,
         "reasons": [
           "Book timestamp too old for simulation"
         ],
+        "sourceAgeSeconds": 756.693,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:24.101Z",
+          "receivedAt": "2026-09-22T23:39:24.120Z",
+          "durationMs": 19,
+          "httpDate": "Tue, 22 Sep 2026 23:39:24 GMT",
+          "httpAge": "11",
+          "cacheControl": "public, max-age=30"
+        },
         "topNoAsks": [
           {
             "priceU": 10000,
@@ -1056,203 +923,204 @@
       "quoteCapacity": null
     },
     {
-      "slug": "tc-temp-nychigh-2026-09-22-gte69lt70f",
-      "question": "Highest temperature in NYC on September 22?",
-      "url": "https://polymarket.us/event/temp-nychigh-2026-09-22",
-      "station": "KNYC",
+      "slug": "tc-temp-miahigh-2026-09-22-gte87lt88f",
+      "question": "Highest temperature in Miami on September 22?",
+      "url": "https://polymarket.us/event/temp-miahigh-2026-09-22",
+      "station": "KMIA",
       "date": "2026-09-22",
       "band": {
-        "low": 69,
-        "high": 70
+        "low": 87,
+        "high": 88
       },
-      "rulesHash": "711b1d700652aec3c7c4e9b48a3d7b4c91de5bf36a8b6ffb9fe3da01b3383ba6",
+      "rulesHash": "65087340d66353689c6000275fb4aa98ff47ae4054aaf94860aa664adea28672",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "BOOK_UNUSABLE",
+      "detail": "Book timestamp too old for simulation",
+      "diagnostic": {
+        "evidenceEliminated": true,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 182.627,
+        "quoteReceiptAgeSeconds": 0.257,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": true,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": {
+        "id": "e95e8a31aa23ab9628933ae5a91828b37f4ca5c1158e1ca5675fa3ff01cbd4ac",
+        "kind": "CLI_PRELIMINARY",
+        "floorF": 89,
+        "issuedAt": "2026-09-22T20:25:00.000Z",
+        "observedAt": null,
+        "firstSeenAt": "2026-09-22T20:27:12.433Z",
+        "sourceUrl": "https://api.weather.gov/products/32968b41-1de5-4bd2-a3a5-7ef94d408380"
+      },
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:36:21.747Z",
+        "receivedAt": "2026-09-22T23:39:24.374Z",
+        "ageSeconds": 182.627,
+        "noAsk": null,
+        "state": "MARKET_STATE_OPEN",
+        "valid": false,
+        "reasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "sourceAgeSeconds": 182.627,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:24.351Z",
+          "receivedAt": "2026-09-22T23:39:24.374Z",
+          "durationMs": 23,
+          "httpDate": "Tue, 22 Sep 2026 23:39:24 GMT",
+          "httpAge": "4",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": []
+      },
+      "signal": {
+        "firstSeenAt": "2026-09-22T20:27:16.877Z",
+        "evidenceId": "e95e8a31aa23ab9628933ae5a91828b37f4ca5c1158e1ca5675fa3ff01cbd4ac",
+        "rulesHash": "65087340d66353689c6000275fb4aa98ff47ae4054aaf94860aa664adea28672",
+        "firstBookAt": "2026-09-22T20:27:16.549Z",
+        "firstNoAsk": null
+      },
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-mdwhigh-2026-09-22-gte66lt67f",
+      "question": "Highest temperature in Chicago on September 22?",
+      "url": "https://polymarket.us/event/temp-mdwhigh-2026-09-22",
+      "station": "KMDW",
+      "date": "2026-09-22",
+      "band": {
+        "low": 66,
+        "high": 67
+      },
+      "rulesHash": "78dc1c4c8819cf49712606e9a2932dbef79c486701a10468f58f3c74304c3279",
       "validRules": true,
       "ruleIssues": [],
       "status": "RANGE_NOT_ELIMINATED",
       "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 1516.883,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": true,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
       "evidence": {
-        "id": "8461374be1873c242dd7271b4cfbafc041298179959f1e48216e43a787ef41d6",
+        "id": "c7368dfba822139e22641f9e2a12b557beb534e65eac7ea4eade0bb9bf547496",
         "kind": "CLI_PRELIMINARY",
-        "floorF": 68,
-        "issuedAt": "2026-09-22T20:37:00.000Z",
+        "floorF": 64,
+        "issuedAt": "2026-09-22T21:38:00.000Z",
         "observedAt": null,
-        "firstSeenAt": "2026-09-22T20:46:01.689Z",
-        "sourceUrl": "https://api.weather.gov/products/31d1b306-f104-41be-b79f-1ae70d09fb94"
+        "firstSeenAt": "2026-09-22T21:44:49.701Z",
+        "sourceUrl": "https://api.weather.gov/products/4e1f79f5-84d0-484a-a56d-9f8edfd641eb"
       },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-09-22T23:16:02.266Z",
-        "receivedAt": "2026-09-22T23:31:06.437Z",
-        "ageSeconds": 904.171,
+        "asOf": "2026-09-22T23:14:07.987Z",
+        "receivedAt": "2026-09-22T23:39:24.870Z",
+        "ageSeconds": 1516.883,
         "noAsk": null,
         "state": "MARKET_STATE_OPEN",
         "valid": false,
         "reasons": [
           "Book timestamp too old for simulation"
         ],
+        "sourceAgeSeconds": 1516.883,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:24.852Z",
+          "receivedAt": "2026-09-22T23:39:24.870Z",
+          "durationMs": 18,
+          "httpDate": "Tue, 22 Sep 2026 23:39:24 GMT",
+          "httpAge": "25",
+          "cacheControl": "public, max-age=30"
+        },
         "topNoAsks": []
       },
       "signal": null,
       "quoteCapacity": null
     },
     {
-      "slug": "tc-temp-nychigh-2026-09-22-gte71f",
-      "question": "Highest temperature in NYC on September 22?",
-      "url": "https://polymarket.us/event/temp-nychigh-2026-09-22",
-      "station": "KNYC",
-      "date": "2026-09-22",
-      "band": null,
-      "rulesHash": "b9fed489e1b075eaa2545cca072bfda0a44c9cfa4d137daf7f7600b233581030",
-      "validRules": false,
-      "ruleIssues": [
-        "Unsupported or ambiguous temperature band"
-      ],
-      "status": "RULES_REVIEW",
-      "detail": "Unsupported or ambiguous temperature band",
-      "evidence": {
-        "id": "8461374be1873c242dd7271b4cfbafc041298179959f1e48216e43a787ef41d6",
-        "kind": "CLI_PRELIMINARY",
-        "floorF": 68,
-        "issuedAt": "2026-09-22T20:37:00.000Z",
-        "observedAt": null,
-        "firstSeenAt": "2026-09-22T20:46:01.689Z",
-        "sourceUrl": "https://api.weather.gov/products/31d1b306-f104-41be-b79f-1ae70d09fb94"
-      },
-      "weatherConflict": false,
-      "book": {
-        "asOf": "2026-09-22T23:26:47.804Z",
-        "receivedAt": "2026-09-22T23:31:06.687Z",
-        "ageSeconds": 258.883,
-        "noAsk": null,
-        "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "topNoAsks": []
-      },
-      "signal": null,
-      "quoteCapacity": null
-    },
-    {
-      "slug": "tc-temp-nychigh-2026-09-22-lt63f",
-      "question": "Highest temperature in NYC on September 22?",
-      "url": "https://polymarket.us/event/temp-nychigh-2026-09-22",
-      "station": "KNYC",
-      "date": "2026-09-22",
-      "band": null,
-      "rulesHash": "87aa25019a791826e7f732635e49e343ea3ab1e37e9c41c14978bb8f5ce94478",
-      "validRules": false,
-      "ruleIssues": [
-        "Unsupported or ambiguous temperature band"
-      ],
-      "status": "RULES_REVIEW",
-      "detail": "Unsupported or ambiguous temperature band",
-      "evidence": {
-        "id": "8461374be1873c242dd7271b4cfbafc041298179959f1e48216e43a787ef41d6",
-        "kind": "CLI_PRELIMINARY",
-        "floorF": 68,
-        "issuedAt": "2026-09-22T20:37:00.000Z",
-        "observedAt": null,
-        "firstSeenAt": "2026-09-22T20:46:01.689Z",
-        "sourceUrl": "https://api.weather.gov/products/31d1b306-f104-41be-b79f-1ae70d09fb94"
-      },
-      "weatherConflict": false,
-      "book": {
-        "asOf": "2026-09-22T23:26:47.422Z",
-        "receivedAt": "2026-09-22T23:31:06.939Z",
-        "ageSeconds": 259.517,
-        "noAsk": null,
-        "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "topNoAsks": []
-      },
-      "signal": null,
-      "quoteCapacity": null
-    },
-    {
-      "slug": "tc-temp-sfohigh-2026-09-22-gte68lt69f",
-      "question": "Highest temperature in San Francisco on September 22?",
-      "url": "https://polymarket.us/event/temp-sfohigh-2026-09-22",
-      "station": "KSFO",
+      "slug": "tc-temp-laxhigh-2026-09-22-gte79lt80f",
+      "question": "Highest temperature in Los Angeles on September 22?",
+      "url": "https://polymarket.us/event/temp-laxhigh-2026-09-22",
+      "station": "KLAX",
       "date": "2026-09-22",
       "band": {
-        "low": 68,
-        "high": 69
+        "low": 79,
+        "high": 80
       },
-      "rulesHash": "8effd49270dfe236005fb339e80fef73194a0e4c77e9fa64e0665422750bef09",
+      "rulesHash": "cd9e52a0e9461baa03946dad8fe38e9c8a2f650b50ae99d458566b1e588180bf",
       "validRules": true,
       "ruleIssues": [],
       "status": "RANGE_NOT_ELIMINATED",
       "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 590.187,
+        "quoteReceiptAgeSeconds": 0.001,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": true,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
       "evidence": {
-        "id": "cc0e3a69181b066fb7ddc790247339a7e50105cde7e18d3e6311476bacb874e8",
+        "id": "d73b41e14b553fdb1341b190b6ffeb993cf6dfd57a2ab4d3d2ac72955febacff",
         "kind": "ASOS_SIX_HOUR",
-        "floorF": 63,
+        "floorF": 74,
         "issuedAt": null,
-        "observedAt": "2026-09-22T17:56:00.000Z",
-        "firstSeenAt": "2026-09-22T18:00:23.423Z",
-        "sourceUrl": "https://aviationweather.gov/api/data/metar?ids=KSFO&format=json&hours=30"
+        "observedAt": "2026-09-22T17:53:00.000Z",
+        "firstSeenAt": "2026-09-22T17:55:19.844Z",
+        "sourceUrl": "https://aviationweather.gov/api/data/metar?ids=KLAX&format=json&hours=30"
       },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-09-22T23:20:35.892Z",
-        "receivedAt": "2026-09-22T23:31:07.188Z",
-        "ageSeconds": 631.296,
-        "noAsk": 0.99,
-        "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "topNoAsks": [
-          {
-            "priceU": 990000,
-            "qty": 6
-          }
-        ]
-      },
-      "signal": null,
-      "quoteCapacity": null
-    },
-    {
-      "slug": "tc-temp-sfohigh-2026-09-22-gte70lt71f",
-      "question": "Highest temperature in San Francisco on September 22?",
-      "url": "https://polymarket.us/event/temp-sfohigh-2026-09-22",
-      "station": "KSFO",
-      "date": "2026-09-22",
-      "band": {
-        "low": 70,
-        "high": 71
-      },
-      "rulesHash": "227f2f9a41f10a5ef4d8097b0d7e58cb5d3df65a760a6b8395ed16d8575774bd",
-      "validRules": true,
-      "ruleIssues": [],
-      "status": "RANGE_NOT_ELIMINATED",
-      "detail": null,
-      "evidence": {
-        "id": "cc0e3a69181b066fb7ddc790247339a7e50105cde7e18d3e6311476bacb874e8",
-        "kind": "ASOS_SIX_HOUR",
-        "floorF": 63,
-        "issuedAt": null,
-        "observedAt": "2026-09-22T17:56:00.000Z",
-        "firstSeenAt": "2026-09-22T18:00:23.423Z",
-        "sourceUrl": "https://aviationweather.gov/api/data/metar?ids=KSFO&format=json&hours=30"
-      },
-      "weatherConflict": false,
-      "book": {
-        "asOf": "2026-09-22T23:13:17.713Z",
-        "receivedAt": "2026-09-22T23:31:07.437Z",
-        "ageSeconds": 1069.724,
+        "asOf": "2026-09-22T23:29:34.935Z",
+        "receivedAt": "2026-09-22T23:39:25.122Z",
+        "ageSeconds": 590.187,
         "noAsk": null,
         "state": "MARKET_STATE_OPEN",
         "valid": false,
         "reasons": [
           "Book timestamp too old for simulation"
         ],
+        "sourceAgeSeconds": 590.187,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:25.103Z",
+          "receivedAt": "2026-09-22T23:39:25.122Z",
+          "durationMs": 19,
+          "httpDate": "Tue, 22 Sep 2026 23:39:25 GMT",
+          "httpAge": "17",
+          "cacheControl": "public, max-age=30"
+        },
         "topNoAsks": []
       },
       "signal": null,
@@ -1273,6 +1141,23 @@
       "ruleIssues": [],
       "status": "RANGE_NOT_ELIMINATED",
       "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 183.625,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": true,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
       "evidence": {
         "id": "cc0e3a69181b066fb7ddc790247339a7e50105cde7e18d3e6311476bacb874e8",
         "kind": "ASOS_SIX_HOUR",
@@ -1284,15 +1169,305 @@
       },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-09-22T23:26:58.648Z",
-        "receivedAt": "2026-09-22T23:31:07.688Z",
-        "ageSeconds": 249.04,
+        "asOf": "2026-09-22T23:36:21.755Z",
+        "receivedAt": "2026-09-22T23:39:25.380Z",
+        "ageSeconds": 183.625,
         "noAsk": null,
         "state": "MARKET_STATE_OPEN",
         "valid": false,
         "reasons": [
           "Book timestamp too old for simulation"
         ],
+        "sourceAgeSeconds": 183.625,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:25.353Z",
+          "receivedAt": "2026-09-22T23:39:25.380Z",
+          "durationMs": 27,
+          "httpDate": "Tue, 22 Sep 2026 23:39:25 GMT",
+          "httpAge": "1",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": []
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-nychigh-2026-09-22-gte69lt70f",
+      "question": "Highest temperature in NYC on September 22?",
+      "url": "https://polymarket.us/event/temp-nychigh-2026-09-22",
+      "station": "KNYC",
+      "date": "2026-09-22",
+      "band": {
+        "low": 69,
+        "high": 70
+      },
+      "rulesHash": "711b1d700652aec3c7c4e9b48a3d7b4c91de5bf36a8b6ffb9fe3da01b3383ba6",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "RANGE_NOT_ELIMINATED",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 183.61,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": true,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": {
+        "id": "8461374be1873c242dd7271b4cfbafc041298179959f1e48216e43a787ef41d6",
+        "kind": "CLI_PRELIMINARY",
+        "floorF": 68,
+        "issuedAt": "2026-09-22T20:37:00.000Z",
+        "observedAt": null,
+        "firstSeenAt": "2026-09-22T20:46:01.689Z",
+        "sourceUrl": "https://api.weather.gov/products/31d1b306-f104-41be-b79f-1ae70d09fb94"
+      },
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:36:22.010Z",
+        "receivedAt": "2026-09-22T23:39:25.620Z",
+        "ageSeconds": 183.61,
+        "noAsk": null,
+        "state": "MARKET_STATE_OPEN",
+        "valid": false,
+        "reasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "sourceAgeSeconds": 183.61,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:25.603Z",
+          "receivedAt": "2026-09-22T23:39:25.620Z",
+          "durationMs": 17,
+          "httpDate": "Tue, 22 Sep 2026 23:39:25 GMT",
+          "httpAge": "5",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": []
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-miahigh-2026-09-22-gte89lt90f",
+      "question": "Highest temperature in Miami on September 22?",
+      "url": "https://polymarket.us/event/temp-miahigh-2026-09-22",
+      "station": "KMIA",
+      "date": "2026-09-22",
+      "band": {
+        "low": 89,
+        "high": 90
+      },
+      "rulesHash": "6f167804eb10abf4d5f7b371f28ada8c55ba535b995f8e67d8dd8924bbbc7693",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "RANGE_NOT_ELIMINATED",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 8,
+        "displayedNoContracts": 38002,
+        "noPriceWithinCap": true,
+        "noPriceWithinCapAfterBuffer": true,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 184.121,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": true,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": {
+        "id": "e95e8a31aa23ab9628933ae5a91828b37f4ca5c1158e1ca5675fa3ff01cbd4ac",
+        "kind": "CLI_PRELIMINARY",
+        "floorF": 89,
+        "issuedAt": "2026-09-22T20:25:00.000Z",
+        "observedAt": null,
+        "firstSeenAt": "2026-09-22T20:27:12.433Z",
+        "sourceUrl": "https://api.weather.gov/products/32968b41-1de5-4bd2-a3a5-7ef94d408380"
+      },
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:36:21.747Z",
+        "receivedAt": "2026-09-22T23:39:25.868Z",
+        "ageSeconds": 184.121,
+        "noAsk": 0.01,
+        "state": "MARKET_STATE_OPEN",
+        "valid": false,
+        "reasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "sourceAgeSeconds": 184.121,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:25.853Z",
+          "receivedAt": "2026-09-22T23:39:25.868Z",
+          "durationMs": 15,
+          "httpDate": "Tue, 22 Sep 2026 23:39:25 GMT",
+          "httpAge": "29",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": [
+          {
+            "priceU": 10000,
+            "qty": 35856
+          },
+          {
+            "priceU": 20000,
+            "qty": 2000
+          },
+          {
+            "priceU": 70000,
+            "qty": 5
+          },
+          {
+            "priceU": 120000,
+            "qty": 45
+          },
+          {
+            "priceU": 540000,
+            "qty": 1
+          }
+        ]
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-mdwhigh-2026-09-22-gte68lt69f",
+      "question": "Highest temperature in Chicago on September 22?",
+      "url": "https://polymarket.us/event/temp-mdwhigh-2026-09-22",
+      "station": "KMDW",
+      "date": "2026-09-22",
+      "band": {
+        "low": 68,
+        "high": 69
+      },
+      "rulesHash": "fe938fd519fe777c3dbeeb8e8f5d0ba3620790eeb8d952cd8e692f3ecd8d086f",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "RANGE_NOT_ELIMINATED",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 184.122,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": true,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": {
+        "id": "c7368dfba822139e22641f9e2a12b557beb534e65eac7ea4eade0bb9bf547496",
+        "kind": "CLI_PRELIMINARY",
+        "floorF": 64,
+        "issuedAt": "2026-09-22T21:38:00.000Z",
+        "observedAt": null,
+        "firstSeenAt": "2026-09-22T21:44:49.701Z",
+        "sourceUrl": "https://api.weather.gov/products/4e1f79f5-84d0-484a-a56d-9f8edfd641eb"
+      },
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:36:21.999Z",
+        "receivedAt": "2026-09-22T23:39:26.121Z",
+        "ageSeconds": 184.122,
+        "noAsk": null,
+        "state": "MARKET_STATE_OPEN",
+        "valid": false,
+        "reasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "sourceAgeSeconds": 184.122,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:26.104Z",
+          "receivedAt": "2026-09-22T23:39:26.121Z",
+          "durationMs": 17,
+          "httpDate": "Tue, 22 Sep 2026 23:39:26 GMT",
+          "httpAge": "8",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": []
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-laxhigh-2026-09-22-gte81lt82f",
+      "question": "Highest temperature in Los Angeles on September 22?",
+      "url": "https://polymarket.us/event/temp-laxhigh-2026-09-22",
+      "station": "KLAX",
+      "date": "2026-09-22",
+      "band": {
+        "low": 81,
+        "high": 82
+      },
+      "rulesHash": "0796c24068a55debed28d21bf69be10f02ca934e45d6e58d6a7901fbfc3e8f75",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "RANGE_NOT_ELIMINATED",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 98.797,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [],
+        "ruleIssues": [],
+        "weatherFresh": true,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": {
+        "id": "d73b41e14b553fdb1341b190b6ffeb993cf6dfd57a2ab4d3d2ac72955febacff",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 74,
+        "issuedAt": null,
+        "observedAt": "2026-09-22T17:53:00.000Z",
+        "firstSeenAt": "2026-09-22T17:55:19.844Z",
+        "sourceUrl": "https://aviationweather.gov/api/data/metar?ids=KLAX&format=json&hours=30"
+      },
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:37:47.572Z",
+        "receivedAt": "2026-09-22T23:39:26.369Z",
+        "ageSeconds": 98.797,
+        "noAsk": null,
+        "state": "MARKET_STATE_OPEN",
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 98.797,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:26.354Z",
+          "receivedAt": "2026-09-22T23:39:26.369Z",
+          "durationMs": 15,
+          "httpDate": "Tue, 22 Sep 2026 23:39:26 GMT",
+          "httpAge": "13",
+          "cacheControl": "public, max-age=30"
+        },
         "topNoAsks": []
       },
       "signal": null,
@@ -1313,6 +1488,23 @@
       "ruleIssues": [],
       "status": "RANGE_NOT_ELIMINATED",
       "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 184.866,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": true,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
       "evidence": {
         "id": "cc0e3a69181b066fb7ddc790247339a7e50105cde7e18d3e6311476bacb874e8",
         "kind": "ASOS_SIX_HOUR",
@@ -1324,15 +1516,284 @@
       },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-09-22T23:15:16.869Z",
-        "receivedAt": "2026-09-22T23:31:07.940Z",
-        "ageSeconds": 951.071,
+        "asOf": "2026-09-22T23:36:21.753Z",
+        "receivedAt": "2026-09-22T23:39:26.619Z",
+        "ageSeconds": 184.866,
         "noAsk": null,
         "state": "MARKET_STATE_OPEN",
         "valid": false,
         "reasons": [
           "Book timestamp too old for simulation"
         ],
+        "sourceAgeSeconds": 184.866,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:26.604Z",
+          "receivedAt": "2026-09-22T23:39:26.619Z",
+          "durationMs": 15,
+          "httpDate": "Tue, 22 Sep 2026 23:39:26 GMT",
+          "httpAge": "2",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": []
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-nychigh-2026-09-22-gte71f",
+      "question": "Highest temperature in NYC on September 22?",
+      "url": "https://polymarket.us/event/temp-nychigh-2026-09-22",
+      "station": "KNYC",
+      "date": "2026-09-22",
+      "band": {
+        "low": 71,
+        "high": null
+      },
+      "rulesHash": "4fd0d10329c9f098b56adbee36eaab7eacc8fd7854c76452110c55d93977c37c",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "UNBOUNDED_UPPER_RANGE",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 183.855,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": true,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": {
+        "id": "8461374be1873c242dd7271b4cfbafc041298179959f1e48216e43a787ef41d6",
+        "kind": "CLI_PRELIMINARY",
+        "floorF": 68,
+        "issuedAt": "2026-09-22T20:37:00.000Z",
+        "observedAt": null,
+        "firstSeenAt": "2026-09-22T20:46:01.689Z",
+        "sourceUrl": "https://api.weather.gov/products/31d1b306-f104-41be-b79f-1ae70d09fb94"
+      },
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:36:23.015Z",
+        "receivedAt": "2026-09-22T23:39:26.870Z",
+        "ageSeconds": 183.855,
+        "noAsk": null,
+        "state": "MARKET_STATE_OPEN",
+        "valid": false,
+        "reasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "sourceAgeSeconds": 183.855,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:26.854Z",
+          "receivedAt": "2026-09-22T23:39:26.870Z",
+          "durationMs": 16,
+          "httpDate": "Tue, 22 Sep 2026 23:39:26 GMT",
+          "httpAge": "5",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": []
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-miahigh-2026-09-22-gte91f",
+      "question": "Highest temperature in Miami on September 22?",
+      "url": "https://polymarket.us/event/temp-miahigh-2026-09-22",
+      "station": "KMIA",
+      "date": "2026-09-22",
+      "band": {
+        "low": 91,
+        "high": null
+      },
+      "rulesHash": "89aba7d9901d99902838d6c6bf4267790d73deb6f46550bf1aaf0f5cbec84379",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "UNBOUNDED_UPPER_RANGE",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 185.368,
+        "quoteReceiptAgeSeconds": 0.001,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": true,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": {
+        "id": "e95e8a31aa23ab9628933ae5a91828b37f4ca5c1158e1ca5675fa3ff01cbd4ac",
+        "kind": "CLI_PRELIMINARY",
+        "floorF": 89,
+        "issuedAt": "2026-09-22T20:25:00.000Z",
+        "observedAt": null,
+        "firstSeenAt": "2026-09-22T20:27:12.433Z",
+        "sourceUrl": "https://api.weather.gov/products/32968b41-1de5-4bd2-a3a5-7ef94d408380"
+      },
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:36:21.751Z",
+        "receivedAt": "2026-09-22T23:39:27.119Z",
+        "ageSeconds": 185.368,
+        "noAsk": null,
+        "state": "MARKET_STATE_OPEN",
+        "valid": false,
+        "reasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "sourceAgeSeconds": 185.368,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:27.104Z",
+          "receivedAt": "2026-09-22T23:39:27.119Z",
+          "durationMs": 15,
+          "httpDate": "Tue, 22 Sep 2026 23:39:27 GMT",
+          "httpAge": "1",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": []
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-mdwhigh-2026-09-22-gte70f",
+      "question": "Highest temperature in Chicago on September 22?",
+      "url": "https://polymarket.us/event/temp-mdwhigh-2026-09-22",
+      "station": "KMDW",
+      "date": "2026-09-22",
+      "band": {
+        "low": 70,
+        "high": null
+      },
+      "rulesHash": "5e77a7628324b4597811f8171c9186bf629d86762a6ec884a8d09b25487fa275",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "UNBOUNDED_UPPER_RANGE",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 361.329,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": true,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": {
+        "id": "c7368dfba822139e22641f9e2a12b557beb534e65eac7ea4eade0bb9bf547496",
+        "kind": "CLI_PRELIMINARY",
+        "floorF": 64,
+        "issuedAt": "2026-09-22T21:38:00.000Z",
+        "observedAt": null,
+        "firstSeenAt": "2026-09-22T21:44:49.701Z",
+        "sourceUrl": "https://api.weather.gov/products/4e1f79f5-84d0-484a-a56d-9f8edfd641eb"
+      },
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:33:26.042Z",
+        "receivedAt": "2026-09-22T23:39:27.371Z",
+        "ageSeconds": 361.329,
+        "noAsk": null,
+        "state": "MARKET_STATE_OPEN",
+        "valid": false,
+        "reasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "sourceAgeSeconds": 361.329,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:27.354Z",
+          "receivedAt": "2026-09-22T23:39:27.371Z",
+          "durationMs": 17,
+          "httpDate": "Tue, 22 Sep 2026 23:39:27 GMT",
+          "httpAge": "7",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": []
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-laxhigh-2026-09-22-gte83f",
+      "question": "Highest temperature in Los Angeles on September 22?",
+      "url": "https://polymarket.us/event/temp-laxhigh-2026-09-22",
+      "station": "KLAX",
+      "date": "2026-09-22",
+      "band": {
+        "low": 83,
+        "high": null
+      },
+      "rulesHash": "77bef62ffdfccd73ddb1f85f28cf38a222bd6254589ee37bc2593e8c0b0cd765",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "UNBOUNDED_UPPER_RANGE",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 72.738,
+        "quoteReceiptAgeSeconds": 0.001,
+        "bookReasons": [],
+        "ruleIssues": [],
+        "weatherFresh": true,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": {
+        "id": "d73b41e14b553fdb1341b190b6ffeb993cf6dfd57a2ab4d3d2ac72955febacff",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 74,
+        "issuedAt": null,
+        "observedAt": "2026-09-22T17:53:00.000Z",
+        "firstSeenAt": "2026-09-22T17:55:19.844Z",
+        "sourceUrl": "https://aviationweather.gov/api/data/metar?ids=KLAX&format=json&hours=30"
+      },
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:38:14.884Z",
+        "receivedAt": "2026-09-22T23:39:27.622Z",
+        "ageSeconds": 72.738,
+        "noAsk": null,
+        "state": "MARKET_STATE_OPEN",
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 72.738,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:27.605Z",
+          "receivedAt": "2026-09-22T23:39:27.622Z",
+          "durationMs": 17,
+          "httpDate": "Tue, 22 Sep 2026 23:39:27 GMT",
+          "httpAge": "18",
+          "cacheControl": "public, max-age=30"
+        },
         "topNoAsks": []
       },
       "signal": null,
@@ -1344,14 +1805,32 @@
       "url": "https://polymarket.us/event/temp-sfohigh-2026-09-22",
       "station": "KSFO",
       "date": "2026-09-22",
-      "band": null,
-      "rulesHash": "e79eca6fdf907dfcdae13326c0d5ea09bbeefa1b7381529cf3630303a078206d",
-      "validRules": false,
-      "ruleIssues": [
-        "Unsupported or ambiguous temperature band"
-      ],
-      "status": "RULES_REVIEW",
-      "detail": "Unsupported or ambiguous temperature band",
+      "band": {
+        "low": 76,
+        "high": null
+      },
+      "rulesHash": "317030bd815d12fad428597af77529e106c7054eb26f49944c3f52160f76640f",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "UNBOUNDED_UPPER_RANGE",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 186.134,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": true,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
       "evidence": {
         "id": "cc0e3a69181b066fb7ddc790247339a7e50105cde7e18d3e6311476bacb874e8",
         "kind": "ASOS_SIX_HOUR",
@@ -1363,15 +1842,302 @@
       },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-09-22T23:29:03.603Z",
-        "receivedAt": "2026-09-22T23:31:08.189Z",
-        "ageSeconds": 124.586,
+        "asOf": "2026-09-22T23:36:21.750Z",
+        "receivedAt": "2026-09-22T23:39:27.884Z",
+        "ageSeconds": 186.134,
         "noAsk": null,
         "state": "MARKET_STATE_OPEN",
         "valid": false,
         "reasons": [
           "Book timestamp too old for simulation"
         ],
+        "sourceAgeSeconds": 186.134,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:27.855Z",
+          "receivedAt": "2026-09-22T23:39:27.884Z",
+          "durationMs": 29,
+          "httpDate": "Tue, 22 Sep 2026 23:39:27 GMT",
+          "httpAge": "15",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": []
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-nychigh-2026-09-22-lt63f",
+      "question": "Highest temperature in NYC on September 22?",
+      "url": "https://polymarket.us/event/temp-nychigh-2026-09-22",
+      "station": "KNYC",
+      "date": "2026-09-22",
+      "band": {
+        "low": null,
+        "high": 62
+      },
+      "rulesHash": "63044321345eadc095bfd1557ff4e81c79695888ae2f93cb9702a42d0657839f",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "BOOK_UNUSABLE",
+      "detail": "Book timestamp too old for simulation",
+      "diagnostic": {
+        "evidenceEliminated": true,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 186.119,
+        "quoteReceiptAgeSeconds": 0.321,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": true,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": {
+        "id": "8461374be1873c242dd7271b4cfbafc041298179959f1e48216e43a787ef41d6",
+        "kind": "CLI_PRELIMINARY",
+        "floorF": 68,
+        "issuedAt": "2026-09-22T20:37:00.000Z",
+        "observedAt": null,
+        "firstSeenAt": "2026-09-22T20:46:01.689Z",
+        "sourceUrl": "https://api.weather.gov/products/31d1b306-f104-41be-b79f-1ae70d09fb94"
+      },
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:36:22.005Z",
+        "receivedAt": "2026-09-22T23:39:28.124Z",
+        "ageSeconds": 186.119,
+        "noAsk": null,
+        "state": "MARKET_STATE_OPEN",
+        "valid": false,
+        "reasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "sourceAgeSeconds": 186.119,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:28.105Z",
+          "receivedAt": "2026-09-22T23:39:28.124Z",
+          "durationMs": 19,
+          "httpDate": "Tue, 22 Sep 2026 23:39:28 GMT",
+          "httpAge": "23",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": []
+      },
+      "signal": {
+        "firstSeenAt": "2026-09-22T23:36:29.906Z",
+        "evidenceId": "8461374be1873c242dd7271b4cfbafc041298179959f1e48216e43a787ef41d6",
+        "rulesHash": "63044321345eadc095bfd1557ff4e81c79695888ae2f93cb9702a42d0657839f",
+        "firstBookAt": "2026-09-22T23:36:29.660Z",
+        "firstNoAsk": null
+      },
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-miahigh-2026-09-22-lt83f",
+      "question": "Highest temperature in Miami on September 22?",
+      "url": "https://polymarket.us/event/temp-miahigh-2026-09-22",
+      "station": "KMIA",
+      "date": "2026-09-22",
+      "band": {
+        "low": null,
+        "high": 82
+      },
+      "rulesHash": "b92296d6a3b4d6b4de5d7b3b959e2039d0fb91410063c9ad0b54a2054f9f70eb",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "BOOK_UNUSABLE",
+      "detail": "Book timestamp too old for simulation",
+      "diagnostic": {
+        "evidenceEliminated": true,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 761.516,
+        "quoteReceiptAgeSeconds": 0.259,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": true,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": {
+        "id": "e95e8a31aa23ab9628933ae5a91828b37f4ca5c1158e1ca5675fa3ff01cbd4ac",
+        "kind": "CLI_PRELIMINARY",
+        "floorF": 89,
+        "issuedAt": "2026-09-22T20:25:00.000Z",
+        "observedAt": null,
+        "firstSeenAt": "2026-09-22T20:27:12.433Z",
+        "sourceUrl": "https://api.weather.gov/products/32968b41-1de5-4bd2-a3a5-7ef94d408380"
+      },
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:26:47.107Z",
+        "receivedAt": "2026-09-22T23:39:28.623Z",
+        "ageSeconds": 761.516,
+        "noAsk": null,
+        "state": "MARKET_STATE_OPEN",
+        "valid": false,
+        "reasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "sourceAgeSeconds": 761.516,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:28.607Z",
+          "receivedAt": "2026-09-22T23:39:28.623Z",
+          "durationMs": 16,
+          "httpDate": "Tue, 22 Sep 2026 23:39:28 GMT",
+          "httpAge": "13",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": []
+      },
+      "signal": {
+        "firstSeenAt": "2026-09-22T23:36:30.408Z",
+        "evidenceId": "e95e8a31aa23ab9628933ae5a91828b37f4ca5c1158e1ca5675fa3ff01cbd4ac",
+        "rulesHash": "b92296d6a3b4d6b4de5d7b3b959e2039d0fb91410063c9ad0b54a2054f9f70eb",
+        "firstBookAt": "2026-09-22T23:36:30.144Z",
+        "firstNoAsk": null
+      },
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-mdwhigh-2026-09-22-lt62f",
+      "question": "Highest temperature in Chicago on September 22?",
+      "url": "https://polymarket.us/event/temp-mdwhigh-2026-09-22",
+      "station": "KMDW",
+      "date": "2026-09-22",
+      "band": {
+        "low": null,
+        "high": 61
+      },
+      "rulesHash": "0d8bcb71e58b5fa01e62f2121df69abb063cdf52f23e3a59d4f0c5e59b53d215",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "BOOK_UNUSABLE",
+      "detail": "Book timestamp too old for simulation",
+      "diagnostic": {
+        "evidenceEliminated": true,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 761.322,
+        "quoteReceiptAgeSeconds": 0.258,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": true,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": {
+        "id": "c7368dfba822139e22641f9e2a12b557beb534e65eac7ea4eade0bb9bf547496",
+        "kind": "CLI_PRELIMINARY",
+        "floorF": 64,
+        "issuedAt": "2026-09-22T21:38:00.000Z",
+        "observedAt": null,
+        "firstSeenAt": "2026-09-22T21:44:49.701Z",
+        "sourceUrl": "https://api.weather.gov/products/4e1f79f5-84d0-484a-a56d-9f8edfd641eb"
+      },
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:26:47.805Z",
+        "receivedAt": "2026-09-22T23:39:29.127Z",
+        "ageSeconds": 761.322,
+        "noAsk": null,
+        "state": "MARKET_STATE_OPEN",
+        "valid": false,
+        "reasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "sourceAgeSeconds": 761.322,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:29.108Z",
+          "receivedAt": "2026-09-22T23:39:29.127Z",
+          "durationMs": 19,
+          "httpDate": "Tue, 22 Sep 2026 23:39:29 GMT",
+          "httpAge": "2",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": []
+      },
+      "signal": {
+        "firstSeenAt": "2026-09-22T23:36:30.908Z",
+        "evidenceId": "c7368dfba822139e22641f9e2a12b557beb534e65eac7ea4eade0bb9bf547496",
+        "rulesHash": "0d8bcb71e58b5fa01e62f2121df69abb063cdf52f23e3a59d4f0c5e59b53d215",
+        "firstBookAt": "2026-09-22T23:36:30.647Z",
+        "firstNoAsk": null
+      },
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-laxhigh-2026-09-22-lt75f",
+      "question": "Highest temperature in Los Angeles on September 22?",
+      "url": "https://polymarket.us/event/temp-laxhigh-2026-09-22",
+      "station": "KLAX",
+      "date": "2026-09-22",
+      "band": {
+        "low": null,
+        "high": 74
+      },
+      "rulesHash": "b88108bb0533848a85a42ad5b4f4648294afce3a60301e93522c5aafd84af03c",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "RANGE_NOT_ELIMINATED",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 48.215,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [],
+        "ruleIssues": [],
+        "weatherFresh": true,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": {
+        "id": "d73b41e14b553fdb1341b190b6ffeb993cf6dfd57a2ab4d3d2ac72955febacff",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 74,
+        "issuedAt": null,
+        "observedAt": "2026-09-22T17:53:00.000Z",
+        "firstSeenAt": "2026-09-22T17:55:19.844Z",
+        "sourceUrl": "https://aviationweather.gov/api/data/metar?ids=KLAX&format=json&hours=30"
+      },
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:38:41.410Z",
+        "receivedAt": "2026-09-22T23:39:29.625Z",
+        "ageSeconds": 48.215,
+        "noAsk": null,
+        "state": "MARKET_STATE_OPEN",
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 48.215,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:29.608Z",
+          "receivedAt": "2026-09-22T23:39:29.625Z",
+          "durationMs": 17,
+          "httpDate": "Tue, 22 Sep 2026 23:39:29 GMT",
+          "httpAge": "27",
+          "cacheControl": "public, max-age=30"
+        },
         "topNoAsks": []
       },
       "signal": null,
@@ -1383,14 +2149,32 @@
       "url": "https://polymarket.us/event/temp-sfohigh-2026-09-22",
       "station": "KSFO",
       "date": "2026-09-22",
-      "band": null,
-      "rulesHash": "59c503ee4b4e4c842f5dcf5a6d842de2ecfcceab87a19acf139e371062475395",
-      "validRules": false,
-      "ruleIssues": [
-        "Unsupported or ambiguous temperature band"
-      ],
-      "status": "RULES_REVIEW",
-      "detail": "Unsupported or ambiguous temperature band",
+      "band": {
+        "low": null,
+        "high": 67
+      },
+      "rulesHash": "229b3dc05f2f99ebc444812003aace27e984acf62246f77b196c636d2a2e77bf",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "RANGE_NOT_ELIMINATED",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 6,
+        "displayedNoContracts": 2956,
+        "noPriceWithinCap": true,
+        "noPriceWithinCapAfterBuffer": true,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 232.597,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": true,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
       "evidence": {
         "id": "cc0e3a69181b066fb7ddc790247339a7e50105cde7e18d3e6311476bacb874e8",
         "kind": "ASOS_SIX_HOUR",
@@ -1402,23 +2186,28 @@
       },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-09-22T23:25:19.793Z",
-        "receivedAt": "2026-09-22T23:31:08.439Z",
-        "ageSeconds": 348.646,
+        "asOf": "2026-09-22T23:35:37.280Z",
+        "receivedAt": "2026-09-22T23:39:29.877Z",
+        "ageSeconds": 232.597,
         "noAsk": 0.02,
         "state": "MARKET_STATE_OPEN",
         "valid": false,
         "reasons": [
           "Book timestamp too old for simulation"
         ],
+        "sourceAgeSeconds": 232.597,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:29.857Z",
+          "receivedAt": "2026-09-22T23:39:29.877Z",
+          "durationMs": 20,
+          "httpDate": "Tue, 22 Sep 2026 23:39:29 GMT",
+          "httpAge": "9",
+          "cacheControl": "public, max-age=30"
+        },
         "topNoAsks": [
           {
             "priceU": 20000,
-            "qty": 2670
-          },
-          {
-            "priceU": 80000,
-            "qty": 9
+            "qty": 2619
           },
           {
             "priceU": 110000,
@@ -1431,6 +2220,10 @@
           {
             "priceU": 180000,
             "qty": 6
+          },
+          {
+            "priceU": 750000,
+            "qty": 250
           }
         ]
       },
@@ -1438,52 +2231,78 @@
       "quoteCapacity": null
     },
     {
-      "slug": "tc-temp-laxhigh-2026-09-23-gte78lt79f",
-      "question": "Highest temperature in Los Angeles on September 23?",
-      "url": "https://polymarket.us/event/temp-laxhigh-2026-09-23",
-      "station": "KLAX",
+      "slug": "tc-temp-nychigh-2026-09-23-gte65lt66f",
+      "question": "Highest temperature in NYC on September 23?",
+      "url": "https://polymarket.us/event/temp-nychigh-2026-09-23",
+      "station": "KNYC",
       "date": "2026-09-23",
       "band": {
-        "low": 78,
-        "high": 79
+        "low": 65,
+        "high": 66
       },
-      "rulesHash": "d01e60f306a6792bc7307c1e9edd24a2f79d438cb462f7a5df12a089e0b81444",
+      "rulesHash": "413757d1c86bdea61e53a17f3a5b1ec7ff623ab5db498812fa4f6aac75a8c0d8",
       "validRules": true,
       "ruleIssues": [],
       "status": "WAITING_FOR_EXTREMA_OR_CLI",
       "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 15,
+        "displayedNoContracts": 8673,
+        "noPriceWithinCap": true,
+        "noPriceWithinCapAfterBuffer": true,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 199.437,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": false,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-09-22T23:20:50.067Z",
-        "receivedAt": "2026-09-22T23:31:08.689Z",
-        "ageSeconds": 618.622,
-        "noAsk": 0.79,
+        "asOf": "2026-09-22T23:36:10.687Z",
+        "receivedAt": "2026-09-22T23:39:30.124Z",
+        "ageSeconds": 199.437,
+        "noAsk": 0.73,
         "state": "MARKET_STATE_OPEN",
         "valid": false,
         "reasons": [
           "Book timestamp too old for simulation"
         ],
+        "sourceAgeSeconds": 199.437,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:30.107Z",
+          "receivedAt": "2026-09-22T23:39:30.124Z",
+          "durationMs": 17,
+          "httpDate": "Tue, 22 Sep 2026 23:39:30 GMT",
+          "httpAge": "6",
+          "cacheControl": "public, max-age=30"
+        },
         "topNoAsks": [
           {
-            "priceU": 790000,
-            "qty": 346
+            "priceU": 730000,
+            "qty": 100
           },
           {
-            "priceU": 800000,
-            "qty": 10766
+            "priceU": 740000,
+            "qty": 55
           },
           {
-            "priceU": 810000,
-            "qty": 264
+            "priceU": 750000,
+            "qty": 30
           },
           {
-            "priceU": 820000,
-            "qty": 8
+            "priceU": 760000,
+            "qty": 46
           },
           {
-            "priceU": 830000,
-            "qty": 2
+            "priceU": 770000,
+            "qty": 31
           }
         ]
       },
@@ -1491,244 +2310,74 @@
       "quoteCapacity": null
     },
     {
-      "slug": "tc-temp-laxhigh-2026-09-23-gte80lt81f",
-      "question": "Highest temperature in Los Angeles on September 23?",
-      "url": "https://polymarket.us/event/temp-laxhigh-2026-09-23",
-      "station": "KLAX",
-      "date": "2026-09-23",
-      "band": {
-        "low": 80,
-        "high": 81
-      },
-      "rulesHash": "5f4ccfea0511d16d7334555aac7388113e88f31c943b0a1eff880eb17478e422",
-      "validRules": true,
-      "ruleIssues": [],
-      "status": "WAITING_FOR_EXTREMA_OR_CLI",
-      "detail": null,
-      "evidence": null,
-      "weatherConflict": false,
-      "book": {
-        "asOf": "2026-09-22T23:20:18.328Z",
-        "receivedAt": "2026-09-22T23:31:08.940Z",
-        "ageSeconds": 650.612,
-        "noAsk": 0.58,
-        "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "topNoAsks": [
-          {
-            "priceU": 580000,
-            "qty": 105
-          },
-          {
-            "priceU": 590000,
-            "qty": 248
-          },
-          {
-            "priceU": 600000,
-            "qty": 10002
-          },
-          {
-            "priceU": 610000,
-            "qty": 17
-          },
-          {
-            "priceU": 620000,
-            "qty": 2
-          }
-        ]
-      },
-      "signal": null,
-      "quoteCapacity": null
-    },
-    {
-      "slug": "tc-temp-laxhigh-2026-09-23-gte82lt83f",
-      "question": "Highest temperature in Los Angeles on September 23?",
-      "url": "https://polymarket.us/event/temp-laxhigh-2026-09-23",
-      "station": "KLAX",
+      "slug": "tc-temp-miahigh-2026-09-23-gte82lt83f",
+      "question": "Highest temperature in Miami on September 23?",
+      "url": "https://polymarket.us/event/temp-miahigh-2026-09-23",
+      "station": "KMIA",
       "date": "2026-09-23",
       "band": {
         "low": 82,
         "high": 83
       },
-      "rulesHash": "a43a6c2f52a5d67022a89f31bad3fa23f4bf562f16b7b8e243752cc4f6d1bd9b",
+      "rulesHash": "1c6797288a57d3f17cf56239c0be23305f1b7f2bc175a49e880dd734ad43decc",
       "validRules": true,
       "ruleIssues": [],
       "status": "WAITING_FOR_EXTREMA_OR_CLI",
       "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 4,
+        "displayedNoContracts": 1315,
+        "noPriceWithinCap": true,
+        "noPriceWithinCapAfterBuffer": true,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 271.194,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": false,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-09-22T23:30:57.986Z",
-        "receivedAt": "2026-09-22T23:31:09.196Z",
-        "ageSeconds": 11.21,
-        "noAsk": 0.78,
-        "state": "MARKET_STATE_OPEN",
-        "valid": true,
-        "reasons": [],
-        "topNoAsks": [
-          {
-            "priceU": 780000,
-            "qty": 4
-          },
-          {
-            "priceU": 790000,
-            "qty": 1
-          },
-          {
-            "priceU": 800000,
-            "qty": 53
-          },
-          {
-            "priceU": 810000,
-            "qty": 214
-          },
-          {
-            "priceU": 820000,
-            "qty": 10000
-          }
-        ]
-      },
-      "signal": null,
-      "quoteCapacity": null
-    },
-    {
-      "slug": "tc-temp-laxhigh-2026-09-23-gte84lt85f",
-      "question": "Highest temperature in Los Angeles on September 23?",
-      "url": "https://polymarket.us/event/temp-laxhigh-2026-09-23",
-      "station": "KLAX",
-      "date": "2026-09-23",
-      "band": {
-        "low": 84,
-        "high": 85
-      },
-      "rulesHash": "f9be3d5fe7a902d78b13fa408ab6a70987ada3079fd25a37088c34ed8e09344b",
-      "validRules": true,
-      "ruleIssues": [],
-      "status": "WAITING_FOR_EXTREMA_OR_CLI",
-      "detail": null,
-      "evidence": null,
-      "weatherConflict": false,
-      "book": {
-        "asOf": "2026-09-22T23:29:11.454Z",
-        "receivedAt": "2026-09-22T23:31:09.441Z",
-        "ageSeconds": 117.987,
-        "noAsk": 0.95,
-        "state": "MARKET_STATE_OPEN",
-        "valid": true,
-        "reasons": [],
-        "topNoAsks": [
-          {
-            "priceU": 950000,
-            "qty": 4
-          },
-          {
-            "priceU": 960000,
-            "qty": 49
-          },
-          {
-            "priceU": 970000,
-            "qty": 14380
-          },
-          {
-            "priceU": 990000,
-            "qty": 1
-          }
-        ]
-      },
-      "signal": null,
-      "quoteCapacity": null
-    },
-    {
-      "slug": "tc-temp-laxhigh-2026-09-23-gte86f",
-      "question": "Highest temperature in Los Angeles on September 23?",
-      "url": "https://polymarket.us/event/temp-laxhigh-2026-09-23",
-      "station": "KLAX",
-      "date": "2026-09-23",
-      "band": null,
-      "rulesHash": "bc5dc9615b72ae7fbfa617aaaf5fcd37389c7f02653df22118809f1fe10a5d57",
-      "validRules": false,
-      "ruleIssues": [
-        "Unsupported or ambiguous temperature band"
-      ],
-      "status": "RULES_REVIEW",
-      "detail": "Unsupported or ambiguous temperature band",
-      "evidence": null,
-      "weatherConflict": false,
-      "book": {
-        "asOf": "2026-09-22T23:13:42.007Z",
-        "receivedAt": "2026-09-22T23:31:09.694Z",
-        "ageSeconds": 1047.687,
-        "noAsk": 0.97,
+        "asOf": "2026-09-22T23:34:59.179Z",
+        "receivedAt": "2026-09-22T23:39:30.373Z",
+        "ageSeconds": 271.194,
+        "noAsk": 0.96,
         "state": "MARKET_STATE_OPEN",
         "valid": false,
         "reasons": [
           "Book timestamp too old for simulation"
         ],
+        "sourceAgeSeconds": 271.194,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:30.358Z",
+          "receivedAt": "2026-09-22T23:39:30.373Z",
+          "durationMs": 15,
+          "httpDate": "Tue, 22 Sep 2026 23:39:30 GMT",
+          "httpAge": "16",
+          "cacheControl": "public, max-age=30"
+        },
         "topNoAsks": [
           {
+            "priceU": 960000,
+            "qty": 367
+          },
+          {
             "priceU": 970000,
-            "qty": 257
+            "qty": 315
           },
           {
             "priceU": 980000,
-            "qty": 678
+            "qty": 233
           },
           {
             "priceU": 990000,
-            "qty": 1
-          }
-        ]
-      },
-      "signal": null,
-      "quoteCapacity": null
-    },
-    {
-      "slug": "tc-temp-laxhigh-2026-09-23-lt78f",
-      "question": "Highest temperature in Los Angeles on September 23?",
-      "url": "https://polymarket.us/event/temp-laxhigh-2026-09-23",
-      "station": "KLAX",
-      "date": "2026-09-23",
-      "band": null,
-      "rulesHash": "4f762b5950c62a7e97b201328339189074dbbf5804b39344f50b08793d188375",
-      "validRules": false,
-      "ruleIssues": [
-        "Unsupported or ambiguous temperature band"
-      ],
-      "status": "RULES_REVIEW",
-      "detail": "Unsupported or ambiguous temperature band",
-      "evidence": null,
-      "weatherConflict": false,
-      "book": {
-        "asOf": "2026-09-22T23:30:53.046Z",
-        "receivedAt": "2026-09-22T23:31:09.949Z",
-        "ageSeconds": 16.903,
-        "noAsk": 0.94,
-        "state": "MARKET_STATE_OPEN",
-        "valid": true,
-        "reasons": [],
-        "topNoAsks": [
-          {
-            "priceU": 940000,
-            "qty": 30
-          },
-          {
-            "priceU": 950000,
-            "qty": 111
-          },
-          {
-            "priceU": 960000,
-            "qty": 11386
-          },
-          {
-            "priceU": 970000,
-            "qty": 525
-          },
-          {
-            "priceU": 980000,
-            "qty": 971
+            "qty": 400
           }
         ]
       },
@@ -1750,20 +2399,44 @@
       "ruleIssues": [],
       "status": "WAITING_FOR_EXTREMA_OR_CLI",
       "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 13,
+        "displayedNoContracts": 11116,
+        "noPriceWithinCap": true,
+        "noPriceWithinCapAfterBuffer": true,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 97.596,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [],
+        "ruleIssues": [],
+        "weatherFresh": false,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-09-22T23:30:56.789Z",
-        "receivedAt": "2026-09-22T23:31:10.196Z",
-        "ageSeconds": 13.407,
+        "asOf": "2026-09-22T23:37:53.029Z",
+        "receivedAt": "2026-09-22T23:39:30.625Z",
+        "ageSeconds": 97.596,
         "noAsk": 0.83,
         "state": "MARKET_STATE_OPEN",
         "valid": true,
         "reasons": [],
+        "sourceAgeSeconds": 97.596,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:30.608Z",
+          "receivedAt": "2026-09-22T23:39:30.625Z",
+          "durationMs": 17,
+          "httpDate": "Tue, 22 Sep 2026 23:39:30 GMT",
+          "httpAge": "14",
+          "cacheControl": "public, max-age=30"
+        },
         "topNoAsks": [
           {
             "priceU": 830000,
-            "qty": 7
+            "qty": 32
           },
           {
             "priceU": 840000,
@@ -1771,15 +2444,319 @@
           },
           {
             "priceU": 850000,
-            "qty": 88
+            "qty": 78
           },
           {
             "priceU": 860000,
-            "qty": 27
+            "qty": 2
           },
           {
             "priceU": 870000,
             "qty": 10002
+          }
+        ]
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-laxhigh-2026-09-23-gte78lt79f",
+      "question": "Highest temperature in Los Angeles on September 23?",
+      "url": "https://polymarket.us/event/temp-laxhigh-2026-09-23",
+      "station": "KLAX",
+      "date": "2026-09-23",
+      "band": {
+        "low": 78,
+        "high": 79
+      },
+      "rulesHash": "d01e60f306a6792bc7307c1e9edd24a2f79d438cb462f7a5df12a089e0b81444",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "WAITING_FOR_EXTREMA_OR_CLI",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 13,
+        "displayedNoContracts": 12229,
+        "noPriceWithinCap": true,
+        "noPriceWithinCapAfterBuffer": true,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 14.991,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [],
+        "ruleIssues": [],
+        "weatherFresh": false,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": null,
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:39:15.882Z",
+        "receivedAt": "2026-09-22T23:39:30.873Z",
+        "ageSeconds": 14.991,
+        "noAsk": 0.74,
+        "state": "MARKET_STATE_OPEN",
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 14.991,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:30.857Z",
+          "receivedAt": "2026-09-22T23:39:30.873Z",
+          "durationMs": 16,
+          "httpDate": "Tue, 22 Sep 2026 23:39:30 GMT",
+          "httpAge": "8",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": [
+          {
+            "priceU": 740000,
+            "qty": 373
+          },
+          {
+            "priceU": 750000,
+            "qty": 79
+          },
+          {
+            "priceU": 760000,
+            "qty": 49
+          },
+          {
+            "priceU": 770000,
+            "qty": 425
+          },
+          {
+            "priceU": 780000,
+            "qty": 10002
+          }
+        ]
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-sfohigh-2026-09-23-gte75lt76f",
+      "question": "Highest temperature in San Francisco on September 23?",
+      "url": "https://polymarket.us/event/temp-sfohigh-2026-09-23",
+      "station": "KSFO",
+      "date": "2026-09-23",
+      "band": {
+        "low": 75,
+        "high": 76
+      },
+      "rulesHash": "60cd08fd460b10467c53a6da20412ae92107cba79144c484aa18e3ea51697be1",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "WAITING_FOR_EXTREMA_OR_CLI",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 13,
+        "displayedNoContracts": 11856,
+        "noPriceWithinCap": true,
+        "noPriceWithinCapAfterBuffer": true,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 53.666,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [],
+        "ruleIssues": [],
+        "weatherFresh": false,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": null,
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:38:37.457Z",
+        "receivedAt": "2026-09-22T23:39:31.123Z",
+        "ageSeconds": 53.666,
+        "noAsk": 0.83,
+        "state": "MARKET_STATE_OPEN",
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 53.666,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:31.106Z",
+          "receivedAt": "2026-09-22T23:39:31.123Z",
+          "durationMs": 17,
+          "httpDate": "Tue, 22 Sep 2026 23:39:31 GMT",
+          "httpAge": "21",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": [
+          {
+            "priceU": 830000,
+            "qty": 7
+          },
+          {
+            "priceU": 840000,
+            "qty": 219
+          },
+          {
+            "priceU": 860000,
+            "qty": 2
+          },
+          {
+            "priceU": 870000,
+            "qty": 1
+          },
+          {
+            "priceU": 880000,
+            "qty": 2
+          }
+        ]
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-nychigh-2026-09-23-gte67lt68f",
+      "question": "Highest temperature in NYC on September 23?",
+      "url": "https://polymarket.us/event/temp-nychigh-2026-09-23",
+      "station": "KNYC",
+      "date": "2026-09-23",
+      "band": {
+        "low": 67,
+        "high": 68
+      },
+      "rulesHash": "ec46cdf8fc34100e3e962becdc1df871d1a44ef57eb8b2a87aac2bca6919acff",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "WAITING_FOR_EXTREMA_OR_CLI",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 15,
+        "displayedNoContracts": 11984,
+        "noPriceWithinCap": true,
+        "noPriceWithinCapAfterBuffer": true,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 44.51,
+        "quoteReceiptAgeSeconds": 0.001,
+        "bookReasons": [],
+        "ruleIssues": [],
+        "weatherFresh": false,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": null,
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:38:46.863Z",
+        "receivedAt": "2026-09-22T23:39:31.373Z",
+        "ageSeconds": 44.51,
+        "noAsk": 0.5,
+        "state": "MARKET_STATE_OPEN",
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 44.51,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:31.357Z",
+          "receivedAt": "2026-09-22T23:39:31.373Z",
+          "durationMs": 16,
+          "httpDate": "Tue, 22 Sep 2026 23:39:31 GMT",
+          "httpAge": "20",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": [
+          {
+            "priceU": 500000,
+            "qty": 287
+          },
+          {
+            "priceU": 510000,
+            "qty": 10000
+          },
+          {
+            "priceU": 520000,
+            "qty": 19
+          },
+          {
+            "priceU": 530000,
+            "qty": 8
+          },
+          {
+            "priceU": 540000,
+            "qty": 32
+          }
+        ]
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-miahigh-2026-09-23-gte84lt85f",
+      "question": "Highest temperature in Miami on September 23?",
+      "url": "https://polymarket.us/event/temp-miahigh-2026-09-23",
+      "station": "KMIA",
+      "date": "2026-09-23",
+      "band": {
+        "low": 84,
+        "high": 85
+      },
+      "rulesHash": "be357cdc7e6bf33752ac149fa66897fbccef40629a6749c4308e1b2c38b9c1a4",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "WAITING_FOR_EXTREMA_OR_CLI",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 13,
+        "displayedNoContracts": 11658,
+        "noPriceWithinCap": true,
+        "noPriceWithinCapAfterBuffer": true,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 541.295,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": false,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": null,
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:30:30.329Z",
+        "receivedAt": "2026-09-22T23:39:31.624Z",
+        "ageSeconds": 541.295,
+        "noAsk": 0.86,
+        "state": "MARKET_STATE_OPEN",
+        "valid": false,
+        "reasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "sourceAgeSeconds": 541.295,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:31.607Z",
+          "receivedAt": "2026-09-22T23:39:31.624Z",
+          "durationMs": 17,
+          "httpDate": "Tue, 22 Sep 2026 23:39:31 GMT",
+          "httpAge": "23",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": [
+          {
+            "priceU": 860000,
+            "qty": 30
+          },
+          {
+            "priceU": 870000,
+            "qty": 125
+          },
+          {
+            "priceU": 880000,
+            "qty": 1
+          },
+          {
+            "priceU": 890000,
+            "qty": 10031
+          },
+          {
+            "priceU": 900000,
+            "qty": 50
           }
         ]
       },
@@ -1801,16 +2778,44 @@
       "ruleIssues": [],
       "status": "WAITING_FOR_EXTREMA_OR_CLI",
       "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 16,
+        "displayedNoContracts": 11263,
+        "noPriceWithinCap": true,
+        "noPriceWithinCapAfterBuffer": true,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 275.725,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": false,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-09-22T23:30:40.780Z",
-        "receivedAt": "2026-09-22T23:31:10.446Z",
-        "ageSeconds": 29.666,
+        "asOf": "2026-09-22T23:34:56.148Z",
+        "receivedAt": "2026-09-22T23:39:31.873Z",
+        "ageSeconds": 275.725,
         "noAsk": 0.6,
         "state": "MARKET_STATE_OPEN",
-        "valid": true,
-        "reasons": [],
+        "valid": false,
+        "reasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "sourceAgeSeconds": 275.725,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:31.858Z",
+          "receivedAt": "2026-09-22T23:39:31.873Z",
+          "durationMs": 15,
+          "httpDate": "Tue, 22 Sep 2026 23:39:31 GMT",
+          "httpAge": "28",
+          "cacheControl": "public, max-age=30"
+        },
         "topNoAsks": [
           {
             "priceU": 600000,
@@ -1822,15 +2827,315 @@
           },
           {
             "priceU": 620000,
-            "qty": 81
+            "qty": 106
           },
           {
             "priceU": 630000,
-            "qty": 10349
+            "qty": 79
           },
           {
             "priceU": 640000,
+            "qty": 10004
+          }
+        ]
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-laxhigh-2026-09-23-gte80lt81f",
+      "question": "Highest temperature in Los Angeles on September 23?",
+      "url": "https://polymarket.us/event/temp-laxhigh-2026-09-23",
+      "station": "KLAX",
+      "date": "2026-09-23",
+      "band": {
+        "low": 80,
+        "high": 81
+      },
+      "rulesHash": "5f4ccfea0511d16d7334555aac7388113e88f31c943b0a1eff880eb17478e422",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "WAITING_FOR_EXTREMA_OR_CLI",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 15,
+        "displayedNoContracts": 11997,
+        "noPriceWithinCap": true,
+        "noPriceWithinCapAfterBuffer": true,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 43.414,
+        "quoteReceiptAgeSeconds": 0.001,
+        "bookReasons": [],
+        "ruleIssues": [],
+        "weatherFresh": false,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": null,
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:38:48.713Z",
+        "receivedAt": "2026-09-22T23:39:32.127Z",
+        "ageSeconds": 43.414,
+        "noAsk": 0.56,
+        "state": "MARKET_STATE_OPEN",
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 43.414,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:32.107Z",
+          "receivedAt": "2026-09-22T23:39:32.127Z",
+          "durationMs": 20,
+          "httpDate": "Tue, 22 Sep 2026 23:39:32 GMT",
+          "httpAge": "22",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": [
+          {
+            "priceU": 560000,
+            "qty": 51
+          },
+          {
+            "priceU": 570000,
             "qty": 29
+          },
+          {
+            "priceU": 580000,
+            "qty": 128
+          },
+          {
+            "priceU": 590000,
+            "qty": 10248
+          },
+          {
+            "priceU": 600000,
+            "qty": 2
+          }
+        ]
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-sfohigh-2026-09-23-gte77lt78f",
+      "question": "Highest temperature in San Francisco on September 23?",
+      "url": "https://polymarket.us/event/temp-sfohigh-2026-09-23",
+      "station": "KSFO",
+      "date": "2026-09-23",
+      "band": {
+        "low": 77,
+        "high": 78
+      },
+      "rulesHash": "646e11648033d134a311329b2ce0bfe8f511f27f3427f82853ed2e24491711a9",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "WAITING_FOR_EXTREMA_OR_CLI",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 13,
+        "displayedNoContracts": 11548,
+        "noPriceWithinCap": true,
+        "noPriceWithinCapAfterBuffer": true,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 27.333,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [],
+        "ruleIssues": [],
+        "weatherFresh": false,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": null,
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:39:05.041Z",
+        "receivedAt": "2026-09-22T23:39:32.374Z",
+        "ageSeconds": 27.333,
+        "noAsk": 0.77,
+        "state": "MARKET_STATE_OPEN",
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 27.333,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:32.357Z",
+          "receivedAt": "2026-09-22T23:39:32.374Z",
+          "durationMs": 17,
+          "httpDate": "Tue, 22 Sep 2026 23:39:32 GMT",
+          "httpAge": "19",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": [
+          {
+            "priceU": 770000,
+            "qty": 138
+          },
+          {
+            "priceU": 780000,
+            "qty": 1
+          },
+          {
+            "priceU": 790000,
+            "qty": 10036
+          },
+          {
+            "priceU": 800000,
+            "qty": 2
+          },
+          {
+            "priceU": 810000,
+            "qty": 2
+          }
+        ]
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-nychigh-2026-09-23-gte69lt70f",
+      "question": "Highest temperature in NYC on September 23?",
+      "url": "https://polymarket.us/event/temp-nychigh-2026-09-23",
+      "station": "KNYC",
+      "date": "2026-09-23",
+      "band": {
+        "low": 69,
+        "high": 70
+      },
+      "rulesHash": "ec88e7b104d7cb30aae505dcb9745cacfee980c8680e7193670fac52c2375216",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "WAITING_FOR_EXTREMA_OR_CLI",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 13,
+        "displayedNoContracts": 1261,
+        "noPriceWithinCap": true,
+        "noPriceWithinCapAfterBuffer": true,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 36.569,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [],
+        "ruleIssues": [],
+        "weatherFresh": false,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": null,
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:38:56.054Z",
+        "receivedAt": "2026-09-22T23:39:32.623Z",
+        "ageSeconds": 36.569,
+        "noAsk": 0.87,
+        "state": "MARKET_STATE_OPEN",
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 36.569,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:32.607Z",
+          "receivedAt": "2026-09-22T23:39:32.623Z",
+          "durationMs": 16,
+          "httpDate": "Tue, 22 Sep 2026 23:39:32 GMT",
+          "httpAge": "15",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": [
+          {
+            "priceU": 870000,
+            "qty": 24
+          },
+          {
+            "priceU": 880000,
+            "qty": 48
+          },
+          {
+            "priceU": 890000,
+            "qty": 424
+          },
+          {
+            "priceU": 900000,
+            "qty": 31
+          },
+          {
+            "priceU": 910000,
+            "qty": 32
+          }
+        ]
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-miahigh-2026-09-23-gte86lt87f",
+      "question": "Highest temperature in Miami on September 23?",
+      "url": "https://polymarket.us/event/temp-miahigh-2026-09-23",
+      "station": "KMIA",
+      "date": "2026-09-23",
+      "band": {
+        "low": 86,
+        "high": 87
+      },
+      "rulesHash": "a7ba8b19f584783a27c88e2f229cf4c2df64a6c4168f022550aeb8ccb039a907",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "WAITING_FOR_EXTREMA_OR_CLI",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 18,
+        "displayedNoContracts": 11639,
+        "noPriceWithinCap": true,
+        "noPriceWithinCapAfterBuffer": true,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 106.969,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [],
+        "ruleIssues": [],
+        "weatherFresh": false,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": null,
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:37:45.903Z",
+        "receivedAt": "2026-09-22T23:39:32.872Z",
+        "ageSeconds": 106.969,
+        "noAsk": 0.7,
+        "state": "MARKET_STATE_OPEN",
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 106.969,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:32.856Z",
+          "receivedAt": "2026-09-22T23:39:32.872Z",
+          "durationMs": 16,
+          "httpDate": "Tue, 22 Sep 2026 23:39:32 GMT",
+          "httpAge": "5",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": [
+          {
+            "priceU": 700000,
+            "qty": 2
+          },
+          {
+            "priceU": 710000,
+            "qty": 18
+          },
+          {
+            "priceU": 720000,
+            "qty": 28
+          },
+          {
+            "priceU": 730000,
+            "qty": 31
+          },
+          {
+            "priceU": 740000,
+            "qty": 10052
           }
         ]
       },
@@ -1852,28 +3157,56 @@
       "ruleIssues": [],
       "status": "WAITING_FOR_EXTREMA_OR_CLI",
       "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 15,
+        "displayedNoContracts": 11680,
+        "noPriceWithinCap": true,
+        "noPriceWithinCapAfterBuffer": true,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 367.08,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": false,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-09-22T23:30:22.858Z",
-        "receivedAt": "2026-09-22T23:31:10.694Z",
-        "ageSeconds": 47.836,
+        "asOf": "2026-09-22T23:33:26.048Z",
+        "receivedAt": "2026-09-22T23:39:33.128Z",
+        "ageSeconds": 367.08,
         "noAsk": 0.77,
         "state": "MARKET_STATE_OPEN",
-        "valid": true,
-        "reasons": [],
+        "valid": false,
+        "reasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "sourceAgeSeconds": 367.08,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:33.105Z",
+          "receivedAt": "2026-09-22T23:39:33.128Z",
+          "durationMs": 23,
+          "httpDate": "Tue, 22 Sep 2026 23:39:33 GMT",
+          "httpAge": null,
+          "cacheControl": "public, max-age=30"
+        },
         "topNoAsks": [
           {
             "priceU": 770000,
-            "qty": 3
+            "qty": 28
           },
           {
             "priceU": 780000,
-            "qty": 135
+            "qty": 110
           },
           {
             "priceU": 790000,
-            "qty": 71
+            "qty": 73
           },
           {
             "priceU": 800000,
@@ -1882,6 +3215,302 @@
           {
             "priceU": 810000,
             "qty": 1
+          }
+        ]
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-laxhigh-2026-09-23-gte82lt83f",
+      "question": "Highest temperature in Los Angeles on September 23?",
+      "url": "https://polymarket.us/event/temp-laxhigh-2026-09-23",
+      "station": "KLAX",
+      "date": "2026-09-23",
+      "band": {
+        "low": 82,
+        "high": 83
+      },
+      "rulesHash": "a43a6c2f52a5d67022a89f31bad3fa23f4bf562f16b7b8e243752cc4f6d1bd9b",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "WAITING_FOR_EXTREMA_OR_CLI",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 13,
+        "displayedNoContracts": 11521,
+        "noPriceWithinCap": true,
+        "noPriceWithinCapAfterBuffer": true,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 224.362,
+        "quoteReceiptAgeSeconds": 0.001,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": false,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": null,
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:35:49.008Z",
+        "receivedAt": "2026-09-22T23:39:33.370Z",
+        "ageSeconds": 224.362,
+        "noAsk": 0.78,
+        "state": "MARKET_STATE_OPEN",
+        "valid": false,
+        "reasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "sourceAgeSeconds": 224.362,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:33.355Z",
+          "receivedAt": "2026-09-22T23:39:33.370Z",
+          "durationMs": 15,
+          "httpDate": "Tue, 22 Sep 2026 23:39:33 GMT",
+          "httpAge": "16",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": [
+          {
+            "priceU": 780000,
+            "qty": 4
+          },
+          {
+            "priceU": 790000,
+            "qty": 1
+          },
+          {
+            "priceU": 800000,
+            "qty": 53
+          },
+          {
+            "priceU": 810000,
+            "qty": 184
+          },
+          {
+            "priceU": 820000,
+            "qty": 10000
+          }
+        ]
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-sfohigh-2026-09-23-gte79lt80f",
+      "question": "Highest temperature in San Francisco on September 23?",
+      "url": "https://polymarket.us/event/temp-sfohigh-2026-09-23",
+      "station": "KSFO",
+      "date": "2026-09-23",
+      "band": {
+        "low": 79,
+        "high": 80
+      },
+      "rulesHash": "66b360a0b33e5ffaed6998608eebe665207fb2d319eecf978a8b2bdde839ca13",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "WAITING_FOR_EXTREMA_OR_CLI",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 12,
+        "displayedNoContracts": 11054,
+        "noPriceWithinCap": true,
+        "noPriceWithinCapAfterBuffer": true,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 504.203,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": false,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": null,
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:31:09.418Z",
+        "receivedAt": "2026-09-22T23:39:33.621Z",
+        "ageSeconds": 504.203,
+        "noAsk": 0.7,
+        "state": "MARKET_STATE_OPEN",
+        "valid": false,
+        "reasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "sourceAgeSeconds": 504.203,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:33.604Z",
+          "receivedAt": "2026-09-22T23:39:33.621Z",
+          "durationMs": 17,
+          "httpDate": "Tue, 22 Sep 2026 23:39:33 GMT",
+          "httpAge": "14",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": [
+          {
+            "priceU": 700000,
+            "qty": 4
+          },
+          {
+            "priceU": 720000,
+            "qty": 1
+          },
+          {
+            "priceU": 730000,
+            "qty": 1
+          },
+          {
+            "priceU": 740000,
+            "qty": 4
+          },
+          {
+            "priceU": 750000,
+            "qty": 10002
+          }
+        ]
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-nychigh-2026-09-23-gte71lt72f",
+      "question": "Highest temperature in NYC on September 23?",
+      "url": "https://polymarket.us/event/temp-nychigh-2026-09-23",
+      "station": "KNYC",
+      "date": "2026-09-23",
+      "band": {
+        "low": 71,
+        "high": 72
+      },
+      "rulesHash": "5127fc2f1ca0fff48a00e3ddca705151e48a10803094ff81e2ea029632bd7f26",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "WAITING_FOR_EXTREMA_OR_CLI",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 1,
+        "displayedNoContracts": 1277,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 75.688,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [],
+        "ruleIssues": [],
+        "weatherFresh": false,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": null,
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:38:18.181Z",
+        "receivedAt": "2026-09-22T23:39:33.869Z",
+        "ageSeconds": 75.688,
+        "noAsk": 0.99,
+        "state": "MARKET_STATE_OPEN",
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 75.688,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:33.854Z",
+          "receivedAt": "2026-09-22T23:39:33.869Z",
+          "durationMs": 15,
+          "httpDate": "Tue, 22 Sep 2026 23:39:33 GMT",
+          "httpAge": "27",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": [
+          {
+            "priceU": 990000,
+            "qty": 1277
+          }
+        ]
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-miahigh-2026-09-23-gte88lt89f",
+      "question": "Highest temperature in Miami on September 23?",
+      "url": "https://polymarket.us/event/temp-miahigh-2026-09-23",
+      "station": "KMIA",
+      "date": "2026-09-23",
+      "band": {
+        "low": 88,
+        "high": 89
+      },
+      "rulesHash": "b13e00893d593c8fcedb8be918ab644746c046a042f454e150d7c7480b934e07",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "WAITING_FOR_EXTREMA_OR_CLI",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 14,
+        "displayedNoContracts": 12009,
+        "noPriceWithinCap": true,
+        "noPriceWithinCapAfterBuffer": true,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 696.699,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": false,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": null,
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:27:57.421Z",
+        "receivedAt": "2026-09-22T23:39:34.120Z",
+        "ageSeconds": 696.699,
+        "noAsk": 0.63,
+        "state": "MARKET_STATE_OPEN",
+        "valid": false,
+        "reasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "sourceAgeSeconds": 696.699,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:34.104Z",
+          "receivedAt": "2026-09-22T23:39:34.120Z",
+          "durationMs": 16,
+          "httpDate": "Tue, 22 Sep 2026 23:39:34 GMT",
+          "httpAge": "11",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": [
+          {
+            "priceU": 630000,
+            "qty": 1
+          },
+          {
+            "priceU": 640000,
+            "qty": 49
+          },
+          {
+            "priceU": 650000,
+            "qty": 31
+          },
+          {
+            "priceU": 660000,
+            "qty": 105
+          },
+          {
+            "priceU": 670000,
+            "qty": 121
           }
         ]
       },
@@ -1903,38 +3532,873 @@
       "ruleIssues": [],
       "status": "WAITING_FOR_EXTREMA_OR_CLI",
       "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 12,
+        "displayedNoContracts": 12742,
+        "noPriceWithinCap": true,
+        "noPriceWithinCapAfterBuffer": true,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 101.235,
+        "quoteReceiptAgeSeconds": 0.001,
+        "bookReasons": [],
+        "ruleIssues": [],
+        "weatherFresh": false,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-09-22T23:14:19.968Z",
-        "receivedAt": "2026-09-22T23:31:10.944Z",
-        "ageSeconds": 1010.976,
+        "asOf": "2026-09-22T23:37:53.137Z",
+        "receivedAt": "2026-09-22T23:39:34.372Z",
+        "ageSeconds": 101.235,
         "noAsk": 0.87,
+        "state": "MARKET_STATE_OPEN",
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 101.235,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:34.354Z",
+          "receivedAt": "2026-09-22T23:39:34.372Z",
+          "durationMs": 18,
+          "httpDate": "Tue, 22 Sep 2026 23:39:34 GMT",
+          "httpAge": "4",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": [
+          {
+            "priceU": 870000,
+            "qty": 2
+          },
+          {
+            "priceU": 880000,
+            "qty": 36
+          },
+          {
+            "priceU": 890000,
+            "qty": 76
+          },
+          {
+            "priceU": 900000,
+            "qty": 11001
+          },
+          {
+            "priceU": 910000,
+            "qty": 2
+          }
+        ]
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-laxhigh-2026-09-23-gte84lt85f",
+      "question": "Highest temperature in Los Angeles on September 23?",
+      "url": "https://polymarket.us/event/temp-laxhigh-2026-09-23",
+      "station": "KLAX",
+      "date": "2026-09-23",
+      "band": {
+        "low": 84,
+        "high": 85
+      },
+      "rulesHash": "f9be3d5fe7a902d78b13fa408ab6a70987ada3079fd25a37088c34ed8e09344b",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "WAITING_FOR_EXTREMA_OR_CLI",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 3,
+        "displayedNoContracts": 14445,
+        "noPriceWithinCap": true,
+        "noPriceWithinCapAfterBuffer": true,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 18.519,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [],
+        "ruleIssues": [],
+        "weatherFresh": false,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": null,
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:39:16.100Z",
+        "receivedAt": "2026-09-22T23:39:34.619Z",
+        "ageSeconds": 18.519,
+        "noAsk": 0.96,
+        "state": "MARKET_STATE_OPEN",
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 18.519,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:34.603Z",
+          "receivedAt": "2026-09-22T23:39:34.619Z",
+          "durationMs": 16,
+          "httpDate": "Tue, 22 Sep 2026 23:39:34 GMT",
+          "httpAge": "18",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": [
+          {
+            "priceU": 960000,
+            "qty": 61
+          },
+          {
+            "priceU": 970000,
+            "qty": 14383
+          },
+          {
+            "priceU": 990000,
+            "qty": 1
+          }
+        ]
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-sfohigh-2026-09-23-gte81lt82f",
+      "question": "Highest temperature in San Francisco on September 23?",
+      "url": "https://polymarket.us/event/temp-sfohigh-2026-09-23",
+      "station": "KSFO",
+      "date": "2026-09-23",
+      "band": {
+        "low": 81,
+        "high": 82
+      },
+      "rulesHash": "162eba9e8b456ff57790bda1fe7d47454441d82b3af2409c288109952a6931b0",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "WAITING_FOR_EXTREMA_OR_CLI",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 8,
+        "displayedNoContracts": 18250,
+        "noPriceWithinCap": true,
+        "noPriceWithinCapAfterBuffer": true,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 34.026,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [],
+        "ruleIssues": [],
+        "weatherFresh": false,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": null,
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:39:00.844Z",
+        "receivedAt": "2026-09-22T23:39:34.870Z",
+        "ageSeconds": 34.026,
+        "noAsk": 0.9,
+        "state": "MARKET_STATE_OPEN",
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 34.026,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:34.853Z",
+          "receivedAt": "2026-09-22T23:39:34.870Z",
+          "durationMs": 17,
+          "httpDate": "Tue, 22 Sep 2026 23:39:34 GMT",
+          "httpAge": "24",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": [
+          {
+            "priceU": 900000,
+            "qty": 12
+          },
+          {
+            "priceU": 920000,
+            "qty": 1
+          },
+          {
+            "priceU": 930000,
+            "qty": 1
+          },
+          {
+            "priceU": 940000,
+            "qty": 10002
+          },
+          {
+            "priceU": 950000,
+            "qty": 2
+          }
+        ]
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-nychigh-2026-09-23-gte73f",
+      "question": "Highest temperature in NYC on September 23?",
+      "url": "https://polymarket.us/event/temp-nychigh-2026-09-23",
+      "station": "KNYC",
+      "date": "2026-09-23",
+      "band": {
+        "low": 73,
+        "high": null
+      },
+      "rulesHash": "d1854f5ff9934a44027e08de626d7eb20c455952764451dfc648543ca3f869ca",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "WAITING_FOR_EXTREMA_OR_CLI",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 369.284,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": false,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": null,
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:33:25.834Z",
+        "receivedAt": "2026-09-22T23:39:35.118Z",
+        "ageSeconds": 369.284,
+        "noAsk": null,
         "state": "MARKET_STATE_OPEN",
         "valid": false,
         "reasons": [
           "Book timestamp too old for simulation"
         ],
+        "sourceAgeSeconds": 369.284,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:35.103Z",
+          "receivedAt": "2026-09-22T23:39:35.118Z",
+          "durationMs": 15,
+          "httpDate": "Tue, 22 Sep 2026 23:39:35 GMT",
+          "httpAge": "25",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": []
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-miahigh-2026-09-23-gte90f",
+      "question": "Highest temperature in Miami on September 23?",
+      "url": "https://polymarket.us/event/temp-miahigh-2026-09-23",
+      "station": "KMIA",
+      "date": "2026-09-23",
+      "band": {
+        "low": 90,
+        "high": null
+      },
+      "rulesHash": "77dd45467c36ef82a0b3a4a4f2551757a6e5432e38c54d4475823dc4ba716cee",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "WAITING_FOR_EXTREMA_OR_CLI",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 13,
+        "displayedNoContracts": 13079,
+        "noPriceWithinCap": true,
+        "noPriceWithinCapAfterBuffer": true,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 14.797,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [],
+        "ruleIssues": [],
+        "weatherFresh": false,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": null,
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:39:20.572Z",
+        "receivedAt": "2026-09-22T23:39:35.369Z",
+        "ageSeconds": 14.797,
+        "noAsk": 0.86,
+        "state": "MARKET_STATE_OPEN",
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 14.797,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:35.353Z",
+          "receivedAt": "2026-09-22T23:39:35.369Z",
+          "durationMs": 16,
+          "httpDate": "Tue, 22 Sep 2026 23:39:35 GMT",
+          "httpAge": "9",
+          "cacheControl": "public, max-age=30"
+        },
         "topNoAsks": [
           {
+            "priceU": 860000,
+            "qty": 14
+          },
+          {
             "priceU": 870000,
-            "qty": 3
+            "qty": 1
+          },
+          {
+            "priceU": 880000,
+            "qty": 35
           },
           {
             "priceU": 890000,
-            "qty": 51
+            "qty": 644
           },
           {
             "priceU": 900000,
-            "qty": 36
+            "qty": 10502
+          }
+        ]
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-mdwhigh-2026-09-23-gte71f",
+      "question": "Highest temperature in Chicago on September 23?",
+      "url": "https://polymarket.us/event/temp-mdwhigh-2026-09-23",
+      "station": "KMDW",
+      "date": "2026-09-23",
+      "band": {
+        "low": 71,
+        "high": null
+      },
+      "rulesHash": "56c7a6299047c25a8065f813a34d1991ddb37a066b7674c7bb6c4e975e3cf224",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "WAITING_FOR_EXTREMA_OR_CLI",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 308.609,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": false,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": null,
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:34:27.012Z",
+        "receivedAt": "2026-09-22T23:39:35.621Z",
+        "ageSeconds": 308.609,
+        "noAsk": null,
+        "state": "MARKET_STATE_OPEN",
+        "valid": false,
+        "reasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "sourceAgeSeconds": 308.609,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:35.602Z",
+          "receivedAt": "2026-09-22T23:39:35.621Z",
+          "durationMs": 19,
+          "httpDate": "Tue, 22 Sep 2026 23:39:35 GMT",
+          "httpAge": "15",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": []
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-laxhigh-2026-09-23-gte86f",
+      "question": "Highest temperature in Los Angeles on September 23?",
+      "url": "https://polymarket.us/event/temp-laxhigh-2026-09-23",
+      "station": "KLAX",
+      "date": "2026-09-23",
+      "band": {
+        "low": 86,
+        "high": null
+      },
+      "rulesHash": "bf24cb6d91c39a2323419a89dda477db06bd9d801ca5e1acc748422ec942880b",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "WAITING_FOR_EXTREMA_OR_CLI",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 1,
+        "displayedNoContracts": 2063,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 9.673,
+        "quoteReceiptAgeSeconds": 0.001,
+        "bookReasons": [],
+        "ruleIssues": [],
+        "weatherFresh": false,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": null,
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:39:26.203Z",
+        "receivedAt": "2026-09-22T23:39:35.876Z",
+        "ageSeconds": 9.673,
+        "noAsk": 0.99,
+        "state": "MARKET_STATE_OPEN",
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 9.673,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:35.852Z",
+          "receivedAt": "2026-09-22T23:39:35.876Z",
+          "durationMs": 24,
+          "httpDate": "Tue, 22 Sep 2026 23:39:35 GMT",
+          "httpAge": "2",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": [
+          {
+            "priceU": 990000,
+            "qty": 2063
+          }
+        ]
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-sfohigh-2026-09-23-gte83f",
+      "question": "Highest temperature in San Francisco on September 23?",
+      "url": "https://polymarket.us/event/temp-sfohigh-2026-09-23",
+      "station": "KSFO",
+      "date": "2026-09-23",
+      "band": {
+        "low": 83,
+        "high": null
+      },
+      "rulesHash": "788de66c94c58015f4fdcad28db7f47321821bcab6ae84d3a4cb5014a191745d",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "WAITING_FOR_EXTREMA_OR_CLI",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 5,
+        "displayedNoContracts": 10734,
+        "noPriceWithinCap": true,
+        "noPriceWithinCapAfterBuffer": true,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 9.999,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [],
+        "ruleIssues": [],
+        "weatherFresh": false,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": null,
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:39:26.128Z",
+        "receivedAt": "2026-09-22T23:39:36.127Z",
+        "ageSeconds": 9.999,
+        "noAsk": 0.92,
+        "state": "MARKET_STATE_OPEN",
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 9.999,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:36.102Z",
+          "receivedAt": "2026-09-22T23:39:36.127Z",
+          "durationMs": 25,
+          "httpDate": "Tue, 22 Sep 2026 23:39:36 GMT",
+          "httpAge": "7",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": [
+          {
+            "priceU": 920000,
+            "qty": 3
+          },
+          {
+            "priceU": 940000,
+            "qty": 17
+          },
+          {
+            "priceU": 950000,
+            "qty": 30
+          },
+          {
+            "priceU": 970000,
+            "qty": 10027
+          },
+          {
+            "priceU": 990000,
+            "qty": 657
+          }
+        ]
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-nychigh-2026-09-23-lt65f",
+      "question": "Highest temperature in NYC on September 23?",
+      "url": "https://polymarket.us/event/temp-nychigh-2026-09-23",
+      "station": "KNYC",
+      "date": "2026-09-23",
+      "band": {
+        "low": null,
+        "high": 64
+      },
+      "rulesHash": "7c6ce4ce1f208c4fee79e5956fc2532cc5d5d51d49f3284cacb7259abb49a5fd",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "WAITING_FOR_EXTREMA_OR_CLI",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 4,
+        "displayedNoContracts": 11476,
+        "noPriceWithinCap": true,
+        "noPriceWithinCapAfterBuffer": true,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 370.547,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": false,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": null,
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:33:25.825Z",
+        "receivedAt": "2026-09-22T23:39:36.372Z",
+        "ageSeconds": 370.547,
+        "noAsk": 0.96,
+        "state": "MARKET_STATE_OPEN",
+        "valid": false,
+        "reasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "sourceAgeSeconds": 370.547,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:36.352Z",
+          "receivedAt": "2026-09-22T23:39:36.372Z",
+          "durationMs": 20,
+          "httpDate": "Tue, 22 Sep 2026 23:39:36 GMT",
+          "httpAge": "0",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": [
+          {
+            "priceU": 960000,
+            "qty": 52
+          },
+          {
+            "priceU": 970000,
+            "qty": 30
+          },
+          {
+            "priceU": 980000,
+            "qty": 10794
+          },
+          {
+            "priceU": 990000,
+            "qty": 600
+          }
+        ]
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-miahigh-2026-09-23-lt82f",
+      "question": "Highest temperature in Miami on September 23?",
+      "url": "https://polymarket.us/event/temp-miahigh-2026-09-23",
+      "station": "KMIA",
+      "date": "2026-09-23",
+      "band": {
+        "low": null,
+        "high": 81
+      },
+      "rulesHash": "f9d122eed7351b4d6f10697044c3b2a1b10195778257b8078451ecd14678736c",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "WAITING_FOR_EXTREMA_OR_CLI",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 186.596,
+        "quoteReceiptAgeSeconds": 0.001,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "ruleIssues": [],
+        "weatherFresh": false,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": null,
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:36:30.027Z",
+        "receivedAt": "2026-09-22T23:39:36.623Z",
+        "ageSeconds": 186.596,
+        "noAsk": null,
+        "state": "MARKET_STATE_OPEN",
+        "valid": false,
+        "reasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "sourceAgeSeconds": 186.596,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:36.602Z",
+          "receivedAt": "2026-09-22T23:39:36.623Z",
+          "durationMs": 21,
+          "httpDate": "Tue, 22 Sep 2026 23:39:36 GMT",
+          "httpAge": "19",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": []
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-mdwhigh-2026-09-23-lt63f",
+      "question": "Highest temperature in Chicago on September 23?",
+      "url": "https://polymarket.us/event/temp-mdwhigh-2026-09-23",
+      "station": "KMDW",
+      "date": "2026-09-23",
+      "band": {
+        "low": null,
+        "high": 62
+      },
+      "rulesHash": "9385858208a88db743864d1cb755bfb532e1ea030f26986517672ee526c985c8",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "WAITING_FOR_EXTREMA_OR_CLI",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 2,
+        "displayedNoContracts": 13808,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 9.776,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [],
+        "ruleIssues": [],
+        "weatherFresh": false,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": null,
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:39:27.094Z",
+        "receivedAt": "2026-09-22T23:39:36.870Z",
+        "ageSeconds": 9.776,
+        "noAsk": 0.98,
+        "state": "MARKET_STATE_OPEN",
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 9.776,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:36.852Z",
+          "receivedAt": "2026-09-22T23:39:36.870Z",
+          "durationMs": 18,
+          "httpDate": "Tue, 22 Sep 2026 23:39:36 GMT",
+          "httpAge": "9",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": [
+          {
+            "priceU": 980000,
+            "qty": 103
+          },
+          {
+            "priceU": 990000,
+            "qty": 13705
+          }
+        ]
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-laxhigh-2026-09-23-lt78f",
+      "question": "Highest temperature in Los Angeles on September 23?",
+      "url": "https://polymarket.us/event/temp-laxhigh-2026-09-23",
+      "station": "KLAX",
+      "date": "2026-09-23",
+      "band": {
+        "low": null,
+        "high": 77
+      },
+      "rulesHash": "ce2ece90279c595c4456ae79c32f1f9232f23b25517ee0f869dc0f06957b774e",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "WAITING_FOR_EXTREMA_OR_CLI",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 5,
+        "displayedNoContracts": 13775,
+        "noPriceWithinCap": true,
+        "noPriceWithinCapAfterBuffer": true,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 109.228,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [],
+        "ruleIssues": [],
+        "weatherFresh": false,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": null,
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:37:47.909Z",
+        "receivedAt": "2026-09-22T23:39:37.137Z",
+        "ageSeconds": 109.228,
+        "noAsk": 0.95,
+        "state": "MARKET_STATE_OPEN",
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 109.228,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:37.102Z",
+          "receivedAt": "2026-09-22T23:39:37.137Z",
+          "durationMs": 35,
+          "httpDate": "Tue, 22 Sep 2026 23:39:37 GMT",
+          "httpAge": "26",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": [
+          {
+            "priceU": 950000,
+            "qty": 111
+          },
+          {
+            "priceU": 960000,
+            "qty": 11386
+          },
+          {
+            "priceU": 970000,
+            "qty": 525
+          },
+          {
+            "priceU": 980000,
+            "qty": 971
+          },
+          {
+            "priceU": 990000,
+            "qty": 782
+          }
+        ]
+      },
+      "signal": null,
+      "quoteCapacity": null
+    },
+    {
+      "slug": "tc-temp-sfohigh-2026-09-23-lt75f",
+      "question": "Highest temperature in San Francisco on September 23?",
+      "url": "https://polymarket.us/event/temp-sfohigh-2026-09-23",
+      "station": "KSFO",
+      "date": "2026-09-23",
+      "band": {
+        "low": null,
+        "high": 74
+      },
+      "rulesHash": "9fa282dcea995058041e051d51d989ef0b543d9f441aa555d72924ef1b217fe2",
+      "validRules": true,
+      "ruleIssues": [],
+      "status": "WAITING_FOR_EXTREMA_OR_CLI",
+      "detail": null,
+      "diagnostic": {
+        "evidenceEliminated": false,
+        "noAskLevels": 11,
+        "displayedNoContracts": 11414,
+        "noPriceWithinCap": true,
+        "noPriceWithinCapAfterBuffer": true,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 40.364,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [],
+        "ruleIssues": [],
+        "weatherFresh": false,
+        "availablePaperBudgetU": 100000000,
+        "sourceAgeBlockedCapacityU": null
+      },
+      "evidence": null,
+      "weatherConflict": false,
+      "book": {
+        "asOf": "2026-09-22T23:38:57.012Z",
+        "receivedAt": "2026-09-22T23:39:37.376Z",
+        "ageSeconds": 40.364,
+        "noAsk": 0.87,
+        "state": "MARKET_STATE_OPEN",
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 40.364,
+        "transport": {
+          "requestStartedAt": "2026-09-22T23:39:37.352Z",
+          "receivedAt": "2026-09-22T23:39:37.376Z",
+          "durationMs": 24,
+          "httpDate": "Tue, 22 Sep 2026 23:39:37 GMT",
+          "httpAge": "24",
+          "cacheControl": "public, max-age=30"
+        },
+        "topNoAsks": [
+          {
+            "priceU": 870000,
+            "qty": 29
+          },
+          {
+            "priceU": 890000,
+            "qty": 1
+          },
+          {
+            "priceU": 900000,
+            "qty": 2
           },
           {
             "priceU": 910000,
-            "qty": 27
+            "qty": 2
           },
           {
             "priceU": 920000,
-            "qty": 10027
+            "qty": 3
           }
         ]
       },
@@ -1947,18 +4411,123 @@
   "errors": [],
   "warnings": [],
   "discovery": {
-    "at": "2026-09-22T23:28:59.725Z",
+    "at": "2026-09-22T23:36:21.656Z",
     "ok": true,
-    "complete": false,
+    "complete": true,
     "eventCount": 10,
     "matched": 60,
-    "watched": 40,
+    "watched": 60,
     "rejectedCount": 0,
-    "rejections": []
+    "rejections": [],
+    "notes": [],
+    "coverage": [
+      {
+        "station": "KLAX",
+        "date": "2026-09-22",
+        "currentDay": true,
+        "matched": 6,
+        "watched": 6,
+        "validRules": 6,
+        "invalidRules": 0,
+        "omitted": []
+      },
+      {
+        "station": "KMDW",
+        "date": "2026-09-22",
+        "currentDay": true,
+        "matched": 6,
+        "watched": 6,
+        "validRules": 6,
+        "invalidRules": 0,
+        "omitted": []
+      },
+      {
+        "station": "KMIA",
+        "date": "2026-09-22",
+        "currentDay": true,
+        "matched": 6,
+        "watched": 6,
+        "validRules": 6,
+        "invalidRules": 0,
+        "omitted": []
+      },
+      {
+        "station": "KNYC",
+        "date": "2026-09-22",
+        "currentDay": true,
+        "matched": 6,
+        "watched": 6,
+        "validRules": 6,
+        "invalidRules": 0,
+        "omitted": []
+      },
+      {
+        "station": "KSFO",
+        "date": "2026-09-22",
+        "currentDay": true,
+        "matched": 6,
+        "watched": 6,
+        "validRules": 6,
+        "invalidRules": 0,
+        "omitted": []
+      },
+      {
+        "station": "KLAX",
+        "date": "2026-09-23",
+        "currentDay": false,
+        "matched": 6,
+        "watched": 6,
+        "validRules": 6,
+        "invalidRules": 0,
+        "omitted": []
+      },
+      {
+        "station": "KMDW",
+        "date": "2026-09-23",
+        "currentDay": false,
+        "matched": 6,
+        "watched": 6,
+        "validRules": 6,
+        "invalidRules": 0,
+        "omitted": []
+      },
+      {
+        "station": "KMIA",
+        "date": "2026-09-23",
+        "currentDay": false,
+        "matched": 6,
+        "watched": 6,
+        "validRules": 6,
+        "invalidRules": 0,
+        "omitted": []
+      },
+      {
+        "station": "KNYC",
+        "date": "2026-09-23",
+        "currentDay": false,
+        "matched": 6,
+        "watched": 6,
+        "validRules": 6,
+        "invalidRules": 0,
+        "omitted": []
+      },
+      {
+        "station": "KSFO",
+        "date": "2026-09-23",
+        "currentDay": false,
+        "matched": 6,
+        "watched": 6,
+        "validRules": 6,
+        "invalidRules": 0,
+        "omitted": []
+      }
+    ],
+    "missingTodayStations": [],
+    "knownCurrentDayFullyWatched": true
   },
   "sourceChecks": {
     "aviation": {
-      "checkedAt": "2026-09-22T23:30:58.352Z",
+      "checkedAt": "2026-09-22T23:39:20.157Z",
       "ok": true,
       "records": 188,
       "evidenceIds": [
@@ -2153,7 +4722,7 @@
       ]
     },
     "cli:KNYC": {
-      "checkedAt": "2026-09-22T23:30:58.646Z",
+      "checkedAt": "2026-09-22T23:38:20.518Z",
       "ok": true,
       "records": 8,
       "evidenceIds": [
@@ -2168,7 +4737,7 @@
       ]
     },
     "cli:KMIA": {
-      "checkedAt": "2026-09-22T23:30:58.767Z",
+      "checkedAt": "2026-09-22T23:38:20.663Z",
       "ok": true,
       "records": 8,
       "evidenceIds": [
@@ -2183,7 +4752,7 @@
       ]
     },
     "cli:KMDW": {
-      "checkedAt": "2026-09-22T23:30:59.022Z",
+      "checkedAt": "2026-09-22T23:38:20.981Z",
       "ok": true,
       "records": 8,
       "evidenceIds": [
@@ -2198,7 +4767,7 @@
       ]
     },
     "cli:KLAX": {
-      "checkedAt": "2026-09-22T23:30:59.285Z",
+      "checkedAt": "2026-09-22T23:38:21.165Z",
       "ok": true,
       "records": 8,
       "evidenceIds": [
@@ -2213,7 +4782,7 @@
       ]
     },
     "cli:KSFO": {
-      "checkedAt": "2026-09-22T23:30:59.556Z",
+      "checkedAt": "2026-09-22T23:38:21.420Z",
       "ok": true,
       "records": 8,
       "evidenceIds": [
@@ -2228,6 +4797,30 @@
       ]
     }
   },
-  "lastCycleGapSeconds": 60.036,
+  "researchDiagnostics": {
+    "version": "1.1.0",
+    "since": "2026-09-22T23:36:22.376Z",
+    "observations": 240,
+    "statusCounts": {
+      "BOOK_UNUSABLE": 30,
+      "RANGE_NOT_ELIMINATED": 64,
+      "UNBOUNDED_UPPER_RANGE": 20,
+      "NO_NO_ASK_LIQUIDITY": 6,
+      "WAITING_FOR_EXTREMA_OR_CLI": 120
+    },
+    "eliminatedChecks": 36,
+    "eliminatedWithoutNoAsks": 36,
+    "sourceAgeOnlyBlocks": 140
+  },
+  "sampling": {
+    "since": "2026-09-22T23:36:20.036Z",
+    "cycles": 4,
+    "gapCount": 4,
+    "totalGapSeconds": 501.935,
+    "maxGapSeconds": 321.874,
+    "gapsOver180": 1,
+    "gapsOver300": 1
+  },
+  "lastCycleGapSeconds": 60.029,
   "caveat": "Hypothetical fills and conditional returns only. Published evidence can be corrected. Book liquidity may disappear. CLI check is not exchange settlement."
 }
