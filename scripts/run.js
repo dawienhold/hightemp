@@ -124,6 +124,28 @@ const obsShort = t => {
   return `${Math.round(t.obsMax)} so far`;
 };
 
+// A hard settlement floor uses only observation evidence that cannot be undone:
+// a precise station T-group / 6-hour maximum, or the NWS same-day preliminary
+// CLI. Coarse whole-degree C observations, MADIS OMO, neighbour inference and
+// forecasts can change probabilities, but can NEVER trigger a hard-lock alert.
+function hardOfficialFloor(t) {
+  if (!t) return null;
+  let floor = null, source = null;
+  if (t.obsPrecise && t.obsMax != null) {
+    floor = Math.round(t.obsMax);
+    source = t.obsSource === "6-hour max group" ? "ASOS 6-hour maximum"
+           : t.obsSource === "hourly tenths" ? "official station T-group"
+           : (t.obsSource || "precise official station observation");
+  }
+  // Prefer the preliminary CLI when it is at least as high: it is the station's
+  // own published maximum-so-far and is the clearest public settlement floor.
+  if (t.prelim && Number.isFinite(t.prelim.max) && (floor == null || t.prelim.max >= floor)) {
+    floor = t.prelim.max;
+    source = "NWS preliminary CLI";
+  }
+  return floor == null ? null : { floor, source };
+}
+
 /* Scoring checkpoints. Every pass writes to history/, but only a few calls a
    day per station go into the scorecard: the 7am call, the first call after
    local noon, and the first call inside the 2-hour pre-peak window. Scoring all
@@ -193,6 +215,18 @@ async function sendAlerts(snap, morning, now) {
     const peak = t.peakH >= 10 ? t.peakH : 14;
     const c = t.conditions || {};
     const base = `${t.point} (${t.i80[0]}-${t.i80[1]}), ${obsShort(t)}`;
+
+    // Actionable market lock: once an official/precise observed floor reaches F,
+    // a daily-high outcome of F-1 or lower is mathematically impossible. Alert
+    // immediately rather than waiting for the entire day's high to be settled.
+    const hf = hardOfficialFloor(t);
+    if (hf) {
+      const dead = hf.floor - 1;
+      await once(`${t.date}|${s.station}|hardfloor|${hf.floor}`,
+                 `${s.station} HARD LOCK: <=${dead}F NO`,
+                 `Official floor is ${hf.floor}F (${hf.source}). Any daily-high market band ending at ${dead}F or lower is now impossible. Final high may still rise.`,
+                 { priority: 5, tags: "lock" });
+    }
     if (!t.settled && localH >= peak - 2 && localH < peak + 1) {
       const up = t.upside != null ? `, ${t.upside.toFixed(1)}F upside` : "";
       const note = t.peakH < 10 ? ` · models' warmest hour was overnight` : "";
