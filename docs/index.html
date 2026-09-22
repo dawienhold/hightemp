@@ -123,6 +123,11 @@ button[disabled]{opacity:.5; cursor:default}
 .evid{margin:2px 0 12px; padding:9px 11px; border-radius:8px; background:var(--surface-2); border:1px solid var(--line-soft); font-size:12.5px; color:var(--ink-2); display:grid; gap:3px}
 .evid b{font-weight:600; color:var(--ink); font-variant-numeric:tabular-nums}
 .evid .hot{color:var(--obs)}
+.hardlock{margin:2px 0 12px; padding:10px 12px; border-radius:8px; background:var(--good-bg); border:1px solid var(--good); color:var(--good); font-size:12.5px; display:grid; gap:2px}
+.hardlock strong{font-weight:600}
+.hardlock .hlsub{color:var(--ink-2)}
+.prow.eliminated .pf,.prow.eliminated .pp{color:var(--good); font-weight:600}
+.prow.eliminated .pfill{background:var(--good); opacity:.8}
 .err{color:var(--bad); font-size:13px}
 
 /* --------------------------------------------------------------- chart */
@@ -362,6 +367,35 @@ function nextSixHourReport(tz) {
 }
 const pct = v => v == null ? "–" : Math.round(v * 100) + "%";
 
+// Only evidence that cannot be revised downward is allowed to create a green
+// market lock. Model output, neighbour inference, MADIS OMO and coarse whole-C
+// observations remain probability evidence only.
+function hardOfficialFloor(d) {
+  if (!d) return null;
+  let floor = null, source = null;
+  if (d.obsPrecise && d.obsMax != null) {
+    floor = Math.round(d.obsMax);
+    source = d.obsSource === "6-hour max group" ? "ASOS 6-hour maximum"
+           : d.obsSource === "hourly tenths" ? "official station T-group"
+           : (d.obsSource || "precise official station observation");
+  }
+  if (d.prelim && Number.isFinite(d.prelim.max) && (floor == null || d.prelim.max >= floor)) {
+    floor = d.prelim.max;
+    source = "NWS preliminary CLI";
+  }
+  return floor == null ? null : { floor, source };
+}
+
+function hardLockBox(d) {
+  const hf = hardOfficialFloor(d);
+  if (!hf) return null;
+  const dead = hf.floor - 1;
+  const box = el("div", "hardlock");
+  box.appendChild(el("strong", null, `✓ HARD LOCK — ${dead}°F or lower cannot win`));
+  box.appendChild(el("span", "hlsub", `Official floor: ${hf.floor}°F · ${hf.source}. Any daily-high market band ending at ${dead}°F or lower has NO locked, although the final high can still rise.`));
+  return box;
+}
+
 const CONF_TONE = { "Very high":"good", "High":"good", "Moderate":"warn", "Low":"bad", "Very low":"bad" };
 
 /* ---------------------------------------------------------------- charts */
@@ -455,15 +489,17 @@ function probBars(d) {
   if (!d || !d.top || !d.top.length) return box;
   const shown = d.top.filter(x => x.p >= 0.005);
   const max = Math.max(...shown.map(b => b.p), 0.01);
+  const hf = hardOfficialFloor(d);
   for (const b of shown) {
-    const row = el("div", "prow" + (b.f === d.modal ? " modal" : ""));
+    const eliminated = hf && b.f < hf.floor;
+    const row = el("div", "prow" + (b.f === d.modal ? " modal" : "") + (eliminated ? " eliminated" : ""));
     row.appendChild(el("span", "pf", b.f + "°"));
     const track = el("span", "ptrack");
     const fill = el("span", "pfill");
     fill.style.width = Math.max(2, (b.p / max) * 100) + "%";
     track.appendChild(fill);
     row.appendChild(track);
-    row.appendChild(el("span", "pp", Math.round(b.p * 100) + "%"));
+    row.appendChild(el("span", "pp", eliminated ? "✓ NO" : Math.round(b.p * 100) + "%"));
     box.appendChild(row);
   }
   return box;
@@ -530,6 +566,8 @@ function stationCard(s, opts = {}) {
   card.appendChild(hero);
   const ev = evidenceBox(s, d0);
   if (ev) card.appendChild(ev);
+  const hl = hardLockBox(d0);
+  if (hl) card.appendChild(hl);
 
   card.appendChild(conditionsStrip(d0));
   card.appendChild(dayChart(s));
