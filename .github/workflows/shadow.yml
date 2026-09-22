@@ -1,0 +1,46 @@
+name: shadow-observer
+
+on:
+  schedule:
+    # Five-minute scheduled starts; GitHub may delay or drop scheduled jobs.
+    - cron: "2-59/5 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: shadow-observer
+  cancel-in-progress: false
+
+jobs:
+  observe:
+    # Public repo + standard runner keeps this layer free. No cache/artifact services.
+    if: ${{ github.event.repository.private == false }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test paper-only safeguards
+        run: node --test tools/shadow.test.js
+      - name: Observe weather and public order books - PAPER ONLY
+        timeout-minutes: 6
+        run: node scripts/shadow.js
+      - name: Save shadow observations only
+        if: always()
+        run: |
+          git config user.name "hightemp-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ ! -d docs/data/shadow ]; then exit 0; fi
+          rm -f docs/data/shadow/.collector.lock docs/data/shadow/*.tmp
+          git add docs/data/shadow
+          if git diff --cached --quiet; then echo "No shadow data changes"; exit 0; fi
+          git commit -q -m "shadow $(date -u +%Y-%m-%dT%H:%MZ)"
+          for i in 1 2 3 4 5; do
+            git pull -q --rebase origin "${GITHUB_REF_NAME}" && git push -q origin "HEAD:${GITHUB_REF_NAME}" && exit 0
+            sleep 5
+          done
+          echo "Shadow commit push failed; inspect this run before retrying"; exit 1
