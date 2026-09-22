@@ -34,6 +34,24 @@ jobs:
         with:
           node-version: 22
 
+      # Python only runs on GitHub's server. Nothing needs to be installed
+      # on your own computer.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install free MADIS reader
+        run: python -m pip install --disable-pip-version-check netCDF4
+
+      - name: Fetch public NOAA MADIS one-minute ASOS
+        run: |
+          python scripts/fetch_madis_omo.py \
+            --stations KNYC \
+            --out docs/data/madis_omo.json
+        # Public MADIS can lag or occasionally be unavailable. Never let that
+        # stop the existing NWS/AviationWeather forecast pipeline.
+        continue-on-error: true
+
       - name: Run the forecast pass
         env:
           FORCE_MORNING: ${{ inputs.morning }}
