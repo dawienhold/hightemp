@@ -42,13 +42,13 @@ const HT = (() => {
 "use strict";
 
 /** Bumped whenever the forecast logic changes, so the scorecard can say so. */
-const MODEL_VERSION = "3.8.1";
+const MODEL_VERSION = "4.0.0";
 
 // ---------------------------------------------------------------- stations
 const STATIONS = [
   { id:"KNYC", short:"NYC", name:"New York", site:"Central Park", cli:"NYC",
     tz:"America/New_York", lat:40.7833, lon:-73.9667, elev:47, wfo:"OKX", gx:34, gy:45, onshore:160,
-    proxies:["KLGA","KEWR","KJRB","KTEB"],
+    proxies:["KLGA","KEWR","KJRB","KTEB"], hourlyOnly:true,
     caveat:"Central Park transmits hourly only. Between readings the curve is inferred from KLGA, KEWR, KJRB and KTEB (5-minute) and re-anchored to each Central Park observation, so it always passes through the station's own values." },
   { id:"KMIA", short:"MIA", name:"Miami", site:"Miami Intl", cli:"MIA",
     tz:"America/New_York", lat:25.7906, lon:-80.3164, elev:3, wfo:"MFL", gx:105, gy:51, onshore:110, proxies:[] },
@@ -183,6 +183,29 @@ const OMENS = "https://ensemble-api.open-meteo.com/v1/ensemble";
 const NWS   = "https://api.weather.gov";
 const AVWX  = "https://aviationweather.gov/api/data/metar";
 
+// Optional NOAA MADIS One-Minute ASOS cache. A free helper script can populate
+// docs/data/madis_omo.json before each forecast pass. Keeping the downloader out
+// of this shared browser/Node engine avoids exposing credentials and avoids
+// shipping a NetCDF parser to the browser.
+function loadMadisOMOFile(stationId, sinceISO) {
+  if (typeof window !== "undefined" || typeof require === "undefined") return [];
+  try {
+    const fs = require("fs"), path = require("path");
+    const file = process.env.MADIS_OMO_FILE || path.resolve(process.cwd(), "docs/data/madis_omo.json");
+    if (!fs.existsSync(file)) return [];
+    const doc = JSON.parse(fs.readFileSync(file, "utf8"));
+    const rows = Array.isArray(doc) ? doc : ((doc && doc.stations && doc.stations[stationId]) || []);
+    const lo = sinceISO ? Date.parse(sinceISO) : -Infinity;
+    return rows.map(r => ({
+      t: new Date(r.t || r.time),
+      c: num(r.c),
+      f: num(r.f),
+      source: "MADIS OMO",
+      omo: true,
+    })).filter(r => !isNaN(+r.t) && +r.t >= lo && (r.c != null || r.f != null));
+  } catch (e) { return []; }
+}
+
 // --------------------------------------------------------------- CLI text
 const MONTHS = { JANUARY:1, FEBRUARY:2, MARCH:3, APRIL:4, MAY:5, JUNE:6, JULY:7,
                  AUGUST:8, SEPTEMBER:9, OCTOBER:10, NOVEMBER:11, DECEMBER:12 };
@@ -199,13 +222,24 @@ function parseCLI(text) {
   const mx = body.match(/^\s*MAXIMUM\s+(-?\d+)\s+(\d{1,4}\s*(?:AM|PM))?/mi);
   const mn = body.match(/^\s*MINIMUM\s+(-?\d+)/mi);
   if (!mx) return null;
-  return { date, max: +mx[1], min: mn ? +mn[1] : null, maxTime: mx[2] ? mx[2].trim() : null };
+  const asOf = t.match(/VALID\s+(?:TODAY\s+)?AS\s+OF\s+(\d{3,4})\s*(AM|PM)\s+LOCAL\s+TIME/i);
+  return { date, max: +mx[1], min: mn ? +mn[1] : null, maxTime: mx[2] ? mx[2].trim() : null,
+           asOf: asOf ? asOf[1].padStart(4, "0") + " " + asOf[2].toUpperCase() : null };
+}
+
+/** "0400 PM" (local STANDARD time, as the CLI writes it) on `date` -> UTC ms. */
+function cliClockToUTC(date, hhmm, tz) {
+  const m = String(hhmm || "").match(/^(\d{1,2})(\d{2})\s*(AM|PM)$/i);
+  if (!m) return null;
+  let h = +m[1] % 12; if (/PM/i.test(m[3])) h += 12;
+  const off = STD_OFFSET_H[tz] ?? 0;
+  return new Date(date + "T00:00:00Z").getTime() + (h - off) * 3600e3 + (+m[2]) * 60e3;
 }
 
 async function fetchCLI(st, cache) {
   const list = await getJSON(`${NWS}/products/types/CLI/locations/${st.cli}`, 20 * 60e3);
   const graph = (list && list["@graph"]) || [];
-  const out = [];
+  const out = [], prelim = [];
   for (const p of graph.slice(0, 64)) {
     let rec = cache && cache.get(p.id);
     if (!rec) {
@@ -221,12 +255,18 @@ async function fetchCLI(st, cache) {
       const closeUTC = new Date(addDays(rec.date, 1) + "T00:00:00Z").getTime() - off * 3600e3;
       const final = !!p.issuanceTime && new Date(p.issuanceTime).getTime() >= closeUTC;
       if (final) out.push({ ...rec, issued: p.issuanceTime, final: true, productId: p.id });
+      else prelim.push({ ...rec, issued: p.issuanceTime, final: false, productId: p.id });
     }
   }
   const seen = new Set(), ded = [];
   // newest date first; within a date the latest issuance wins (corrections)
   out.sort((a, b) => b.date.localeCompare(a.date) || String(b.issued).localeCompare(String(a.issued)));
   for (const r of out) if (!seen.has(r.date)) { seen.add(r.date); ded.push(r); }
+  // Same-day preliminary reports (e.g. "VALID TODAY AS OF 0400 PM"). Never used
+  // for scoring -- only a final CLI settles a call -- but the maximum in one is
+  // the station's own ASOS maximum so far, so it is a hard floor for today.
+  prelim.sort((a, b) => String(b.issued).localeCompare(String(a.issued)));
+  ded.prelim = prelim;
   return ded;
 }
 
@@ -294,26 +334,34 @@ async function fetchObs(stationId, sinceISO, hours) {
     const win = (row.precise && !prev.precise) ? row : prev;
     byMin.set(k, { ...win, sixMaxC: prev.sixMaxC != null ? prev.sixMaxC : row.sixMaxC });
   };
-  const add = (t, c, raw) => {
+  const add = (t, c, raw, source = null, omo = false) => {
     const tg = tGroupC(raw);
     const cc = tg != null ? tg : c;
     if (cc == null || !isFinite(cc)) return;
     put({ t, f: cToF(cc), c: cc,
           precise: tg != null || Math.abs(cc * 10 % 10) > 0.01,
-          sixMaxC: sixHourMaxC(raw) });
+          sixMaxC: sixHourMaxC(raw), source, omo });
   };
 
   try {
     const d = await getJSON(`${NWS}/stations/${stationId}/observations?start=${encodeURIComponent(sinceISO)}`);
     for (const f of ((d && d.features) || [])) {
       const p = f.properties;
-      add(new Date(p.timestamp), num(p.temperature && p.temperature.value), p.rawMessage || "");
+      add(new Date(p.timestamp), num(p.temperature && p.temperature.value), p.rawMessage || "", "NWS observations", false);
     }
   } catch (e) { /* the METAR feed below can still carry the day */ }
 
   try {
-    for (const m of await fetchMetars(stationId, hours)) add(m.t, m.c, m.raw);
+    for (const m of await fetchMetars(stationId, hours)) add(m.t, m.c, m.raw, "AviationWeather METAR", false);
   } catch (e) { /* fall back to whatever the NWS feed gave */ }
+
+  // Free NOAA MADIS One-Minute ASOS cache, if the pre-pass helper populated it.
+  // OMO temperature is useful cadence evidence but is still coarse whole-degree C
+  // at many ASOS sites, so it must never be treated as tenths-resolution truth.
+  for (const m of loadMadisOMOFile(stationId, sinceISO)) {
+    const cc = m.c != null ? m.c : (m.f - 32) * 5 / 9;
+    add(m.t, cc, "", m.source, true);
+  }
 
   return [...byMin.values()].sort((a, b) => a.t - b.t);
 }
@@ -1086,7 +1134,8 @@ function sixHourWindowInDay(obsTime, tz, day) {
 function observedMax(series, tz, day) {
   const real = (series || []).filter(r => !r.inferred);
   const EMPTY = { max: null, precise: false, at: null, quantSd: 0,
-                  loF: null, hiF: null, settles: null, quantized: false, source: null };
+                  loF: null, hiF: null, settles: null, quantized: false, source: null,
+                  coarsePeak: null };
   if (!real.length) return EMPTY;
 
   // Keep precise and coarse evidence apart. A whole-degree C reading of c is
@@ -1134,8 +1183,114 @@ function observedMax(series, tz, day) {
   }
   const settles = [Math.round(loF), Math.round(hiF)];
   const quantized = (hiF - loF) > 0.2;
+
+  // A whole-degree C observation is not precise enough to set the official high,
+  // but it is informative about the next Fahrenheit settlement degree. Example:
+  // a 22C OMO spans roughly 70.7-72.5F. If a precise 71.1F hourly T-group is
+  // already known, the remaining compatible portion of that band puts substantial
+  // mass on 72F. v3.9 carried the upper band but did not feed that information into
+  // the degree distribution, which could leave KNYC biased toward 71 on days like
+  // 2026-09-21.
+  let coarsePeak = null;
+  if (bc) {
+    const cLo = bc.f - 0.9, cHi = bc.f + 0.89;
+    const floor = precise ? Math.max(cLo, max) : cLo;
+    const K = Math.round(precise ? max : cLo);
+    const cut = K + 0.5;
+    const denom = Math.max(0.01, cHi - floor);
+    const p1 = clamp((cHi - Math.max(cut, floor)) / denom, 0, 1);
+    coarsePeak = {
+      f: bc.f, c: bc.c, at: bc.t, loF: +cLo.toFixed(2), hiF: +cHi.toFixed(2),
+      floorF: +floor.toFixed(2), k: K, p1: +p1.toFixed(3), source: bc.source || (bc.omo ? "MADIS OMO" : "whole-degree C")
+    };
+  }
   return { max, precise, at, quantSd: quantized ? 0.52 : 0.15,
-           loF, hiF, settles, quantized, source };
+           loF, hiF, settles, quantized, source, coarsePeak };
+}
+
+/**
+ * HIDDEN PEAKS AT AN HOURLY STATION (v3.9).
+ *
+ * Central Park sends one reading an hour. The CLI maximum comes from the
+ * station's continuous record, so the true high often falls between readings.
+ * The 6-hour maximum group recovers it, but only for windows that have closed
+ * (reports at 11:51/17:51/23:51 UTC). Between the last such report and now,
+ * the hourly readings are all there is, and they run low.
+ *
+ * Calibrated on KNYC 2022-01 -> 2026-09 (1,714 CLI days, IEM METAR archive),
+ * at hourly cut-offs from late morning to midnight, on days where no later
+ * hourly reading beat the running max. K = best max known so far (hourly
+ * tenths or 6-hour group); g = K minus the highest hourly reading since the
+ * last 6-hour report (that report's own reading included). Train 2022-01 ->
+ * 2025-06, test 2025-07 -> 2026-09 agree to within a few points:
+ *
+ *   g = 0, readings either side as high or higher (plateau)   P(CLI >= K+1) 0.58
+ *   g = 0, a sharp peak                                        P(CLI >= K+1) 0.37
+ *   g = 1                                                      P(CLI >= K+1) 0.16
+ *   g >= 2                                                     P(CLI >= K+1) 0.07
+ *
+ * For comparison: over whole days the hourly readings alone came in below the
+ * CLI on 57% of days; with the 6-hour groups included, on 5.5%.
+ *
+ * Applied only once the segment's peak has passed (the latest reading is below
+ * it) or the segment sits below K -- while the station is still rising, the
+ * forecast's own upside already covers the next degree.
+ */
+const HIDDEN_PEAK = {
+  plateau: { p1: 0.58, p2: 0.06 },
+  sharp:   { p1: 0.37, p2: 0.03 },
+  g1:      { p1: 0.16, p2: 0.017 },
+  g2:      { p1: 0.07, p2: 0.017 },
+};
+
+function hiddenPeak(series, tz, day, K, sinceMs) {
+  const real = (series || []).filter(r => !r.inferred && r.precise && r.f != null && climDate(r.t, tz) === day);
+  if (!real.length || K == null) return null;
+  // Start of the stretch no 6-hour group has covered yet (inclusive of that
+  // report's reading, which is where the stretch begins).
+  let segFrom = null;
+  for (const r of real) {
+    if (r.sixMaxC == null || !sixHourWindowInDay(r.t, tz, day)) continue;
+    if (segFrom == null || r.t > segFrom) segFrom = r.t;
+  }
+  if (sinceMs != null && (segFrom == null || sinceMs > segFrom.getTime())) {
+    // A preliminary CLI already accounts for everything up to its as-of time;
+    // the stretch starts with the last reading before then.
+    const before = real.filter(r => r.t.getTime() <= sinceMs);
+    segFrom = before.length ? before[before.length - 1].t : new Date(sinceMs);
+  }
+  const seg = real.filter(r => segFrom == null || r.t >= segFrom);
+  if (seg.length < 2) return null;
+  const F = seg.map(r => Math.round(r.f));
+  const segMax = Math.max(...F);
+  const latest = F[F.length - 1];
+  const g = K - segMax;
+  if (g <= 0 && latest >= segMax) return { g: 0, rising: true, p1: 0, p2: 0, segFrom: segFrom && segFrom.toISOString(), segMax };
+  let cls;
+  if (g >= 2) cls = "g2";
+  else if (g === 1) cls = "g1";
+  else {
+    const all = real.map(r => Math.round(r.f));
+    const i = real.findIndex(r => (segFrom == null || r.t >= segFrom) && Math.round(r.f) === segMax);
+    const prev = i > 0 ? all[i - 1] : null, next = i >= 0 && i < all.length - 1 ? all[i + 1] : null;
+    cls = (prev != null && prev >= segMax) || (next != null && next >= segMax) ? "plateau" : "sharp";
+  }
+  return { g: Math.max(g, 0), cls, rising: false, ...HIDDEN_PEAK[cls], segFrom: segFrom && segFrom.toISOString(), segMax };
+}
+
+/** Mix integer distributions: [[dist, weight], ...] -> same shape as buildDist. */
+function mixDists(parts) {
+  const acc = new Map();
+  for (const [d, w] of parts) { if (!(w > 0)) continue; for (const b of d.asc) acc.set(b.f, (acc.get(b.f) || 0) + b.p * w); }
+  const asc = [...acc.entries()].sort((a, b) => a[0] - b[0]).map(([f, p]) => ({ f, p }));
+  const tot = asc.reduce((s, b) => s + b.p, 0) || 1;
+  for (const b of asc) b.p /= tot;
+  const expected = asc.reduce((s, b) => s + b.f * b.p, 0);
+  const ranked = asc.slice().sort((a, b) => b.p - a.p);
+  const top = ranked.slice(0, 7).sort((a, b) => a.f - b.f);
+  const modal = ranked.length ? ranked[0].f : Math.round(expected);
+  const pick = q => { let c = 0; for (const b of asc) { c += b.p; if (c >= q - 1e-9) return b.f; } return asc[asc.length - 1].f; };
+  return { asc, expected, top, modal, i50: [pick(0.25), pick(0.75)], i80: [pick(0.10), pick(0.90)] };
 }
 
 // -------------------------------------------------------------- the model
@@ -1170,7 +1325,7 @@ function forecastDay(st, ctx, dayOffset) {
   // --- what the station has already done today ----------------------------
   let obsMax = null, obsPrecise = false, obsMaxAt = null, quantSd = 0, current = null, trend = null;
   let currentInferred = false;
-  let obsBand = null, obsSettles = null, obsQuantized = false, obsSource = null;
+  let obsBand = null, obsSettles = null, obsQuantized = false, obsSource = null, coarsePeak = null;
   // Projections are fine for "what is it doing right now"; they are not
   // evidence about what the station has recorded, nor about how wrong a model
   // has been today.
@@ -1179,11 +1334,23 @@ function forecastDay(st, ctx, dayOffset) {
     const om = observedMax(obsSeries, st.tz, date);
     obsMax = om.max; obsPrecise = om.precise; obsMaxAt = om.at; quantSd = om.quantSd;
     obsBand = om.loF == null ? null : [om.loF, om.hiF];
-    obsSettles = om.settles; obsQuantized = om.quantized; obsSource = om.source;
+    obsSettles = om.settles; obsQuantized = om.quantized; obsSource = om.source; coarsePeak = om.coarsePeak;
     current = obsSeries[obsSeries.length - 1];
     currentInferred = !!(current && current.inferred);
     const back = obsSeries.filter(r => nowD - r.t <= 50 * 60e3);
     if (back.length >= 2) trend = back[back.length - 1].f - back[0].f;
+  }
+  // Today's preliminary CLI (e.g. "valid today as of 4 PM"): the station's own
+  // ASOS maximum so far, so a hard floor -- and, unlike an hourly reading, it
+  // has already caught any peak that fell between readings.
+  let prelim = null;
+  if (dayOffset === 0 && ctx.prelim && ctx.prelim.length) {
+    const pr = ctx.prelim.find(r => r.date === date);
+    if (pr) {
+      const asOfMs = cliClockToUTC(date, pr.asOf, st.tz);
+      prelim = { max: pr.max, maxTime: pr.maxTime, asOf: pr.asOf, issued: pr.issued,
+                 asOfUTC: asOfMs ? new Date(asOfMs).toISOString() : null };
+    }
   }
   // With a coarse reading the true value may sit up to ~0.9F above it.
   const obsFloor = obsMax == null ? null : obsMax - (obsPrecise ? 0.05 : 0.9);
@@ -1259,6 +1426,8 @@ function forecastDay(st, ctx, dayOffset) {
 
   if (obsFloor != null) { mu = Math.max(mu, obsFloor); muBase = Math.max(muBase, obsFloor); }
   if (obsMax != null && obsPrecise) { mu = Math.max(mu, obsMax); muBase = Math.max(muBase, obsMax); }
+  if (prelim) { mu = Math.max(mu, prelim.max); muBase = Math.max(muBase, prelim.max); }
+  const knownMax = prelim && (obsMax == null || prelim.max > obsMax) ? prelim.max : obsMax;
 
   // --- spread --------------------------------------------------------------
   const sSpread = Math.max(mad(cands) || 0, 0.4);
@@ -1290,10 +1459,13 @@ function forecastDay(st, ctx, dayOffset) {
   let shrink = 1, settled = false, upside = null;
   if (dayOffset === 0) {
     const ceil = Math.max(...cands);
-    upside = obsMax == null ? null : Math.max(0, ceil - obsMax);
-    const falling = trend != null && trend < -0.4;
-    if (obsMax != null && nowH > peakH + 1 && upside <= 0.4 && falling) { shrink = 0.12; settled = true; }
-    else if (obsMax != null && nowH > peakH + 3 && upside <= 1.2 && falling) { shrink = 0.20; settled = true; }
+    upside = knownMax == null ? null : Math.max(0, ceil - knownMax);
+    // An hourly station's 50-minute trend is mostly the neighbours' projection;
+    // once the models see no further rise and the peak hour is past, its
+    // remaining uncertainty is the hidden-peak term, which is calibrated.
+    const falling = (trend != null && trend < -0.4) || (!!st.hourlyOnly && trend != null && trend <= 0.4);
+    if (knownMax != null && nowH > peakH + 1 && upside <= 0.4 && falling) { shrink = 0.12; settled = true; }
+    else if (knownMax != null && nowH > peakH + 3 && upside <= 1.2 && falling) { shrink = 0.20; settled = true; }
     else {
       // Time left in the heating day, and how much rise is still expected --
       // whichever says "less certain" wins.
@@ -1308,23 +1480,72 @@ function forecastDay(st, ctx, dayOffset) {
   sigma = Math.max(sigma, 0.5);
 
   // --- distribution over whole degrees F -----------------------------------
-  const floorK = obsMax == null ? -Infinity
-               : (obsPrecise ? Math.round(obsMax) : Math.round(obsMax - 0.9));
-  const dist = buildDist(mu, sigma, floorK);
-  const { asc, expected, top, modal, i50, i80 } = dist;
-  const distBase = buildDist(muBase, sigma, floorK);
+  let floorK = obsMax == null ? -Infinity
+             : (obsPrecise ? Math.round(obsMax) : Math.round(obsMax - 0.9));
 
-  const conf = sigma < 1.0 ? "Very high" : sigma < 1.8 ? "High" : sigma < 3.0 ? "Moderate" : sigma < 4.5 ? "Low" : "Very low";
+  if (prelim && prelim.max > floorK) floorK = prelim.max;
+
+  // Hourly-only station: the maximum so far may sit a degree above anything
+  // reported (see HIDDEN_PEAK).
+  let hidden = null;
+  if (dayOffset === 0 && st.hourlyOnly && obsPrecise && isFinite(floorK)) {
+    hidden = hiddenPeak(obsSeries, st.tz, date, floorK, prelim && prelim.asOfUTC ? Date.parse(prelim.asOfUTC) : null);
+  }
+  // After a preliminary CLI there may be too few readings since its as-of time
+  // to form a stretch; the evening's residual risk is then the g >= 2 rate.
+  if (dayOffset === 0 && st.hourlyOnly && prelim && !hidden && settled)
+    hidden = { g: 2, cls: "g2", rising: false, ...HIDDEN_PEAK.g2, segFrom: prelim.asOfUTC, segMax: null };
+  // Whole-degree C OMO/5-minute observations can contain settlement information
+  // even when a lower tenths-resolution hourly reading is the precise maximum.
+  // Treat the quantization geometry as a lower-resolution probability on K+1.
+  // Do NOT add it to the hidden-peak probability (they are correlated views of
+  // the same unseen peak); use the stronger of the two to avoid double counting.
+  const coarseP1 = coarsePeak && coarsePeak.k === floorK ? coarsePeak.p1 : 0;
+  const evidenceP1 = Math.max(hidden ? hidden.p1 : 0, coarseP1 || 0);
+  const evidenceP2 = hidden ? hidden.p2 : 0;
+  const degreeEvidence = evidenceP1 > 0 ? {
+    p1: evidenceP1, p2: Math.min(evidenceP2, evidenceP1),
+    hiddenP1: hidden ? hidden.p1 : 0, coarseP1: coarseP1 || 0,
+    source: coarseP1 > (hidden ? hidden.p1 : 0) ? "quantized observation" : "hidden-peak calibration"
+  } : null;
+
+  let dist, distBase;
+  if (degreeEvidence && settled) {
+    // Peak passed and models see no further rise: observational degree evidence
+    // dominates the residual distribution.
+    const K = floorK, one = (k) => ({ asc: [{ f: k, p: 1 }] });
+    const p1 = degreeEvidence.p1, p2 = degreeEvidence.p2;
+    dist = distBase = mixDists([[one(K), 1 - p1], [one(K + 1), p1 - p2], [one(K + 2), p2]]);
+  } else if (degreeEvidence) {
+    const p1 = degreeEvidence.p1, p2 = degreeEvidence.p2;
+    const w0 = 1 - p1, w1 = p1 - p2, w2 = p2;
+    const at = (m, k) => buildDist(Math.max(m, k), sigma, k);
+    dist = mixDists([[at(mu, floorK), w0], [at(mu, floorK + 1), w1], [at(mu, floorK + 2), w2]]);
+    distBase = mixDists([[at(muBase, floorK), w0], [at(muBase, floorK + 1), w1], [at(muBase, floorK + 2), w2]]);
+  } else {
+    dist = buildDist(mu, sigma, floorK);
+    distBase = buildDist(muBase, sigma, floorK);
+  }
+  const { asc, expected, top, modal, i50, i80 } = dist;
+
+  // Confidence reflects the distribution actually in force: a tight sigma on a
+  // day whose top degree is a coin flip is not "very high".
+  const topP = Math.max(...asc.map(b => b.p));
+  let conf = sigma < 1.0 ? "Very high" : sigma < 1.8 ? "High" : sigma < 3.0 ? "Moderate" : sigma < 4.5 ? "Low" : "Very low";
+  const RANK = ["Very low", "Low", "Moderate", "High", "Very high"];
+  const cap = topP < 0.55 ? "Moderate" : topP < 0.75 ? "High" : "Very high";
+  if (RANK.indexOf(cap) < RANK.indexOf(conf)) conf = cap;
+  if (degreeEvidence && degreeEvidence.p1 >= 0.1) settled = false;
 
   return {
-    date, dayOffset, mu, muRaw, muBase, expected, sigma, conf, settled, peakH, upside,
+    date, dayOffset, mu, muRaw, muBase, expected, sigma, conf, settled, peakH, upside, prelim, hidden, degreeEvidence,
     currentInferred,
     point: Math.round(expected), pointBase: Math.round(distBase.expected),
     regimeAdj: +analog.adj.toFixed(2), analog,
     conditions: (ctx.diag && ctx.diag[date]) || null,
     modal, i50, i80, buckets: asc, top,
     obsMax, obsPrecise, obsMaxAt, quantSd, current, trend,
-    obsBand, obsSettles, obsQuantized, obsSource,
+    obsBand, obsSettles, obsQuantized, obsSource, coarsePeak,
     perModel: perModel.sort((a, b) => a.cand - b.cand),
     ensN: ensMaxes.length, sSpread, sEns, sSkill, shrink,
   };
@@ -1379,6 +1600,7 @@ async function runStation(st, cliCache, memory) {
   });
 
   const ctx = { today, daily, hourly, nbm, ens, cal, obsSeries: series, nowD, models, diag, dayAheadErr,
+                prelim: cliRows.prelim || [],
                 memory: memory || [] };
   const d0 = forecastDay(st, ctx, 0);
   const d1 = forecastDay(st, ctx, 1);
@@ -1392,7 +1614,7 @@ async function runStation(st, cliCache, memory) {
     localDate: today, localClock: localClock(nowD, st.tz), localHour: localHour(nowD, st.tz),
     sunrise: sun && sun.daily ? sun.daily.sunrise[1] : null,
     sunset:  sun && sun.daily ? sun.daily.sunset[1]  : null,
-    obs: dayObs.obs.map(r => ({ t: r.t.toISOString(), f: r.f, precise: r.precise })),
+    obs: dayObs.obs.map(r => ({ t: r.t.toISOString(), f: r.f, precise: r.precise, source: r.source || null, omo: !!r.omo })),
     inferredObs: inferred.map(r => ({ t: r.t.toISOString(), f: r.f })),
     obsCadenceMin: dayObs.obs.length > 2
       ? Math.round((dayObs.obs[dayObs.obs.length-1].t - dayObs.obs[0].t) / 60e3 / (dayObs.obs.length - 1)) : null,
@@ -1674,6 +1896,13 @@ function snapshot(result, opts = {}) {
     obsBand: d.obsBand || null, obsSettles: d.obsSettles || null,
     obsQuantized: !!d.obsQuantized, obsSource: d.obsSource || null,
     obsMaxLabel: obsLabel(d),
+    coarsePeak: d.coarsePeak ? { f:+d.coarsePeak.f.toFixed(1), c:d.coarsePeak.c, at:d.coarsePeak.at ? d.coarsePeak.at.toISOString() : null,
+                                 loF:d.coarsePeak.loF, hiF:d.coarsePeak.hiF, floorF:d.coarsePeak.floorF,
+                                 k:d.coarsePeak.k, p1:d.coarsePeak.p1, source:d.coarsePeak.source } : null,
+    degreeEvidence: d.degreeEvidence || null,
+    prelim: d.prelim || null,
+    hidden: d.hidden ? { p1: d.hidden.p1, p2: d.hidden.p2, g: d.hidden.g, cls: d.hidden.cls || null,
+                         rising: !!d.hidden.rising, segFrom: d.hidden.segFrom, segMax: d.hidden.segMax } : null,
     current: d.current ? +d.current.f.toFixed(1) : null,
     currentInferred: !!d.currentInferred,
     trend: d.trend == null ? null : +d.trend.toFixed(1),
@@ -1723,7 +1952,7 @@ return { STATIONS, MODELS, MODEL_LABEL, runAll, runStation, snapshot, parseCLI,
          loadRegime, saveRegime, mergeRegime, regimeCount, MODEL_VERSION,
          wetClass, WET_LABEL, priorDayReport, ANALOG_DIMS, ANALOG_Z2_CAP,
          loadReports, saveReports, mergeReports, reportHistory,
-         sixHourMaxC, tGroupC, fetchMetars, fetchObs, observedMax, obsLabel,
+         sixHourMaxC, tGroupC, fetchMetars, fetchObs, observedMax, obsLabel, loadMadisOMOFile,
          sixHourWindowInDay, localHM, localDate, climDate, localHour, localClock, addDays, median, mad, normCdf };
 })();
 
