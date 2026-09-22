@@ -1,0 +1,49 @@
+name: mlb-weather
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mlb-weather
+  cancel-in-progress: false
+
+jobs:
+  mlb:
+    # Standard public-repository runner only. No paid weather API or API key.
+    if: ${{ github.event.repository.private == false }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test MLB weather and runs-allowed calculations
+        run: |
+          node --test tools/mlb.test.js
+          python tools/test_mlb_canada.py
+      - name: Build MLB page data
+        run: node scripts/mlb.js
+      - name: Save MLB data only
+        if: always()
+        run: |
+          git config user.name "hightemp-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ ! -d docs/data/mlb ]; then exit 0; fi
+          rm -f docs/data/mlb/*.tmp
+          git add docs/data/mlb
+          if git diff --cached --quiet; then echo "No MLB data changes"; exit 0; fi
+          git commit -q -m "mlb $(date -u +%Y-%m-%dT%H:%MZ)"
+          for i in 1 2 3 4 5; do
+            git pull -q --rebase origin "${GITHUB_REF_NAME}" && git push -q origin "HEAD:${GITHUB_REF_NAME}" && exit 0
+            sleep 5
+          done
+          echo "MLB push failed; inspect job log"; exit 1

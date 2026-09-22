@@ -25,7 +25,7 @@ jobs:
         with:
           node-version: '22'
       - name: Test paper-only safeguards
-        run: node --test tools/shadow.test.js
+        run: node --test tools/shadow.test.js tools/shadow-regression.test.js
       - name: Observe weather and public order books - PAPER ONLY
         timeout-minutes: 6
         run: node scripts/shadow.js
