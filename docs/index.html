@@ -120,6 +120,9 @@ button[disabled]{opacity:.5; cursor:default}
 .pill.bad{color:var(--bad); background:var(--bad-bg)}
 .rng{font-size:12.5px; color:var(--ink-2); font-variant-numeric:tabular-nums}
 .obsline{font-size:12.5px; color:var(--mut); font-variant-numeric:tabular-nums}
+.evid{margin:2px 0 12px; padding:9px 11px; border-radius:8px; background:var(--surface-2); border:1px solid var(--line-soft); font-size:12.5px; color:var(--ink-2); display:grid; gap:3px}
+.evid b{font-weight:600; color:var(--ink); font-variant-numeric:tabular-nums}
+.evid .hot{color:var(--obs)}
 .err{color:var(--bad); font-size:13px}
 
 /* --------------------------------------------------------------- chart */
@@ -295,7 +298,7 @@ button[disabled]{opacity:.5; cursor:default}
       <p><strong>Intraday the observations take over.</strong> Each model's running error against today's readings is carried forward with a three-hour decay, the forecast can never fall below what has already been reported, and the interval narrows on both how little heating day is left and how much rise the models still expect. A day locks in only once the temperature is falling and no model still reaches above the observed maximum.</p>
       <p><strong>Feed cadence.</strong> KMIA, KMDW, KLAX and KSFO transmit every ~5 minutes in whole °C, so a single reading carries about ±0.9°F of slack; the hourly METAR tenths and the 6-hourly remark group pin it precisely, and both are used when present. KNYC transmits hourly only — its card carries the note.</p>
       <p><strong>Which day a reading belongs to.</strong> The CLI's climate day runs midnight to midnight <em>local standard time</em>. While daylight time is in force that is 1:00 AM to 1:00 AM on the wall clock, so a reading at 12:30 AM belongs to the previous day's report. Every observed maximum on this page is filed that way. Only a <em>final</em> CLI (issued after the day closes) settles a call; the afternoon preliminary report never does.</p>
-      <p>Sources: <code>api.weather.gov</code>, <code>aviationweather.gov</code> and <code>open-meteo.com</code>. Raw METARs, every call and every settlement are archived in the repository's <code>docs/data</code> folder.</p>
+      <p>Sources: <code>api.weather.gov</code>, <code>aviationweather.gov</code>, NOAA MADIS One-Minute ASOS when available, and <code>open-meteo.com</code>. Raw METARs, every call and every settlement are archived in the repository's <code>docs/data</code> folder.</p>
     </section>
   </div>
 
@@ -312,6 +315,51 @@ const SVGNS = "http://www.w3.org/2000/svg";
 const el = (tag, cls, txt) => { const n = document.createElement(tag); if (cls) n.className = cls; if (txt != null) n.textContent = txt; return n; };
 const svg = (tag, attrs) => { const n = document.createElementNS(SVGNS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); return n; };
 const f1 = v => v == null ? "–" : (Math.round(v * 10) / 10).toFixed(1);
+
+/* What is actually known about today's official high, and what isn't yet:
+   the public readings, the NWS preliminary report, and (at an hourly station)
+   the calibrated chance that the true peak fell between readings. */
+function evidenceBox(s, d0) {
+  if (!d0 || (!d0.prelim && !(d0.hidden && d0.hidden.p1 > 0) && !(d0.coarsePeak && d0.coarsePeak.p1 > 0))) return null;
+  const box = el("div", "evid");
+  const line = html => { const p = el("div", ""); p.innerHTML = html; box.appendChild(p); };
+  if (d0.obsMax != null)
+    line(`Highest reading sent: <b>${d0.obsMax.toFixed(1)}°</b> → ${Math.round(d0.obsMax)}${d0.obsSource ? ` <span class="muted">(${d0.obsSource})</span>` : ""}`);
+  if (d0.prelim) {
+    const clk = v => v ? String(v).replace(/^0/, "").replace(/^(\d{1,2})(\d\d)\s*/, "$1:$2 ") : "";
+    const asOf = clk(d0.prelim.asOf);
+    line(`NWS preliminary report${asOf ? ` (as of ${asOf} standard time)` : ""}: <b class="hot">${d0.prelim.max}°</b>${d0.prelim.maxTime ? ` at ${clk(d0.prelim.maxTime)} standard time` : ""}. <span class="muted">A floor. Only the report after midnight settles the day.</span>`);
+  }
+  if (d0.coarsePeak && d0.coarsePeak.p1 > 0) {
+    const cp = d0.coarsePeak;
+    const src = cp.source ? ` · ${cp.source}` : "";
+    line(`High-frequency whole-C evidence: <b>${cp.c != null ? cp.c.toFixed(0) + "°C" : cp.f.toFixed(1) + "°F"}</b> spans roughly <b>${cp.loF.toFixed(1)}-${cp.hiF.toFixed(1)}°F</b>${src}. ` +
+         `<span class="muted">Conditioned on the precise floor already observed, the quantization band alone puts about <b>${Math.round(cp.p1 * 100)}%</b> on ${cp.k + 1}°+; this is evidence, not an official maximum.</span>`);
+  }
+  const h = d0.hidden;
+  if (h && h.p1 > 0) {
+    const K = Math.round(Math.max(d0.obsMax ?? -99, d0.prelim ? d0.prelim.max : -99));
+    const why = h.cls === "plateau" ? "the reading held near its peak for over an hour"
+              : h.cls === "sharp" ? "the peak reading fell between two lower ones"
+              : h.g === 1 ? "later readings came within a degree of the high"
+              : "the evening is not covered yet";
+    const shown = d0.degreeEvidence && d0.degreeEvidence.p1 > h.p1 ? d0.degreeEvidence.p1 : h.p1;
+    const src = d0.degreeEvidence && d0.degreeEvidence.source === "quantized observation" ? "high-frequency quantization evidence" : `hourly hidden-peak calibration; ${why}`;
+    line(`Chance the official high is already <b>${K + 1}°+</b>: <b>${Math.round(shown * 100)}%</b> <span class="muted">(${src})</span>`);
+    const next = nextSixHourReport(s.tz || "America/New_York");
+    if (next) line(`<span class="muted">Next hard evidence: the station's 6-hour maximum at ${next}${d0.prelim ? "" : ", or the NWS preliminary report around 4:30 PM standard time"}.</span>`);
+  }
+  return box;
+}
+function nextSixHourReport(tz) {
+  const now = Date.now();
+  for (let k = 0; k < 8; k++) {
+    const t = new Date(now); t.setUTCMinutes(51, 0, 0);
+    t.setUTCHours(Math.floor(t.getUTCHours() / 6) * 6 + 5 + 6 * k);
+    if (t.getTime() > now) return t.toLocaleTimeString([], { timeZone: tz, hour: "numeric", minute: "2-digit" });
+  }
+  return null;
+}
 const pct = v => v == null ? "–" : Math.round(v * 100) + "%";
 
 const CONF_TONE = { "Very high":"good", "High":"good", "Moderate":"warn", "Low":"bad", "Very low":"bad" };
@@ -480,6 +528,8 @@ function stationCard(s, opts = {}) {
   }
   hero.appendChild(meta);
   card.appendChild(hero);
+  const ev = evidenceBox(s, d0);
+  if (ev) card.appendChild(ev);
 
   card.appendChild(conditionsStrip(d0));
   card.appendChild(dayChart(s));
