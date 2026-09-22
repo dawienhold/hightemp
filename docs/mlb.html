@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MLB - Weather and Run Prevention</title>
+<style>
+:root{color-scheme:light dark;--bg:#edf1f3;--panel:#fff;--soft:#f5f8f9;--ink:#14212a;--mut:#627582;--line:#d5dee3;--accent:#0a7ea4;--good:#0f766e;--warn:#96520a;--warnbg:#fff4df}
+@media(prefers-color-scheme:dark){:root{--bg:#0e151a;--panel:#162027;--soft:#1c2831;--ink:#e4edf3;--mut:#b0c2cd;--line:#2a3a45;--accent:#49b4d9;--good:#44d6b7;--warn:#ffd388;--warnbg:#33270d}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,'Segoe UI',sans-serif}.wrap{max-width:1200px;margin:auto;padding:22px 16px 55px}nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}a{color:var(--accent)}nav a{border:1px solid var(--line);border-radius:7px;padding:5px 11px;text-decoration:none}nav a[aria-current]{background:var(--panel);font-weight:650}.head{display:flex;gap:15px;align-items:center;justify-content:space-between}.kicker{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin:0}h1{font-size:30px;line-height:1.1;margin:4px 0 10px}h2{font-size:18px;margin:0 0 8px}p{margin:6px 0}.small,.sub{font-size:12px;color:var(--mut)}.notice{border:1px solid var(--line);border-radius:9px;padding:12px 14px;margin:16px 0;background:var(--warnbg);color:var(--warn)}button,select{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:6px 11px;cursor:pointer}button:focus-visible,select:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}.toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:14px 0 20px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;align-items:start}.card,.panel{border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:16px;min-width:0}.panel{margin-top:24px}.match{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}.teams{font-size:19px;font-weight:650;line-height:1.3}.time{font-size:13px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}.pill{display:inline-block;padding:2px 7px;border:1px solid var(--line);border-radius:6px;font-size:11px;color:var(--mut);margin:5px 5px 5px 0}.warn{color:var(--warn)}.good{color:var(--good)}.weather{border-top:1px solid var(--line);padding-top:12px;margin-top:10px}.wxgrid{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:7px}.tile{background:var(--soft);border-radius:8px;padding:9px 8px;min-width:0}.value{font-size:24px;font-weight:650;color:var(--accent);font-variant-numeric:tabular-nums}.value small{font-size:12px;font-weight:400}.label{font-size:10px;color:var(--mut);line-height:1.4}.defense{margin-top:14px;border-top:1px solid var(--line);padding-top:10px}.defgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.dnum{font-size:21px;font-weight:600;font-variant-numeric:tabular-nums}.rank{font-size:12px;color:var(--mut)}.sect{font-size:11px;font-weight:650;letter-spacing:.07em;text-transform:uppercase;color:var(--mut);margin-bottom:8px}.scroll{overflow:auto}table{border-collapse:collapse;width:100%;font-size:12px;white-space:nowrap}th,td{border-bottom:1px solid var(--line);padding:6px;text-align:right}th:first-child,td:first-child{text-align:left}th{color:var(--mut)}details{margin-top:12px}summary{font-size:12px;cursor:pointer;color:var(--mut)}pre{font:12px/1.5 ui-monospace,Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere;padding:12px;background:var(--soft);border-radius:6px}.empty{padding:25px;text-align:center;border:1px solid var(--line);background:var(--panel);border-radius:10px}.topnote{max-width:85ch}
+@media(max-width:720px){.grid{grid-template-columns:1fr}.head{align-items:flex-start}.wrap{padding:16px 10px}.value{font-size:22px}h1{font-size:27px}.teams{font-size:18px}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+</head>
+<body><div class="wrap">
+<nav aria-label="Pages"><a href="./">High-Temp Desk</a><a href="nfl.html">NFL Rain Watch</a><a href="mlb.html" aria-current="page">MLB</a><a href="shadow.html">Shadow Trader</a></nav>
+<header class="head"><div><p class="kicker">Baseball · next five days</p><h1>MLB</h1><p class="sub">Ballpark wind, precipitation potential, and team runs allowed per game.</p></div><button id="refresh" type="button">Refresh</button></header>
+<p class="small topnote">Weather values describe the outside forecast. Roof position is not assumed. The rain tile shows the <strong>highest hourly precipitation chance</strong> in the selected game window, not the probability of any rain during the entire game.</p>
+<div id="notice" class="notice" hidden></div>
+<div class="toolbar"><span id="status" class="small" role="status" aria-live="polite">Loading MLB data...</span><label class="small">Show <select id="day"><option value="all">All five days</option></select></label></div>
+<main id="games" class="grid"><div class="empty">The first <strong>mlb-weather</strong> workflow creates the data for this page.</div></main>
+<section class="panel"><h2>How to read this page</h2><p class="small"><strong>Weather:</strong> NWS hourly forecasts and gust guidance for U.S. parks. Toronto uses the Canadian government city forecast when its hourly window is available. The default window runs from first pitch through 3½ hours later; live games show the remaining forecast window. Delays, uncertain start times, uncovered hours, and missing gusts are labeled rather than filled with guesses.</p><p class="small"><strong>Defense:</strong> regular-season runs allowed divided by games played, ranked lowest to highest among teams with usable data. This includes pitching, fielding, ballpark and opponent effects. It is not a pure fielding score, a park-adjusted metric, or an assessment of today's starting pitcher. The statistics cutoff and sample size are shown.</p><p class="small"><strong>Roofs:</strong> fixed roofs are labeled indoor. For retractable roofs, outdoor conditions are shown with an unverified-roof warning. Wind direction is where wind comes from, not an inferred in/out-to-centerfield direction.</p><p class="small">Sources: MLB public schedule, venue and standings data; National Weather Service; Environment and Climate Change Canada. No paid weather subscription or account credentials are used by this add-on. Public-source terms and service limits still apply.</p><details><summary>Provider status and source details</summary><pre id="details">No run yet.</pre></details></section>
+</div><script>
+'use strict';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ET='America/New_York';
+const clock=s=>s&&Number.isFinite(Date.parse(s))?new Date(s).toLocaleTimeString('en-US',{timeZone:ET,hour:'numeric',minute:'2-digit'}):'Time TBD';
+const dayLabel=s=>s?new Date(s+'T12:00:00Z').toLocaleDateString('en-US',{timeZone:ET,weekday:'short',month:'short',day:'numeric'}):'Date unknown';
+const when=s=>s&&Number.isFinite(Date.parse(s))?new Date(s).toLocaleString('en-US',{timeZone:ET,month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})+' ET':'Not supplied';
+const val=(x,places=0)=>x==null?'—':Number(x).toFixed(places);
+const safeURL=u=>{try{const a=new URL(u);return a.protocol==='https:'?a.href:'#';}catch{return '#';}};
+let snapshot=null,busy=false,rawPromise=null;
+async function get(url){const r=await fetch(url+(url.includes('?')?'&':'?')+'t='+Date.now(),{cache:'no-store',signal:AbortSignal.timeout(15000)});if(!r.ok)throw Error('HTTP '+r.status);return r.json();}
+async function rawBase(){
+ if(!location.hostname.endsWith('.github.io'))return null;
+ if(rawPromise)return rawPromise;
+ rawPromise=(async()=>{const owner=location.hostname.split('.')[0],repo=location.pathname.split('/').filter(Boolean)[0];
+  if(!/^[\w.-]+$/.test(owner)||!/^[\w.-]+$/.test(repo||''))return null;
+  const key='mlb-branch:'+owner+'/'+repo;let saved=null;try{saved=JSON.parse(localStorage.getItem(key));}catch{}
+  let branch=saved&&Date.now()-saved.at<86400000?saved.branch:null;
+  if(!branch){branch=(await get('https://api.github.com/repos/'+owner+'/'+repo)).default_branch;if(typeof branch!=='string')return null;try{localStorage.setItem(key,JSON.stringify({branch,at:Date.now()}));}catch{}}
+  return 'https://raw.githubusercontent.com/'+owner+'/'+repo+'/'+encodeURIComponent(branch)+'/docs/data/mlb/';
+ })().catch(()=>null);return rawPromise;
+}
+function defense(g){
+ const cell=t=>{const d=t.defense;return '<div class="tile"><strong>'+esc(t.abbr)+'</strong><div class="dnum">'+(d?val(d.raPerGame,2):'—')+' <small class="rank">RA/G</small></div><div class="rank">'+(d?'#'+d.rank+' of '+d.outOf+' · '+d.games+' games':'No usable statistics')+'</div></div>';};
+ const d=g.home.defense||g.away.defense;
+ return '<div class="defense"><div class="sect">Defense — runs allowed per game</div><div class="defgrid">'+cell(g.away)+cell(g.home)+'</div><p class="small">'+(d?esc(d.season)+' regular season, through '+esc(d.throughDate)+'. Lower is better.':'Missing values are not treated as zero.')+'</p></div>';
+}
+function weather(w){
+ if(!w||w.unavailable||w.indoor)return '<div class="weather"><p class="small">'+esc(w?.note||'Forecast unavailable')+'</p></div>';
+ const tile=(x,unit,label)=>'<div class="tile"><div class="value">'+val(x)+'<small>'+unit+'</small></div><div class="label">'+label+'</div></div>';
+ return '<div class="weather"><div class="wxgrid">'+tile(w.peakHourlyPop,'%', 'Peak hourly<br>precipitation chance')+tile(w.maxSustainedMph,' mph','Strongest forecast<br>sustained wind')+tile(w.maxGustMph,' mph','Strongest forecast<br>gust')+'</div>'+
+ '<p class="small">'+esc(w.windFrom?'Wind from '+w.windFrom+' at the windiest hour. ':'')+esc(w.temperatureAtStartF!=null?val(w.temperatureAtStartF)+'°F at window start. ':'')+'</p>'+
+ (w.roofUnverified?'<p class="small warn">Roof position/type unverified: these are outdoor conditions.</p>':'')+
+ (w.partial?'<p class="small warn">Only part of the selected window has usable wind/precipitation data.</p>':'')+
+ (w.stale?'<p class="small warn">Cached forecast retained after a source error; check its timestamp.</p>':'')+
+ (w.snowPossible?'<p class="small warn">Forecast includes possible frozen precipitation.</p>':'')+
+ '<details><summary>Hourly details · '+esc(clock(w.windowStart))+'–'+esc(clock(w.windowEnd))+' ET</summary><p class="small">'+esc(w.windowLabel)+'. Source: '+esc(w.provider)+'</p><div class="scroll"><table><thead><tr><th>Hour ET</th><th>Precip %</th><th>Wind mph</th><th>Gust mph</th><th>From</th><th>°F</th></tr></thead><tbody>'+
+ (w.hourly||[]).map(h=>'<tr><td>'+esc(clock(h.startAt))+'</td><td>'+val(h.pop)+'</td><td>'+val(h.windMph)+'</td><td>'+val(h.gustMph)+'</td><td>'+esc(h.direction||'—')+'</td><td>'+val(h.temperatureF)+'</td></tr>').join('')+
+ '</tbody></table></div><p class="small">Issued '+esc(when(w.issuedAt))+'; received '+esc(when(w.receivedAt))+(w.sourceUrl?' · <a href="'+esc(safeURL(w.sourceUrl))+'" target="_blank" rel="noopener">source</a>':'')+'</p></details></div>';
+}
+function card(g){
+ const roof={fixed:'Fixed roof',retractable:'Retractable roof — position unverified',open:'Open air',unknown:'Roof type unknown'}[g.venue?.roof]||'Roof type unknown';
+ return '<article class="card"><div class="match"><div><div class="teams">'+esc(g.away.abbr)+' <span class="small">at</span> '+esc(g.home.abbr)+'</div><p class="small">'+esc(g.venue?.name)+(g.venue?.city?' · '+esc(g.venue.city):'')+'</p></div><div class="time">'+esc(dayLabel(g.date))+'<br><strong>'+esc(g.startTimeTBD?'Time TBD':clock(g.startAt))+'</strong><span class="small"> ET</span></div></div>'+
+ '<div><span class="pill">'+esc(roof)+'</span><span class="pill '+(g.timingUncertain?'warn':'')+'">'+esc(g.status)+'</span>'+(g.doubleheader?'<span class="pill">Doubleheader game '+esc(g.doubleheader)+'</span>':'')+'</div>'+
+ weather(g.weather)+defense(g)+'<p class="small"><a href="'+esc(safeURL(g.url))+'" target="_blank" rel="noopener">MLB game details</a></p></article>';
+}
+function render(){
+ if(!snapshot)return;const chosen=$('day').value;
+ const games=(snapshot.games||[]).filter(g=>chosen==='all'||g.date===chosen);
+ $('games').innerHTML=games.length?games.map(card).join(''):'<div class="empty">No scheduled or live MLB games in this view. Completed games are omitted.</div>';
+}
+async function load(){
+ if(busy)return;busy=true;$('refresh').disabled=true;
+ try{const bases=['data/mlb/'],raw=await rawBase();if(raw)bases.push(raw);
+  const all=await Promise.allSettled(bases.map(async b=>({base:b,data:await get(b+'latest.json')})));
+  const valid=all.filter(x=>x.status==='fulfilled'&&x.value.data.schemaVersion===1&&Array.isArray(x.value.data.games)&&Number.isFinite(Date.parse(x.value.data.generatedAt))).map(x=>x.value).sort((a,b)=>Date.parse(b.data.generatedAt)-Date.parse(a.data.generatedAt));
+  if(!valid.length)throw Error('No MLB data yet. Run Actions → mlb-weather → Run workflow, then inspect that job.');
+  const best=valid[0];snapshot=best.data;let st=null;try{st=await get(best.base+'status.json');}catch{}
+  const selected=$('day').value,dates=[...new Set(snapshot.games.map(g=>g.date))].sort();
+  $('day').innerHTML='<option value="all">All five days</option>'+dates.map(d=>'<option value="'+esc(d)+'">'+esc(dayLabel(d))+'</option>').join('');
+  if(dates.includes(selected))$('day').value=selected;
+  $('status').textContent='Updated '+when(snapshot.generatedAt)+' · '+snapshot.games.length+' games · hourly collection requested';
+  const messages=[...(snapshot.errors||[]),...(snapshot.warnings||[])];
+  if(Date.now()-Date.parse(snapshot.generatedAt)>2*3600000)messages.unshift('Data is over two hours old; check the mlb-weather workflow.');
+  if(st?.ok===false&&Date.parse(st.lastRunAt)>=Date.parse(snapshot.generatedAt))messages.unshift('The latest run reported source errors; usable cards may still be shown.');
+  $('notice').hidden=!messages.length;$('notice').textContent=messages.length?messages.length+' notice(s): '+messages.slice(0,3).join(' | ')+ (messages.length>3?' — more in Provider status.':''):'';
+  $('details').textContent=JSON.stringify({version:snapshot.version,sourceData:best.base,window:snapshot.window,defense:snapshot.defense,errors:snapshot.errors,warnings:snapshot.warnings,sources:snapshot.sources,lastStatus:st},null,2);
+  render();
+ }catch(e){$('status').textContent='MLB data unavailable';$('notice').hidden=false;$('notice').textContent=e.message;}
+ finally{busy=false;$('refresh').disabled=false;}
+}
+$('refresh').addEventListener('click',load);$('day').addEventListener('change',render);load();setInterval(load,10*60000);
+</script></body></html>

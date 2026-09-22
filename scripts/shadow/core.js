@@ -65,7 +65,7 @@ function feeIssue(c, now) {
   return now - Date.parse(c.feeScheduleReviewedOn + 'T00:00:00Z') > c.feeReviewAfterDays * 86400000
     ? 'Fee schedule review overdue; observations continue but paper entries paused' : null;
 }
-function text(s) { return String(s || '').replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/[\u2010-\u2015\u2212]/g, '-').replace(/\s+/g, ' ').trim(); }
+function text(s) { return String(s || '').replace(/<\/?[a-zA-Z][^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/[\u2010-\u2015\u2212]/g, '-').replace(/\s+/g, ' ').trim(); }
 function datesIn(s) {
   const out = new Set((s.match(/\b20\d{2}-\d{2}-\d{2}\b/g) || []).filter(validDate));
   for (const m of s.matchAll(/\b(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{1,2}),?\s+(20\d{2})\b/gi)) {
@@ -75,25 +75,43 @@ function datesIn(s) {
   return [...out];
 }
 function parseBand(s) {
-  s = text(s);
-  if (/\d+\.\d+/.test(s)) return null; // Whole-degree contracts only; never parse fragments of decimals.
-  const unit = '(?:\\s*(?:°\\s*)?F(?:ahrenheit)?\\b)?';
+  // Parse the explicit rule wording, NEVER infer boundaries from a slug.
+  s = text(s).replace(/&le;|&#8804;/gi, '<=').replace(/&ge;|&#8805;/gi, '>=')
+    .replace(/&lt;/gi, '<').replace(/&gt;/gi, '>').replace(/&deg;|&#176;/gi, ' degrees ')
+    .replace(/\u2264/g, '<=').replace(/\u2265/g, '>=')
+    .replace(/\b20\d{2}-\d{2}-\d{2}\b/g, ' CONTRACT_DATE ');
+  if (/\d+\.\d+/.test(s)) return null;
+  const unit = '(?:\\s*(?:degrees?\\s*|°\\s*)?F(?:ahrenheit)?\\b)?';
+  const requiredUnit = '\\s*(?:degrees?\\s*|°\\s*)?F(?:ahrenheit)?\\b';
   const found = [];
-  for (const re of [new RegExp('\\bbetween\\s+(-?\\d+)' + unit + '\\s+and\\s+(-?\\d+)' + unit, 'gi'),
-    new RegExp('(-?\\d+)' + unit + '\\s*(?:to|-)\\s*(-?\\d+)' + unit + '(?!\\d|\\s*-\\s*\\d)', 'gi')]) {
-    for (const m of s.matchAll(re)) {
-      // Never interpret pieces of ISO dates as a temperature range.
-      if (s.slice(Math.max(0,m.index-5), m.index + m[0].length+5).match(/20\d{2}-\d{2}-\d{2}/)) continue;
-      const low = Number(m[1]), high = Number(m[2]);
-      if (low >= -100 && high <= 150 && low <= high) found.push({low, high});
+  const add = (low, high) => {
+    if ((low===null || (Number.isInteger(low)&&low>=-100&&low<=150)) &&
+        (high===null || (Number.isInteger(high)&&high>=-100&&high<=150)) &&
+        (low===null||high===null||low<=high)) found.push({low,high});
+  };
+  for (const re of [new RegExp('\\bbetween\\s+(-?\\d+)'+unit+'\\s+and\\s+(-?\\d+)'+unit,'gi'),
+    new RegExp('(?<![\\d.])(-?\\d+)'+unit+'\\s*(?:to|-)\\s*(-?\\d+)'+unit+'(?!\\d|\\s*-\\s*\\d)','gi')]) {
+    for(const m of s.matchAll(re)) add(Number(m[1]),Number(m[2]));
+  }
+  for(const m of s.matchAll(new RegExp('(?<![\\d.])(-?\\d+)'+unit+'\\s+or\\s+(below|lower|less|above|higher|more)\\b','gi'))) {
+    const v=Number(m[1]); /below|lower|less/i.test(m[2])?add(null,v):add(v,null);
+  }
+  const comparisons = [
+    ['(?:less\\s+than\\s+or\\s+equal\\s+to|at\\s+most|no\\s+more\\s+than|<=)', 'LE'],
+    ['(?:greater\\s+than\\s+or\\s+equal\\s+to|at\\s+least|no\\s+less\\s+than|>=)', 'GE'],
+    ['(?:less\\s+than(?!\\s+or)|below|under|<(?![=]))', 'LT'],
+    ['(?:greater\\s+than(?!\\s+or)|above|over|>(?![=]))', 'GT']
+  ];
+  for(const [phrase,op] of comparisons) {
+    const re=new RegExp('(?<![\\w<>=])'+phrase+'\\s*(-?\\d+)'+requiredUnit,'gi');
+    for(const m of s.matchAll(re)) {
+      const v=Number(m[1]);
+      if(op==='LE')add(null,v);if(op==='GE')add(v,null);
+      if(op==='LT')add(null,v-1);if(op==='GT')add(v+1,null);
     }
   }
-  for (const m of s.matchAll(new RegExp('(-?\\d+)' + unit + '\\s+or\\s+(below|lower|less|above|higher|more)\\b', 'gi'))) {
-    const v = Number(m[1]); if (v < -100 || v > 150) continue;
-    found.push(/below|lower|less/i.test(m[2]) ? {low:null, high:v} : {low:v, high:null});
-  }
-  const unique = [...new Map(found.map(b => [JSON.stringify(b), b])).values()];
-  return unique.length === 1 ? unique[0] : null;
+  const unique=[...new Map(found.map(b=>[JSON.stringify(b),b])).values()];
+  return unique.length===1?unique[0]:null;
 }
 function parseMarket(m, event, now) {
   const question = text(m.question || m.title), own = text([question, m.description].join(' '));
@@ -110,7 +128,8 @@ function parseMarket(m, event, now) {
   if (/lowest\s+temperature|minimum\s+temperature/i.test(question)) issues.push('Low-temperature market rejected');
   if (!/National Weather Service|\bNWS\b/i.test(rules) || !/Climatological Report\s*\(?\s*Daily|Daily Climate Report|\bCLI(?:NYC|MIA|MDW|LAX|SFO)?\b/i.test(rules)) issues.push('NWS daily CLI resolution source not established');
   if (!/\bFahrenheit\b|°\s*F\b|\d\s*F\b/i.test(rules) || /\bCelsius\b|°\s*C\b/i.test(rules)) issues.push('Unambiguous Fahrenheit units required');
-  const band = parseBand(question) || parseBand(own);
+  const questionBand = parseBand(question), ownBand = parseBand(own);
+  const band = questionBand && !ownBand ? null : (ownBand || questionBand);
   if (!band) issues.push('Unsupported or ambiguous temperature band');
   let outcomes = m.outcomes;
   if (typeof outcomes === 'string') { try { outcomes = JSON.parse(outcomes); } catch { outcomes = null; } }
@@ -209,7 +228,7 @@ function price(v) {
   if (n < 0 || n > U) throw new Error('Book price outside $0..$1');
   return n;
 }
-function parseBook(payload, slug, receivedAt, maxAgeSeconds) {
+function parseBook(payload, slug, receivedAt, maxAgeSeconds, transport = {}) {
   const b = payload && payload.marketData;
   if (!b || b.marketSlug !== slug || !Array.isArray(b.bids) || !Array.isArray(b.offers)) throw new Error('Unexpected book schema or wrong market slug');
   const asOf = Date.parse(b.transactTime);
@@ -235,7 +254,10 @@ function parseBook(payload, slug, receivedAt, maxAgeSeconds) {
   return {slug, receivedAt:iso(receivedAt), asOf:iso(asOf), ageSeconds:(receivedAt-asOf)/1000,
     state:b.state, valid:reasons.length===0, reasons, noAsks, bids, offers,
     bestNoAsk:noAsks.length ? dollars(noAsks[0].priceU) : null, stats:b.stats || {},
-    hash:hash({bids, offers, asOf:b.transactTime, state:b.state})};
+    hash:hash({bids, offers, asOf:b.transactTime, state:b.state}),
+    sourceTimeField:'transactTime',sourceTimeSemantics:'Not independently established for the public gateway; strict source-age policy retained',
+    sourceAgeSeconds:(receivedAt-asOf)/1000,transport,
+    onlySourceAgeBlocked:reasons.length===1&&reasons[0]==='Book timestamp too old for simulation'};
 }
 function sharedDepth(first, second) {
   const old = new Map(first.map(x => [x.priceU,x.qty]));
@@ -298,6 +320,7 @@ function classify(m, book, selection, cfg, now) {
   if (!book.noAsks.length) return {ok:false,reason:'NO_NO_ASK_LIQUIDITY'};
   return {ok:true,reason:'EVIDENCE_ELIMINATED_NOT_SETTLED'};
 }
+const CBuffer = cfg => units(cfg.priceBuffer);
 function evaluate(state, m, book, selection, cfg, now, weatherFresh) {
   state.signals ||= {}; state.positions ||= {}; state.previousBooks ||= {};
   const events=[];
@@ -324,7 +347,14 @@ function evaluate(state, m, book, selection, cfg, now, weatherFresh) {
       else {
         const shared=sharedDepth(before.noAsks,book.noAsks);
         const fill=simulate(shared,paperBudget(state,m,cfg,now),cfg,{minimumQty:m.minimumQty});
-        if(!fill) status='NO_STRESS_QUALIFYING_LIQUIDITY_OR_BUDGET';
+        if(!fill) {
+          const budget=paperBudget(state,m,cfg,now);
+          if(budget<=0)status='PAPER_BUDGET_EXHAUSTED';
+          else if(!shared.length)status='NO_SHARED_DEPTH_AFTER_DELAY';
+          else if(!shared.some(x=>x.priceU+CBuffer(cfg)<=units(cfg.maxNoPrice)))status='PRICE_CAP_AFTER_BUFFER';
+          else if(!shared.some(x=>Math.floor(x.qty*cfg.depthPercent/100)>=Math.max(1,Math.ceil(m.minimumQty))))status='INSUFFICIENT_STRESS_DEPTH';
+          else status='MIN_RETURN_OR_SIZE_NOT_MET';
+        }
         else {
           const position={id:hash(key+'|'+m.rulesHash),market:key,eventSlug:m.eventSlug,question:m.question,
             station:m.station,date:m.date,band:m.band,rulesHash:m.rulesHash,enteredAt:iso(now),
@@ -339,7 +369,22 @@ function evaluate(state, m, book, selection, cfg, now, weatherFresh) {
   }
   if(book) state.previousBooks[key]={valid:book.valid,receivedAt:book.receivedAt,noAsks:book.noAsks,
     rulesHash:m.rulesHash,eliminated:result.ok&&weatherFresh};
-  return {status,detail:result.detail || null,quoteCapacity,events,signal:state.signals[key] || null};
+  const diagnostic={
+    evidenceEliminated:!!(m.valid&&!selection.conflict&&e&&finite(m.band?.high)&&e.floorF>m.band.high),
+    noAskLevels:book?.noAsks?.length??null,
+    displayedNoContracts:book?book.noAsks.reduce((n,x)=>n+x.qty,0):null,
+    noPriceWithinCap:!!book?.noAsks?.some(x=>x.priceU<=units(cfg.maxNoPrice)),
+    noPriceWithinCapAfterBuffer:!!book?.noAsks?.some(x=>x.priceU+units(cfg.priceBuffer)<=units(cfg.maxNoPrice)),
+    sourceAgeOnlyBlocked:book?.onlySourceAgeBlocked||false,
+    quoteSourceAgeSeconds:book?.sourceAgeSeconds??null,
+    quoteReceiptAgeSeconds:book?(now-Date.parse(book.receivedAt))/1000:null,
+    bookReasons:book?.reasons||[],ruleIssues:m.issues||[],weatherFresh:!!weatherFresh,
+    availablePaperBudgetU:paperBudget(state,m,cfg,now),
+    // Observation-only sensitivity measure: it NEVER places or grades a position.
+    sourceAgeBlockedCapacityU:book?.onlySourceAgeBlocked&&m.valid&&!selection.conflict&&e&&finite(m.band?.high)&&e.floorF>m.band.high
+      ? (simulate(book.noAsks,units(cfg.maxPaperSpendPerMarket),cfg,{stress:false,minimumQty:m.minimumQty})?.netIfNoWinsU??null):null
+  };
+  return {status,detail:result.detail || null,quoteCapacity,events,diagnostic,signal:state.signals[key] || null};
 }
 function gradeCLI(position, evidence) {
   const r=Object.values(evidence).filter(x=>x.station===position.station&&x.date===position.date&&x.kind==='CLI_FINAL')

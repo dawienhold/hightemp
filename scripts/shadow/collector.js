@@ -48,7 +48,9 @@ function createClient(cfg, transport=global.fetch, clock=Date.now) {
         if(!r.ok) throw new Error(`HTTP ${r.status} ${u.hostname}${u.pathname}`);
         const data=r.status===204?[]:await r.json();
         const receivedAt=clock();
-        return {data,url:u.href,startedAt:C.iso(startedAt),receivedAt:C.iso(receivedAt),durationMs:receivedAt-startedAt};
+        return {data,url:u.href,startedAt:C.iso(startedAt),receivedAt:C.iso(receivedAt),durationMs:receivedAt-startedAt,
+          httpDate:r.headers?.get('date')||null,httpAge:r.headers?.get('age')||null,
+          cacheControl:r.headers?.get('cache-control')||null};
       } catch(e) {
         // Do not retry schema/access failures or fetch an authenticated substitute.
         throw new Error(`${u.hostname}${u.pathname}: ${e.message}`);
@@ -75,6 +77,7 @@ class Collector {
     this.pendingLogs=[]; this.markets=[]; this.errors=[]; this.warnings=[];
     this.cliCache=this.state.cliCache || {};
     this.lastCliAttempt=0; this.lastDiscoveryAttempt=0;
+    this.allMarketCount=0;this.state.researchDiagnostics ||= {};
     this.rawCycle=[];
   }
   log(kind,data={}) { this.pendingLogs.push({at:C.iso(this.clock()),kind,...data}); }
@@ -139,9 +142,12 @@ class Collector {
     await Promise.all([aviation,...cliJobs]);
   }
   async discover() {
-    if(this.clock()-this.lastDiscoveryAttempt<this.cfg.discoverySeconds*1000&&this.markets.length) return;
+    if(this.lastDiscoveryAttempt&&this.clock()-this.lastDiscoveryAttempt<this.cfg.discoverySeconds*1000) {
+      if(this.state.discovery?.ok===false)this.errors.push('Discovery retry paused: '+this.state.discovery.error);
+      return;
+    }
     this.lastDiscoveryAttempt=this.clock();
-    const events=new Map(); let complete=true;
+    const events=new Map(); let complete=true; const discoveryNotes=[];
     try {
       const seenPages=new Set();
       for(let page=1;page<=this.cfg.discoveryMaxPages;page++) {
@@ -152,10 +158,10 @@ class Collector {
         const list=r.data.events;
         if(!list.length) break;
         const fingerprint=C.hash(list.map(e=>e.slug));
-        if(seenPages.has(fingerprint)) {complete=false;break;} seenPages.add(fingerprint);
+        if(seenPages.has(fingerprint)) {complete=false;discoveryNotes.push('Search pagination repeated a page');break;} seenPages.add(fingerprint);
         for(const e of list) if(e.slug) events.set(e.slug,e);
         if(list.length<this.cfg.discoveryPageSize) break;
-        if(page===this.cfg.discoveryMaxPages) complete=false;
+        if(page===this.cfg.discoveryMaxPages) {complete=false;discoveryNotes.push('Search page limit reached');}
       }
       for(const slug of this.cfg.eventSlugs) {
         const r=await this.read(MARKET+'/v1/events/slug/'+slug);
@@ -188,11 +194,31 @@ class Collector {
         const priority=m=>m.date===C.day(this.clock(),m.station)?0:m.date>C.day(this.clock(),m.station)?1:2;
         return priority(a)-priority(b)||a.slug.localeCompare(b.slug);
       });
-      if(unique.length>this.cfg.maxMarketsPerCycle) {complete=false;this.warnings.push('Market cap reached; some markets not sampled');}
-      this.markets=unique.slice(0,this.cfg.maxMarketsPerCycle);
-      this.state.discovery={at:C.iso(this.clock()),ok:true,complete,eventCount:events.size,matched:unique.length,watched:this.markets.length,rejectedCount:rejected.length,rejections:rejected.slice(0,20)};
+      if(unique.length>this.cfg.maxMarketsPerCycle) {complete=false;discoveryNotes.push('Market cap reached');}
+      const balanced=[];
+      for(const pri of [0,1,2]) {
+        const groups=this.cfg.stations.map(st=>unique.filter(m=>m.station===st&&
+          (m.date===C.day(this.clock(),st)?0:m.date>C.day(this.clock(),st)?1:2)===pri));
+        const largest=Math.max(0,...groups.map(g=>g.length));
+        for(let i=0;i<largest;i++)for(const g of groups)if(g[i])balanced.push(g[i]);
+      }
+      this.markets=balanced.slice(0,this.cfg.maxMarketsPerCycle);
+      const watched=new Set(this.markets.map(m=>m.slug));
+      const groups=new Map();
+      for(const m of unique){const k=m.station+'|'+m.date;
+        if(!groups.has(k))groups.set(k,{station:m.station,date:m.date,currentDay:m.date===C.day(this.clock(),m.station),matched:0,watched:0,validRules:0,invalidRules:0,omitted:[]});
+        const g=groups.get(k);g.matched++;if(m.valid)g.validRules++;else g.invalidRules++;
+        if(watched.has(m.slug))g.watched++;else g.omitted.push(m.slug);
+      }
+      const coverage=[...groups.values()];
+      const missingTodayStations=this.cfg.stations.filter(st=>!coverage.some(g=>g.station===st&&g.currentDay));
+      if(missingTodayStations.length)discoveryNotes.push('No current-climate-day event mapped for '+missingTodayStations.join(', '));
+      this.allMarketCount=unique.length;
+      this.state.discovery={at:C.iso(this.clock()),ok:true,complete,eventCount:events.size,matched:unique.length,watched:this.markets.length,rejectedCount:rejected.length,rejections:rejected.slice(0,20),notes:discoveryNotes,coverage,missingTodayStations,
+        knownCurrentDayFullyWatched:coverage.filter(g=>g.currentDay).every(g=>g.matched===g.watched)&&missingTodayStations.length===0};
       this.raw('MARKET_RULES',{markets:this.markets},'market-rules-'+C.iso(this.clock()).slice(0,10));
-      if(!complete) this.warnings.push('Discovery was capped or pagination repeated; market coverage is incomplete');
+      for(const note of discoveryNotes)this.warnings.push(note);
+      if(!complete)this.warnings.push('Discovery coverage not proven complete; see station/date coverage');
       if(!this.markets.length) this.warnings.push('No supported markets matched. This is not proof there are no opportunities; inspect discovery diagnostics.');
     } catch(e) {
       this.errors.push('Discovery: '+e.message);
@@ -215,9 +241,11 @@ class Collector {
   }
   async book(m) {
     const r=await this.read(MARKET+'/v1/markets/'+encodeURIComponent(m.slug)+'/book');
-    const b=C.parseBook(r.data,m.slug,Date.parse(r.receivedAt),this.cfg.maxBookAgeSeconds);
+    const b=C.parseBook(r.data,m.slug,Date.parse(r.receivedAt),this.cfg.maxBookAgeSeconds,
+      {requestStartedAt:r.startedAt,receivedAt:r.receivedAt,durationMs:r.durationMs,httpDate:r.httpDate||null,httpAge:r.httpAge||null,cacheControl:r.cacheControl||null});
     this.raw('BOOK',{market:m.slug,requestStartedAt:r.startedAt,receivedAt:r.receivedAt,durationMs:r.durationMs,
-      asOf:b.asOf,state:b.state,hash:b.hash,
+      asOf:b.asOf,state:b.state,hash:b.hash,valid:b.valid,reasons:b.reasons,sourceAgeSeconds:b.sourceAgeSeconds,
+      transport:b.transport,allBidLevels:b.bids.length,allOfferLevels:b.offers.length,allNoAskLevels:b.noAsks.length,
       bids:b.bids.slice(0,this.cfg.bookArchiveLevels),offers:b.offers.slice(0,this.cfg.bookArchiveLevels),
       noAsks:b.noAsks.slice(0,this.cfg.bookArchiveLevels),depthTruncated:b.bids.length>this.cfg.bookArchiveLevels||b.offers.length>this.cfg.bookArchiveLevels});
     return b;
@@ -246,14 +274,19 @@ class Collector {
       this.log('MARKET_OBSERVATION',{market:m.slug,station:m.station,date:m.date,rulesHash:m.rulesHash,
         status:result.status,evidenceId:select.evidence?.id||null,floorF:select.evidence?.floorF??null,
         quoteAsOf:book.asOf,quoteReceivedAt:book.receivedAt,noAsk:book.bestNoAsk,
-        idealizedNetU:result.quoteCapacity?.netIfNoWinsU??null});
+        idealizedNetU:result.quoteCapacity?.netIfNoWinsU??null,detail:result.detail,diagnostic:result.diagnostic});
+      const utc=C.iso(now).slice(0,10);
+      const diag=this.state.researchDiagnostics[utc] ||= {version:'1.1.0',since:C.iso(now),observations:0,statusCounts:{},eliminatedChecks:0,eliminatedWithoutNoAsks:0,sourceAgeOnlyBlocks:0};
+      diag.observations++;diag.statusCounts[result.status]=(diag.statusCounts[result.status]||0)+1;
+      if(result.diagnostic.evidenceEliminated){diag.eliminatedChecks++;if(result.diagnostic.noAskLevels===0)diag.eliminatedWithoutNoAsks++;}
+      if(result.diagnostic.sourceAgeOnlyBlocked)diag.sourceAgeOnlyBlocks++;
       return {slug:m.slug,question:m.question,url:m.url,station:m.station,date:m.date,band:m.band,
-        rulesHash:m.rulesHash,validRules:m.valid,ruleIssues:m.issues,status:result.status,detail:result.detail,
+        rulesHash:m.rulesHash,validRules:m.valid,ruleIssues:m.issues,status:result.status,detail:result.detail,diagnostic:result.diagnostic,
         evidence:select.evidence?{id:select.evidence.id,kind:select.evidence.kind,floorF:select.evidence.floorF,
           issuedAt:select.evidence.issuedAt,observedAt:select.evidence.observedAt,firstSeenAt:select.evidence.firstSeenAt,
           sourceUrl:select.evidence.sourceUrl}:null,weatherConflict:select.conflict,
         book:{asOf:book.asOf,receivedAt:book.receivedAt,ageSeconds:book.ageSeconds,noAsk:book.bestNoAsk,state:book.state,
-          valid:book.valid,reasons:book.reasons,topNoAsks:book.noAsks.slice(0,5)},signal:result.signal,
+          valid:book.valid,reasons:book.reasons,sourceAgeSeconds:book.sourceAgeSeconds,transport:book.transport,topNoAsks:book.noAsks.slice(0,5)},signal:result.signal,
         quoteCapacity:result.quoteCapacity?{qty:result.quoteCapacity.qty,costU:result.quoteCapacity.costU,
           netIfNoWinsU:result.quoteCapacity.netIfNoWinsU,roiIfNoWins:result.quoteCapacity.roiIfNoWins}:null};
     } catch(e) {
@@ -326,12 +359,13 @@ class Collector {
     }
     this.rawCycle=[];this.pendingLogs=[];
     atomic(path.join(this.out,'state.json'),this.state);
-    const snap={schemaVersion:1,version:'1.0.0',mode:'PAPER_ONLY',generatedAt:last,
+    const snap={schemaVersion:1,version:'1.1.0',mode:'PAPER_ONLY',generatedAt:last,
       transport:'Unauthenticated Polymarket US REST snapshots; no WebSocket',
       liveOrdersPossible:false,config:this.cfg,summary,stations:stationStatus,markets:rows,
       positions:all.slice().reverse().slice(0,200),positionDisplayLimited:all.length>200,
       errors:[...new Set(this.errors)],warnings:[...new Set([...this.warnings,...(C.feeIssue(this.cfg,now)?[C.feeIssue(this.cfg,now)]:[])])],
-      discovery:this.state.discovery||null,sourceChecks:this.state.sourceChecks,
+      discovery:this.state.discovery||null,sourceChecks:this.state.sourceChecks,researchDiagnostics:this.state.researchDiagnostics[date]||null,
+      sampling:this.state.sampling||null,
       lastCycleGapSeconds:this.lastGap??null,
       caveat:'Hypothetical fills and conditional returns only. Published evidence can be corrected. Book liquidity may disappear. CLI check is not exchange settlement.'};
     atomic(path.join(this.out,'latest.json'),snap);
@@ -344,7 +378,12 @@ class Collector {
     const started=this.clock();
     this.lastGap=this.state.lastCycleAt ? (started-Date.parse(this.state.lastCycleAt))/1000:null;
     this.state.lastCycleAt=C.iso(started);
+    const sample=this.state.sampling ||= {since:C.iso(started),cycles:0,gapCount:0,totalGapSeconds:0,maxGapSeconds:0,gapsOver180:0,gapsOver300:0};
+    sample.cycles++;
+    if(this.lastGap!=null){sample.gapCount++;sample.totalGapSeconds+=this.lastGap;sample.maxGapSeconds=Math.max(sample.maxGapSeconds,this.lastGap);if(this.lastGap>180)sample.gapsOver180++;if(this.lastGap>300)sample.gapsOver300++;}
+
     await Promise.all([this.weather(),this.discover()]);
+    for(const note of this.state.discovery?.notes||[])this.warnings.push(note);
     const rows=[];
     // Intentional sequential evaluation gives deterministic capital allocation.
     for(const m of this.markets) rows.push(await this.observeMarket(m));
