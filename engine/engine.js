@@ -42,14 +42,14 @@ const HT = (() => {
 "use strict";
 
 /** Bumped whenever the forecast logic changes, so the scorecard can say so. */
-const MODEL_VERSION = "4.0.0";
+const MODEL_VERSION = "4.2.0";
 
 // ---------------------------------------------------------------- stations
 const STATIONS = [
   { id:"KNYC", short:"NYC", name:"New York", site:"Central Park", cli:"NYC",
     tz:"America/New_York", lat:40.7833, lon:-73.9667, elev:47, wfo:"OKX", gx:34, gy:45, onshore:160,
     proxies:["KLGA","KEWR","KJRB","KTEB"], hourlyOnly:true,
-    caveat:"Central Park transmits hourly only. Between readings the curve is inferred from KLGA, KEWR, KJRB and KTEB (5-minute) and re-anchored to each Central Park observation, so it always passes through the station's own values." },
+    caveat:"Central Park reports can miss between-report peaks. Data input health shows separately tested neighbor estimates; only target-station reports inform the observed floor." },
   { id:"KMIA", short:"MIA", name:"Miami", site:"Miami Intl", cli:"MIA",
     tz:"America/New_York", lat:25.7906, lon:-80.3164, elev:3, wfo:"MFL", gx:105, gy:51, onshore:110, proxies:[] },
   { id:"KMDW", short:"MDW", name:"Chicago", site:"Midway", cli:"MDW",
@@ -237,37 +237,36 @@ function cliClockToUTC(date, hhmm, tz) {
 }
 
 async function fetchCLI(st, cache) {
-  const list = await getJSON(`${NWS}/products/types/CLI/locations/${st.cli}`, 20 * 60e3);
-  const graph = (list && list["@graph"]) || [];
-  const out = [], prelim = [];
-  for (const p of graph.slice(0, 64)) {
-    let rec = cache && cache.get(p.id);
-    if (!rec) {
-      try {
-        const prod = await getJSON(`${NWS}/products/${p.id}`);
-        rec = parseCLI(prod.productText || "");
-      } catch (e) { rec = null; }
-      if (cache) cache.set(p.id, rec || { bad: true });
+  let graph=[];
+  try { const list=await getObsJSON(`${NWS}/products/types/CLI/locations/${st.cli}`); graph=list["@graph"]||[]; }
+  catch(e) { /* shared validated CLI records remain available below */ }
+  const out=[],prelim=[];
+  const add=(rec,p)=>{
+    if(!rec||rec.bad)return;
+    const closeUTC=new Date(addDays(rec.date,1)+"T00:00:00Z").getTime()-(STD_OFFSET_H[st.tz]||0)*3600e3;
+    const final=!!p.issuanceTime&&new Date(p.issuanceTime).getTime()>=closeUTC&&!rec.asOf;
+    (final?out:prelim).push({...rec,issued:p.issuanceTime,final,productId:p.id});
+  };
+  // Preserve the historical calibration window, but bound each request and use small batches.
+  for(let i=0;i<Math.min(graph.length,64);i+=4)await Promise.allSettled(graph.slice(i,i+4).map(async p=>{
+    let rec=cache&&cache.get(p.id);
+    if(!rec||rec.bad) {
+      const prod=await getObsJSON(`${NWS}/products/${p.id}`);
+      rec=parseCLI(prod.productText||"");
+      if(cache&&rec)cache.set(p.id,rec); // no permanently cached transient failures
     }
-    if (rec && !rec.bad) {
-      // Final once issued after the climate day closed (midnight standard time).
-      const off = STD_OFFSET_H[st.tz] ?? 0;
-      const closeUTC = new Date(addDays(rec.date, 1) + "T00:00:00Z").getTime() - off * 3600e3;
-      const final = !!p.issuanceTime && new Date(p.issuanceTime).getTime() >= closeUTC;
-      if (final) out.push({ ...rec, issued: p.issuanceTime, final: true, productId: p.id });
-      else prelim.push({ ...rec, issued: p.issuanceTime, final: false, productId: p.id });
-    }
+    add(rec,p);
+  }));
+  const shared=sharedObservationDoc();
+  for(const item of shared?.products||[]) {
+    if(item.evidence?.station!==st.id||Date.parse(item.firstReceivedAt)>Date.now())continue;
+    const rec=parseCLI(item.product.productText||""); if(rec)add(rec,item.product);
   }
-  const seen = new Set(), ded = [];
-  // newest date first; within a date the latest issuance wins (corrections)
-  out.sort((a, b) => b.date.localeCompare(a.date) || String(b.issued).localeCompare(String(a.issued)));
-  for (const r of out) if (!seen.has(r.date)) { seen.add(r.date); ded.push(r); }
-  // Same-day preliminary reports (e.g. "VALID TODAY AS OF 0400 PM"). Never used
-  // for scoring -- only a final CLI settles a call -- but the maximum in one is
-  // the station's own ASOS maximum so far, so it is a hard floor for today.
-  prelim.sort((a, b) => String(b.issued).localeCompare(String(a.issued)));
-  ded.prelim = prelim;
-  return ded;
+  const unique=rows=>{
+    rows.sort((a,b)=>b.date.localeCompare(a.date)||String(b.issued).localeCompare(String(a.issued)));
+    const seen=new Set();return rows.filter(r=>{if(seen.has(r.date))return false;seen.add(r.date);return true;});
+  };
+  const result=unique(out);result.prelim=unique(prelim);return result;
 }
 
 // ---------------------------------------------------------- observations
@@ -325,70 +324,61 @@ async function fetchMetars(stationId, hours = 30) {
  * group is never dropped in the merge. Either feed failing leaves the other
  * carrying the day.
  */
+// Observation requests are intentionally independent of the long model-guidance retries.
+async function getObsJSON(url) {
+  const headers = { Accept: "application/geo+json,application/json" };
+  if (typeof window === "undefined") headers["User-Agent"] = "hightemp-desk (github.com/dawienhold/hightemp)";
+  const r = await fetch(url, { headers, signal: AbortSignal.timeout(8000) });
+  if (r.status === 204) return [];
+  if (!r.ok) throw new Error("Observation HTTP " + r.status);
+  return r.json();
+}
+function sharedObservationDoc() {
+  if (typeof window !== "undefined" || typeof require === "undefined") return null;
+  return require("../scripts/observations/shared.js").load(require("path").join(__dirname,".."));
+}
 async function fetchObs(stationId, sinceISO, hours) {
-  const byMin = new Map();
-  const put = row => {
-    const k = Math.round(row.t.getTime() / 60e3);
-    const prev = byMin.get(k);
-    if (!prev) { byMin.set(k, row); return; }
-    const win = (row.precise && !prev.precise) ? row : prev;
-    byMin.set(k, { ...win, sixMaxC: prev.sixMaxC != null ? prev.sixMaxC : row.sixMaxC });
+  const now = Date.now(), byMin = new Map(), rawVariants = [];
+  const add = (t,c,raw,source) => {
+    if (!t || !Number.isFinite(+t) || +t > now || +t < Date.parse(sinceISO)) return;
+    const tg = tGroupC(raw), cc = tg != null ? tg : c;
+    if (cc == null || !Number.isFinite(cc) || cc < -80 || cc > 65) return;
+    const row={t,f:cToF(cc),c:cc,precise:tg!=null,sixMaxC:sixHourMaxC(raw),source,raw,omo:false};
+    rawVariants.push(row);
+    const key=+t, prev=byMin.get(key);
+    if (!prev || (row.precise && !prev.precise) || (/\bCOR\b/.test(raw) && !/\bCOR\b/.test(prev.raw||""))) byMin.set(key,row);
+    else if (prev.c===row.c && prev.sixMaxC==null && row.sixMaxC!=null) prev.sixMaxC=row.sixMaxC;
   };
-  const add = (t, c, raw, source = null, omo = false) => {
-    const tg = tGroupC(raw);
-    const cc = tg != null ? tg : c;
-    if (cc == null || !isFinite(cc)) return;
-    put({ t, f: cToF(cc), c: cc,
-          precise: tg != null || Math.abs(cc * 10 % 10) > 0.01,
-          sixMaxC: sixHourMaxC(raw), source, omo });
-  };
-
-  try {
-    const d = await getJSON(`${NWS}/stations/${stationId}/observations?start=${encodeURIComponent(sinceISO)}`);
-    for (const f of ((d && d.features) || [])) {
-      const p = f.properties;
-      add(new Date(p.timestamp), num(p.temperature && p.temperature.value), p.rawMessage || "", "NWS observations", false);
-    }
-  } catch (e) { /* the METAR feed below can still carry the day */ }
-
-  try {
-    for (const m of await fetchMetars(stationId, hours)) add(m.t, m.c, m.raw, "AviationWeather METAR", false);
-  } catch (e) { /* fall back to whatever the NWS feed gave */ }
-
-  // Free NOAA MADIS One-Minute ASOS cache, if the pre-pass helper populated it.
-  // OMO temperature is useful cadence evidence but is still coarse whole-degree C
-  // at many ASOS sites, so it must never be treated as tenths-resolution truth.
-  for (const m of loadMadisOMOFile(stationId, sinceISO)) {
-    const cc = m.c != null ? m.c : (m.f - 32) * 5 / 9;
-    add(m.t, cc, "", m.source, true);
+  const shared=sharedObservationDoc();
+  if(shared) for(const r of require("../scripts/observations/shared.js").rowsFor(shared,stationId,Date.parse(sinceISO),now))
+    add(r.t,r.c,r.raw,r.source);
+  // Both sources start now. A stalled NWS request cannot delay AWC from starting.
+  // A small overlap complements the shared archive; on initial installation fetch the requested history.
+  await Promise.allSettled([
+    (async()=>{const d=await getObsJSON(`${NWS}/stations/${stationId}/observations?start=${encodeURIComponent(sinceISO)}`);
+      for(const f of d.features||[]){const p=f.properties;add(new Date(p.timestamp),num(p.temperature&&p.temperature.value),p.rawMessage||"","NWS observations");}})(),
+    (async()=>{const d=await getObsJSON(`${AVWX}?ids=${encodeURIComponent(stationId)}&format=json&hours=${hours}`);
+      for(const o of Array.isArray(d)?d:[])if(!o.icaoId||o.icaoId===stationId)add(new Date(o.obsTime*1000),num(o.temp),o.rawOb||"","AviationWeather METAR");})()
+  ]);
+  // Apply the shared parser's correction/conflict selection when available in Node.
+  if(typeof window === "undefined" && typeof require !== "undefined") {
+    const C=require("../scripts/observations/core.js");
+    const parsed=rawVariants.map(r=>C.parseMetar({icaoId:stationId,rawOb:r.raw,obsTime:+r.t/1000},r.source,now,"",[stationId])).filter(Boolean);
+    const conflicts=new Set((shared?.conflicts||[]).filter(r=>r.station===stationId).map(r=>r.t));
+    return C.selectRows(parsed,now).filter(r=>!r.conflict&&!conflicts.has(r.t)).map(r=>({...r,t:new Date(r.t)}));
   }
-
-  return [...byMin.values()].sort((a, b) => a.t - b.t);
+  return [...byMin.values()].sort((a,b)=>a.t-b.t);
 }
 
 async function fetchDayObs(st, nowD) {
   const today = climDate(nowD, st.tz);
-  const startUTC = new Date(new Date(today + "T00:00:00Z").getTime() - 30 * 3600e3).toISOString();
-  const hours = clamp(Math.ceil((nowD - new Date(startUTC)) / 3600e3) + 1, 2, 48);
+  const startUTC = new Date(new Date(today + "T00:00:00Z").getTime() - (STD_OFFSET_H[st.tz] || 0) * 3600e3).toISOString();
+  const hours = clamp(Math.ceil((nowD - new Date(startUTC)) / 3600e3) + 1, 2, 26);
   const prim = await fetchObs(st.id, startUTC, hours);
   const keep = prim.filter(r => climDate(r.t, st.tz) === today);
-
-  let proxy = [];
-  if (st.proxies && st.proxies.length) {
-    const sets = await Promise.all(st.proxies.map(p => fetchObs(p, startUTC, hours).catch(() => [])));
-    const byBucket = new Map();
-    sets.forEach(rows => {
-      for (const r of rows) {
-        if (climDate(r.t, st.tz) !== today) continue;
-        const k = Math.round(r.t.getTime() / 300e3) * 300e3;
-        if (!byBucket.has(k)) byBucket.set(k, []);
-        byBucket.get(k).push(r.f);
-      }
-    });
-    proxy = [...byBucket.entries()].sort((a, b) => a[0] - b[0])
-      .map(([k, v]) => ({ t: new Date(k), f: v.reduce((s, x) => s + x, 0) / v.length, n: v.length }));
-  }
-  return { today, obs: keep, proxy };
+  // Nearby stations are collected once by the independent observation worker.
+  // They appear in Data input health, not as fabricated target observations.
+  return { today, obs: keep, proxy: [] };
 }
 
 function inferSubHourly(obs, proxy) {
@@ -1132,7 +1122,7 @@ function sixHourWindowInDay(obsTime, tz, day) {
  * which is what they are for.
  */
 function observedMax(series, tz, day) {
-  const real = (series || []).filter(r => !r.inferred);
+  const real = (series || []).filter(r => !r.inferred && !r.omo);
   const EMPTY = { max: null, precise: false, at: null, quantSd: 0,
                   loF: null, hiF: null, settles: null, quantized: false, source: null,
                   coarsePeak: null };
@@ -1329,7 +1319,7 @@ function forecastDay(st, ctx, dayOffset) {
   // Projections are fine for "what is it doing right now"; they are not
   // evidence about what the station has recorded, nor about how wrong a model
   // has been today.
-  const realObs = obsSeries.filter(o => !o.inferred);
+  const realObs = obsSeries.filter(o => !o.inferred && !o.omo);
   if (dayOffset === 0 && obsSeries.length) {
     const om = observedMax(obsSeries, st.tz, date);
     obsMax = om.max; obsPrecise = om.precise; obsMaxAt = om.at; quantSd = om.quantSd;
@@ -1572,10 +1562,12 @@ async function runStation(st, cliCache, memory) {
   const cal = calibrate(daily, prev, cliRows, today, models);
 
   let series = dayObs.obs.slice(), inferred = [];
-  if (st.proxies.length) {
+  if (st.proxies.length && dayObs.proxy.length) {
     inferred = inferSubHourly(dayObs.obs, dayObs.proxy);
     const lastReal = dayObs.obs.length ? dayObs.obs[dayObs.obs.length - 1].t : 0;
-    series = series.concat(inferred.filter(r => r.t > lastReal)).sort((a, b) => a.t - b.t);
+    // Neighbor estimates are advisory: never add them to the forecast observation series.
+    // The separately refreshed input-status panel exposes validated weighted estimates.
+    inferred = [];
   }
 
   const diag = dailyDiagnostics(cond, st);
@@ -1946,7 +1938,7 @@ function snapshot(result, opts = {}) {
 }
 
 return { STATIONS, MODELS, MODEL_LABEL, runAll, runStation, snapshot, parseCLI,
-         fetchConditions, dailyDiagnostics, analogAdjust, buildDist,
+         getObsJSON, fetchCLI, fetchConditions, dailyDiagnostics, analogAdjust, buildDist,
          scoreCalls, aggregateScores, logRows, leadBucket,
          emptyStats, accumulate, finalizeStats, passWithScoring, passAuto, loadPending, savePending,
          loadRegime, saveRegime, mergeRegime, regimeCount, MODEL_VERSION,

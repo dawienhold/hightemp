@@ -100,7 +100,9 @@ class Collector {
   }
   async weather() {
     const now=this.clock();
+    const shared=require("../observations/shared.js").ingestShadow(this);
     const aviation=(async()=>{
+      if(shared.aviation) return;
       try {
         // One small batch for the five stations; not a query per station.
         const r=await this.read(`${AV}/api/data/metar?ids=${this.cfg.stations.join(',')}&format=json&hours=30`);
@@ -117,6 +119,7 @@ class Collector {
     if(now-this.lastCliAttempt>=this.cfg.cliRefreshSeconds*1000) {
       this.lastCliAttempt=now;
       for(const station of this.cfg.stations) cliJobs.push((async()=>{
+        if(shared.cli.has(station)) return;
         const key='cli:'+station;
         try {
           const list=await this.read(`${NWS}/products/types/CLI/locations/${C.STATIONS[station].cli}`);
@@ -234,7 +237,7 @@ class Collector {
     return m;
   }
   weatherFresh(station,e) {
-    if(!e) return false;
+    if(!e || this.sharedConflicts?.some(r=>r.station===station)) return false;
     const s=this.state.sourceChecks[e.kind.startsWith('CLI_')?'cli:'+station:'aviation'];
     return s?.ok===true&&Array.isArray(s.evidenceIds)&&s.evidenceIds.includes(e.id)
       &&this.clock()-Date.parse(s.checkedAt)<=this.cfg.maxWeatherCheckAgeSeconds*1000;

@@ -301,7 +301,7 @@ button[disabled]{opacity:.5; cursor:default}
       <p><strong>Settlement truth is the CLI daily climate report</strong> each station's NWS office issues overnight — the MAXIMUM line, in whole °F. Everything here aims at that number, not at a grid cell near the station.</p>
       <p><strong>Two calibrations, doing different jobs.</strong> The <em>bias</em> term is the station's reported high minus each model's own analysis over the trailing month, which captures the offset between the grid and the actual sensor. The <em>skill</em> term comes from what each model really forecast a day ahead, and it alone sets the width of the confidence interval — analysis error would understate the spread badly, because the analysis has already seen the weather.</p>
       <p><strong>Intraday the observations take over.</strong> Each model's running error against today's readings is carried forward with a three-hour decay, the forecast can never fall below what has already been reported, and the interval narrows on both how little heating day is left and how much rise the models still expect. A day locks in only once the temperature is falling and no model still reaches above the observed maximum.</p>
-      <p><strong>Feed cadence.</strong> KMIA, KMDW, KLAX and KSFO transmit every ~5 minutes in whole °C, so a single reading carries about ±0.9°F of slack; the hourly METAR tenths and the 6-hourly remark group pin it precisely, and both are used when present. KNYC transmits hourly only — its card carries the note.</p>
+      <p><strong>Feed cadence.</strong> KMIA, KMDW, KLAX and KSFO transmit every ~5 minutes in whole °C, so a single reading carries about ±0.9°F of slack; the hourly METAR tenths and the 6-hourly remark group pin it precisely, and both are used when present. Nearby-station estimates are shown separately in Data input health; they never establish the official maximum.</p>
       <p><strong>Which day a reading belongs to.</strong> The CLI's climate day runs midnight to midnight <em>local standard time</em>. While daylight time is in force that is 1:00 AM to 1:00 AM on the wall clock, so a reading at 12:30 AM belongs to the previous day's report. Every observed maximum on this page is filed that way. Only a <em>final</em> CLI (issued after the day closes) settles a call; the afternoon preliminary report never does.</p>
       <p>Sources: <code>api.weather.gov</code>, <code>aviationweather.gov</code>, NOAA MADIS One-Minute ASOS when available, and <code>open-meteo.com</code>. Raw METARs, every call and every settlement are archived in the repository's <code>docs/data</code> folder.</p>
     </section>
@@ -1054,5 +1054,6 @@ async function load() {
 })();
 })();
 </script>
+<script src="input-status.js" defer></script>
 </body>
 </html>
