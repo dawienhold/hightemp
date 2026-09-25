@@ -62,10 +62,83 @@ test('fast source publishes while another source remains pending',async()=>{cons
  assert.equal(S.load(root,now).rows.length,1);release({records:0});await slow;
  }finally{fs.rmSync(root,{recursive:true,force:true});}});
 test('engine observed maximum ignores OMO and inferred values',()=>{const HT=require('../engine/engine');const r=HT.observedMax([{t:new Date(now),f:100,precise:true,inferred:true},{t:new Date(now),f:99,precise:true,omo:true}],'America/New_York','2026-09-22');assert.equal(r.max,null);});
-test('engine starts NWS and AWC concurrently and keeps tenth-C evidence',async()=>{const HT=require('../engine/engine'),original=global.fetch;const seen=[];let release;const hold=new Promise(r=>{release=r;});const stamp=Date.now()-3600000;const d=new Date(stamp);d.setUTCSeconds(0,0);const code=String(d.getUTCDate()).padStart(2,'0')+String(d.getUTCHours()).padStart(2,'0')+String(d.getUTCMinutes()).padStart(2,'0');
- try{global.fetch=async url=>{seen.push(String(url));if(String(url).includes('api.weather.gov')){await hold;return {ok:true,json:async()=>({features:[]})};}return {ok:true,json:async()=>[{icaoId:'KNYC',obsTime:+d/1000,rawOb:raw('KNYC',code)}]};};
- const pending=HT.fetchObs('KNYC',C.iso(Date.now()-6*3600000),6);await new Promise(r=>setImmediate(r));assert.equal(seen.length,2);release();const result=await pending;assert.equal(result.length,1);assert.equal(result[0].precise,true);
- }finally{release();global.fetch=original;}});
+test('engine starts NWS and AWC concurrently and keeps tenth-C evidence', async () => {
+ // Unit-test both input sources explicitly. Otherwise the real repository's
+ // shared.json leaks into this test after the first successful collector run.
+ // Production MUST keep merging that cache; only this test uses an empty one.
+ const HT = require('../engine/engine');
+ const originalFetch = global.fetch, originalLoad = S.load;
+ const seen = [];
+ let release;
+ const hold = new Promise(resolve => { release = resolve; });
+ const stamp = Date.now() - 3600000, d = new Date(stamp);
+ d.setUTCSeconds(0, 0);
+ const code = [d.getUTCDate(), d.getUTCHours(), d.getUTCMinutes()]
+  .map(x => String(x).padStart(2, '0')).join('');
+ try {
+  S.load = () => null;
+  global.fetch = async url => {
+   seen.push(String(url));
+   if (String(url).includes('api.weather.gov')) {
+    await hold;
+    return {ok: true, json: async () => ({features: []})};
+   }
+   return {ok: true, json: async () => [
+    {icaoId: 'KNYC', obsTime: +d / 1000, rawOb: raw('KNYC', code)}
+   ]};
+  };
+  const pending = HT.fetchObs('KNYC', C.iso(Date.now() - 6 * 3600000), 6);
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(seen.length, 2);
+  release();
+  const result = await pending;
+  assert.equal(result.length, 1);
+  assert.equal(result[0].precise, true);
+ } finally {
+  release();
+  global.fetch = originalFetch;
+  S.load = originalLoad;
+ }
+});
+
+test('engine merges an explicit cached report with a fetched report', async () => {
+ // Regression: the behavior that exposed the test-isolation bug is desirable.
+ // A valid cached target report must not be thrown away to make a test pass.
+ const HT = require('../engine/engine');
+ const originalFetch = global.fetch, originalLoad = S.load;
+ const nowMs = Date.now();
+ const rowAt = hoursAgo => {
+  const d = new Date(nowMs - hoursAgo * 3600000);
+  d.setUTCSeconds(0, 0);
+  const code = [d.getUTCDate(), d.getUTCHours(), d.getUTCMinutes()]
+   .map(x => String(x).padStart(2, '0')).join('');
+  return {icaoId: 'KNYC', obsTime: +d / 1000, rawOb: raw('KNYC', code)};
+ };
+ const cachedInput = rowAt(2), fetchedInput = rowAt(1);
+ const cached = C.parseMetar(cachedInput, 'AWC', nowMs - 30000,
+  'https://aviationweather.gov/api/data/metar', ['KNYC']);
+ assert(cached);
+ const doc = {schemaVersion: 1, generatedAt: C.iso(nowMs - 10000),
+  rows: [cached], conflicts: []};
+ const before = JSON.stringify(doc);
+ let cacheLoads = 0;
+ try {
+  S.load = () => { cacheLoads++; return doc; };
+  global.fetch = async url => ({ok: true, json: async () =>
+   String(url).includes('api.weather.gov') ? {features: []} : [fetchedInput]});
+  const result = await HT.fetchObs('KNYC', C.iso(nowMs - 6 * 3600000), 6);
+  assert.equal(cacheLoads, 1);
+  assert.equal(result.length, 2);
+  assert(result.every(r => r.precise));
+  assert.deepEqual(result.map(r => +r.t).sort((a, b) => a - b),
+   [cachedInput.obsTime * 1000, fetchedInput.obsTime * 1000]);
+  assert.equal(JSON.stringify(doc), before, 'Input snapshot must not be mutated');
+ } finally {
+  global.fetch = originalFetch;
+  S.load = originalLoad;
+ }
+});
+
 test('unresolved corrected-label disagreement invalidates its training score',()=>{const state={};const issue=now-60000;W.rememberPrediction(state,W.nowcast(rowsForFeatures(issue),'KNYC',issue,state,cfg));const a=obs('KNYC',now,21);W.gradeArrivals(state,[a],cfg,now+60000);assert.equal(state.training.length,1);W.gradeArrivals(state,[a,obs('KNYC',now,22)],cfg,now+60000);assert.equal(state.training.length,0);});
 test('restart persists learned samples without resetting simulated capital',()=>{const root=fs.mkdtempSync(path.join(os.tmpdir(),'obs-restart-'));try{const a=new ObservationCollector(root,cfg,{clock:()=>now,read:async()=>{}});a.state.training=training();a.flush();const b=new ObservationCollector(root,cfg,{clock:()=>now,read:async()=>{}});assert.equal(b.state.training.length,144);assert.equal(fs.existsSync(path.join(root,'docs/data/shadow/state.json')),false);}finally{fs.rmSync(root,{recursive:true,force:true});}});
 test('successful synthetic collection feeds shared CLI and raw reports into Shadow without extra weather requests',async()=>{
