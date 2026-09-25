@@ -1,0 +1,47 @@
+name: contract-consistency
+
+on:
+  schedule:
+    # Read-only snapshots, NOT an always-on arbitrage service.
+    - cron: "1-59/10 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: contract-consistency
+  cancel-in-progress: false
+
+jobs:
+  observe:
+    # Standard public-repository runner only. No trading credentials or paid services.
+    if: ${{ github.event.repository.private == false }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test consistency logic and read-only safeguards
+        run: node --test tools/consistency.test.js
+      - name: Observe related contracts - NO ORDERS
+        timeout-minutes: 5
+        run: node scripts/consistency.js
+      - name: Save consistency research only
+        if: always()
+        run: |
+          set -eu
+          if [ ! -d docs/data/consistency ]; then exit 0; fi
+          rm -f docs/data/consistency/.consistency.lock docs/data/consistency/*.tmp
+          git config user.name "hightemp-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data/consistency
+          if git diff --cached --quiet; then echo "No consistency changes"; exit 0; fi
+          git commit -q -m "consistency $(date -u +%Y-%m-%dT%H:%MZ)"
+          for i in 1 2 3 4 5; do
+            git pull -q --rebase origin "${GITHUB_REF_NAME}" && git push -q origin "HEAD:${GITHUB_REF_NAME}" && exit 0
+            sleep 5
+          done
+          echo "Push failed. No force push or history rewrite was attempted."; exit 1
