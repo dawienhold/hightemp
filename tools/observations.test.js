@@ -168,3 +168,142 @@ test('fresh shared AWC check cannot revive an absent cached six-hour report',()=
  const status=S.ingestShadow(s);assert.equal(status.aviation,false);
  const six=Object.values(s.state.evidence).find(e=>e.kind==='ASOS_SIX_HOUR');assert(six);assert.equal(s.weatherFresh('KNYC',six),false);
  }finally{fs.rmSync(root,{recursive:true,force:true});}});
+
+// v4.2.1 cadence / explicit nowcast-state regressions. All responses are synthetic.
+const nwsURL=id=>`https://api.weather.gov/stations/${id}/observations?limit=36`;
+const fields=(id='KMIA',t=now-60000,value=25,qc='V',unit='wmoUnit:degC')=>({
+ station:`https://api.weather.gov/stations/${id}`,timestamp:C.iso(t),rawMessage:null,
+ temperature:{value,unitCode:unit,qualityControl:qc}
+});
+function structured(id,t,c=25,qc='V'){return C.fromNWS(fields(id,t,c,qc),id,now,nwsURL(id),[id]);}
+test('QC-passed structured NWS row survives without fake raw text or precision',()=>{
+ const r=structured('KMIA',now-60000,25.555555);assert(r);assert(r.structured);assert(r.advisoryOnly);
+ assert.equal(r.precise,false);assert.equal(r.precisionC,null);assert.equal(r.sixMaxC,null);assert.equal(r.raw,'');assert.equal(r.trendEligible,true);
+ assert.equal(C.selectRows([r],now).length,1);
+});
+for(const qc of ['C','S','V','G','T'])test(`structured QC ${qc} permits trend research only`,()=>{const r=structured('KMIA',now-60000,25,qc);assert(C.usableTemperature(r));assert.equal(r.eligibleForLocks,false);});
+for(const qc of ['X','Q','B','I','W'])test(`structured QC ${qc} is rejected, not interpreted as an observed extreme`,()=>{assert.equal(structured('KMIA',now-60000,25,qc),null);});
+for(const qc of ['Z',null,'UNKNOWN'])test(`unverified QC ${qc} is visible but not a model input`,()=>{const r=structured('KMIA',now-60000,25,qc);assert(r);assert.equal(C.usableTemperature(r),false);assert.equal(C.selectRows([r],now).length,1);});
+test('structured Fahrenheit and Kelvin convert explicitly',()=>{
+ const a=C.fromNWS(fields('KMIA',now-60000,77,'V','wmoUnit:degF'),'KMIA',now,nwsURL('KMIA'),['KMIA']);
+ const b=C.fromNWS(fields('KMIA',now-60000,298.15,'V','wmoUnit:K'),'KMIA',now,nwsURL('KMIA'),['KMIA']);
+ assert.equal(a.c,25);assert(Math.abs(b.c-25)<1e-8);
+});
+for(const value of [null,'25',NaN,Infinity,99,-99])test(`invalid structured numeric value ${value} rejected`,()=>assert.equal(structured('KMIA',now-60000,value),null));
+test('missing or unsupported structured unit is never guessed',()=>{
+ for(const unit of [null,'','F','wmoUnit:degR'])assert.equal(C.fromNWS(fields('KMIA',now-60000,25,'V',unit),'KMIA',now,nwsURL('KMIA'),['KMIA']),null);
+});
+test('structured source and station must agree',()=>{
+ const p=fields('KMIA');assert.equal(C.fromNWS(p,'KNYC',now,nwsURL('KNYC'),['KNYC']),null);
+ assert.equal(C.fromNWS(p,'KMIA',now,nwsURL('KNYC'),['KMIA']),null);
+ assert.equal(C.fromNWS(p,'KMIA',now,'https://api.weather.gov.evil.test/stations/KMIA/observations',['KMIA']),null);
+});
+test('structured future/timezone-free timestamps rejected',()=>{
+ assert.equal(structured('KMIA',now+1000),null);const p=fields();p.timestamp='2026-09-22T17:59:00';
+ assert.equal(C.fromNWS(p,'KMIA',now,nwsURL('KMIA'),['KMIA']),null);
+});
+for(const wrap of [s=>'123\n'+s,s=>'2026/09/22 17:51\n'+s,s=>'\x01123\nSAUS42 KWBC 221800\n'+s+'=\x03'])test('known raw wrapper preserved without loss of T-group',()=>{
+ const x=C.parseMetar({rawOb:wrap(raw()),obsTime:Date.parse('2026-09-22T17:51Z')/1000},'AWC',now,'url',['KNYC']);assert(x);assert.equal(x.c,21.7);assert.equal(x.precise,true);
+});
+test('arbitrary prose or multiple raw reports are not accepted as wrappers',()=>{
+ assert.equal(C.parseMetar({rawOb:'arbitrary text '+raw()},'NWS',now,'url',['KNYC']),null);
+ assert.equal(C.parseMetar({rawOb:raw()+'\n'+raw('KMIA')},'NWS',now,'url',['KNYC','KMIA']),null);
+});
+test('present invalid raw report cannot be laundered through structured fallback',()=>{
+ const p=fields('KNYC',Date.parse('2026-09-22T17:51Z'));
+ for(const x of [raw('KMIA'),raw('KNYC','221851'),raw('KNYC','221751','99/10','T09990100'),'unrecognized '+raw()]){
+  assert.equal(C.fromNWS({...p,rawMessage:x},'KNYC',now,nwsURL('KNYC'),['KNYC']),null);
+ }
+});
+test('raw precise report wins over observation-only fallback at same timestamp',()=>{
+ const t=Date.parse('2026-09-22T17:51Z'),a=structured('KNYC',t,30),b=C.parseMetar({rawOb:raw(),obsTime:t/1000},'AWC',now,'url',['KNYC']);
+ const r=C.selectRows([a,b],now);assert.equal(r.length,1);assert.equal(r[0].c,21.7);assert.equal(r[0].conflict,false);
+});
+test('unexplained contradictory structured reports are not averaged',()=>{
+ const a=structured('KNYC',now-60000,25),b=structured('KNYC',now-60000,26);
+ assert.equal(C.selectRows([a,b],now)[0].conflict,true);
+});
+test('structured records cannot raise the engine climate floor or quantization evidence',()=>{
+ const HT=require('../engine/engine');const a={...structured('KNYC',now-60000,40),t:new Date(now-60000)};
+ assert.equal(HT.observedMax([a],'America/New_York','2026-09-22').max,null);
+ const r=HT.observedMax([a,{t:new Date(now-3600000),f:71.06,c:21.7,precise:true}],'America/New_York','2026-09-22');
+ assert.equal(r.max,71.06);assert.equal(r.coarsePeak,null);
+});
+test('structured cached records are revalidated and not re-timestamped',()=>{
+ const r=structured('KNYC',now-600000,25),doc={rows:[r]};const a=S.rowsFor(doc,'KNYC',now-3600000,now);
+ assert.equal(a.length,1);assert.equal(a[0].firstReceivedAt,r.firstReceivedAt);assert.equal(a[0].precise,false);
+ assert.equal(S.rowsFor({rows:[{...r,c:30}]},'KNYC',now-3600000,now).length,0);
+});
+test('structured cache never supplies Shadow climate evidence',()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'obs-structured-shadow-'));
+ try{
+  atomic(path.join(root,'docs/data/observations/shared.json'),{schemaVersion:1,generatedAt:C.iso(now),rows:[structured('KNYC',now-60000,40)],products:[],checks:{}});
+  const {Collector}=require('../scripts/shadow/collector');const sh=new Collector(root,{...require('../scripts/shadow/config.json'),stations:['KNYC']},{clock:()=>now,read:async()=>{}});
+  S.ingestShadow(sh);assert.equal(Object.keys(sh.state.evidence).length,0);
+ }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+test('restored structured neighbors can provide pairs without learned weights',()=>{
+ const a=now-3600000;const rr=[obs('KNYC',a,20),structured('KLGA',a,21),structured('KLGA',now-60000,22),structured('KEWR',a,22),structured('KEWR',now-60000,23)];
+ const nc=W.nowcast(rr,'KNYC',now,{},cfg);assert.equal(nc.ok,true);assert.equal(nc.status,'COLLECTING_VALIDATION');assert.equal(nc.inputs.length,2);
+ assert.equal(nc.preferredF,nc.baselineF);assert.equal(nc.eligibleForLocks,false);
+});
+test('an unchanged neighbor temperature still counts when its timestamp advances',()=>{
+ const rr=rowsForFeatures();rr[2].c=rr[1].c;rr[2].f=rr[1].f;rr[4].c=rr[3].c;rr[4].f=rr[3].f;
+ const nc=W.nowcast(rr,'KNYC',now,{},cfg);assert(nc.ok);assert.equal(nc.equalDelta,0);
+});
+test('fresh-target status is not confused with missing-data abstention',()=>{
+ const rr=rowsForFeatures();rr.push(obs('KNYC',now-60000,21));const nc=W.nowcast(rr,'KNYC',now,{},cfg);
+ assert.equal(nc.status,'FRESH_TARGET');assert.equal(nc.candidateF,null);assert.equal(nc.preferredF,C.cToF(21));
+});
+test('each unavailable paired neighbor has an explicit reason',()=>{
+ const rr=rowsForFeatures();rr[2].t=C.iso(now-30*60000);const nc=W.nowcast(rr,'KNYC',now,{},cfg);
+ assert.equal(nc.status,'INSUFFICIENT_NEIGHBORS');assert(nc.neighborDiagnostics.some(x=>x.station==='KLGA'&&x.status==='NEIGHBOR_TOO_OLD'));
+ assert(nc.neighborDiagnostics.some(x=>x.station==='KJRB'&&x.status==='NO_USABLE_NEIGHBOR_REPORT'));
+});
+test('missing precise anchor remains different from insufficient validation days',()=>{
+ const rr=[structured('KNYC',now-60000,20)];const nc=W.nowcast(rr,'KNYC',now,{},cfg);
+ assert.equal(nc.status,'NO_PRECISE_ANCHOR');assert.equal(nc.candidateF,null);
+});
+test('recent cadence and latest age are independent',()=>{
+ const rr=Array.from({length:12},(_,i)=>obs('KMIA',now-(i*5+20)*60000,25));const d=C.cadenceInfo(rr,now);
+ assert.equal(d.recentSpacingMinutes,5);assert.equal(d.latestAgeMinutes,20);assert.equal(d.recentRows,12);
+});
+test('NWS collector reports structured retained/rejected counts and reasons',async()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'nws-counts-'));try{
+  const c=new ObservationCollector(root,cfg,{clock:()=>now,read:async url=>{
+   const id=new URL(url).pathname.split('/')[2];return {url,receivedAt:C.iso(now),data:{features:[{properties:fields(id,now-60000,25)},{properties:fields(id,now-60000,25,'X')}]}};
+  }});await c.nws();const x=c.state.checks['NWS:KMIA'];assert.equal(x.records,1);assert.equal(x.supplied,2);assert.equal(x.structuredRecords,1);assert.equal(x.rejected,1);assert.equal(x.rejectionReasons.TEMPERATURE_QC_X,1);
+ }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+for(const id of ['KMIA','KMDW','KSFO','KLAX'])test(`engine retains five-minute structured ${id} observations alongside hourly reports`,async()=>{
+ const HT=require('../engine/engine'),saveFetch=global.fetch,saveLoad=S.load;const end=new Date(Date.now()-5*60000);end.setUTCSeconds(0,0);
+ const stamps=Array.from({length:36},(_,i)=>+end-i*5*60000),hourly=[+end-1*60000,+end-61*60000,+end-121*60000];
+ const dd=t=>{const d=new Date(t);return [d.getUTCDate(),d.getUTCHours(),d.getUTCMinutes()].map(x=>String(x).padStart(2,'0')).join('');};
+ try{
+  S.load=()=>null;global.fetch=async url=>({ok:true,json:async()=>String(url).includes('api.weather.gov')?{features:stamps.map(t=>({properties:fields(id,t,25)}))}:hourly.map(t=>({icaoId:id,obsTime:t/1000,rawOb:raw(id,dd(t),'25/10','T02500100')}))});
+  const r=await HT.fetchObs(id,C.iso(+end-4*3600000),4);assert.equal(r.length,39);assert.equal(r.filter(x=>x.structured).length,36);assert.equal(r.filter(x=>x.precise).length,3);assert.equal(r.inputCadence.recentSpacingMinutes,5);
+  assert.equal(r.inputDiagnostics.NWS.structuredRecords,36);
+ }finally{global.fetch=saveFetch;S.load=saveLoad;}
+});
+test('one failed observation source is visible while the other still supplies data',async()=>{
+ const HT=require('../engine/engine'),saveFetch=global.fetch,saveLoad=S.load;const d=new Date(Date.now()-60000);d.setUTCSeconds(0,0);
+ const code=[d.getUTCDate(),d.getUTCHours(),d.getUTCMinutes()].map(x=>String(x).padStart(2,'0')).join('');
+ try{
+  S.load=()=>null;global.fetch=async url=>{if(String(url).includes('api.weather.gov'))throw Error('synthetic timeout');return {ok:true,json:async()=>[{icaoId:'KMIA',obsTime:+d/1000,rawOb:raw('KMIA',code)}]};};
+  const r=await HT.fetchObs('KMIA',C.iso(+d-3600000),1);assert.equal(r.length,1);assert.equal(r.inputDiagnostics.NWS.ok,false);assert.match(r.inputDiagnostics.NWS.error,/timeout/);assert.equal(r.inputDiagnostics.AWC.ok,true);
+ }finally{global.fetch=saveFetch;S.load=saveLoad;}
+});
+test('a known unresolved shared conflict still blocks the forecast evidence stream',async()=>{
+ const HT=require('../engine/engine'),saveFetch=global.fetch,saveLoad=S.load;const d=new Date(Date.now()-60000);d.setUTCSeconds(0,0);
+ const code=[d.getUTCDate(),d.getUTCHours(),d.getUTCMinutes()].map(x=>String(x).padStart(2,'0')).join('');
+ try{
+  S.load=()=>({rows:[],conflicts:[{station:'KMIA',t:d.toISOString()}]});
+  global.fetch=async url=>({ok:true,json:async()=>String(url).includes('api.weather.gov')?{features:[]}:[{icaoId:'KMIA',obsTime:+d/1000,rawOb:raw('KMIA',code)}]});
+  assert.equal((await HT.fetchObs('KMIA',C.iso(+d-3600000),1)).length,0);
+ }finally{global.fetch=saveFetch;S.load=saveLoad;}
+});
+test('precise target requirement and validation minimums remain unchanged',()=>{
+ assert.equal(cfg.maxAnchorMinutes,90);assert.equal(cfg.maxNeighborAgeMinutes,25);
+ assert.equal(cfg.minTrainingDays,5);assert.equal(cfg.minTrainingSamples,40);
+ assert.equal(cfg.minValidationDays,3);assert.equal(cfg.minValidationSamples,12);assert.equal(cfg.improvementRequired,.05);
+});

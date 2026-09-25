@@ -42,7 +42,7 @@ const HT = (() => {
 "use strict";
 
 /** Bumped whenever the forecast logic changes, so the scorecard can say so. */
-const MODEL_VERSION = "4.2.0";
+const MODEL_VERSION = "4.2.1";
 
 // ---------------------------------------------------------------- stations
 const STATIONS = [
@@ -328,46 +328,64 @@ async function fetchMetars(stationId, hours = 30) {
 async function getObsJSON(url) {
   const headers = { Accept: "application/geo+json,application/json" };
   if (typeof window === "undefined") headers["User-Agent"] = "hightemp-desk (github.com/dawienhold/hightemp)";
-  const r = await fetch(url, { headers, signal: AbortSignal.timeout(8000) });
-  if (r.status === 204) return [];
-  if (!r.ok) throw new Error("Observation HTTP " + r.status);
-  return r.json();
+  const controller = new AbortController(); let timer;
+  try {
+    const timeout = new Promise((_, reject) => { timer = setTimeout(() => { controller.abort(); reject(new Error("Observation request timeout")); }, 12000); });
+    const operation = (async () => {
+      const r = await fetch(url, { headers, signal: controller.signal });
+      if (r.status === 204) return [];
+      if (!r.ok) throw new Error("Observation HTTP " + r.status);
+      return r.json();
+    })();
+    return await Promise.race([operation, timeout]);
+  } finally { clearTimeout(timer); }
 }
 function sharedObservationDoc() {
   if (typeof window !== "undefined" || typeof require === "undefined") return null;
   return require("../scripts/observations/shared.js").load(require("path").join(__dirname,".."));
 }
 async function fetchObs(stationId, sinceISO, hours) {
-  const now = Date.now(), byMin = new Map(), rawVariants = [];
-  const add = (t,c,raw,source) => {
-    if (!t || !Number.isFinite(+t) || +t > now || +t < Date.parse(sinceISO)) return;
-    const tg = tGroupC(raw), cc = tg != null ? tg : c;
-    if (cc == null || !Number.isFinite(cc) || cc < -80 || cc > 65) return;
-    const row={t,f:cToF(cc),c:cc,precise:tg!=null,sixMaxC:sixHourMaxC(raw),source,raw,omo:false};
-    rawVariants.push(row);
-    const key=+t, prev=byMin.get(key);
-    if (!prev || (row.precise && !prev.precise) || (/\bCOR\b/.test(raw) && !/\bCOR\b/.test(prev.raw||""))) byMin.set(key,row);
-    else if (prev.c===row.c && prev.sixMaxC==null && row.sixMaxC!=null) prev.sixMaxC=row.sixMaxC;
-  };
-  const shared=sharedObservationDoc();
-  if(shared) for(const r of require("../scripts/observations/shared.js").rowsFor(shared,stationId,Date.parse(sinceISO),now))
-    add(r.t,r.c,r.raw,r.source);
-  // Both sources start now. A stalled NWS request cannot delay AWC from starting.
-  // A small overlap complements the shared archive; on initial installation fetch the requested history.
-  await Promise.allSettled([
-    (async()=>{const d=await getObsJSON(`${NWS}/stations/${stationId}/observations?start=${encodeURIComponent(sinceISO)}`);
-      for(const f of d.features||[]){const p=f.properties;add(new Date(p.timestamp),num(p.temperature&&p.temperature.value),p.rawMessage||"","NWS observations");}})(),
-    (async()=>{const d=await getObsJSON(`${AVWX}?ids=${encodeURIComponent(stationId)}&format=json&hours=${hours}`);
-      for(const o of Array.isArray(d)?d:[])if(!o.icaoId||o.icaoId===stationId)add(new Date(o.obsTime*1000),num(o.temp),o.rawOb||"","AviationWeather METAR");})()
-  ]);
-  // Apply the shared parser's correction/conflict selection when available in Node.
-  if(typeof window === "undefined" && typeof require !== "undefined") {
-    const C=require("../scripts/observations/core.js");
-    const parsed=rawVariants.map(r=>C.parseMetar({icaoId:stationId,rawOb:r.raw,obsTime:+r.t/1000},r.source,now,"",[stationId])).filter(Boolean);
-    const conflicts=new Set((shared?.conflicts||[]).filter(r=>r.station===stationId).map(r=>r.t));
-    return C.selectRows(parsed,now).filter(r=>!r.conflict&&!conflicts.has(r.t)).map(r=>({...r,t:new Date(r.t)}));
+  if (typeof require === "undefined") throw new Error("Observation collection runs in Node/GitHub Actions; browsers display saved snapshots.");
+  const C = require("../scripts/observations/core.js");
+  const now = Date.now(), since = Date.parse(sinceISO), variants = [], checks = {};
+  const add = r => { if (r && Date.parse(r.t) >= since && Date.parse(r.t) <= Date.now()) variants.push(r); };
+  const shared = sharedObservationDoc();
+  if (shared) for (const r of require("../scripts/observations/shared.js").rowsFor(shared, stationId, since, now)) {
+    if (C.isStructured(r)) add({...r, t:r.t.toISOString()});
+    else {
+      const v = C.parseMetar({icaoId:stationId, obsTime:+r.t/1000, rawOb:r.raw}, r.source, Date.parse(r.firstReceivedAt), r.sourceUrl, [stationId]);
+      add(v);
+    }
   }
-  return [...byMin.values()].sort((a,b)=>a.t-b.t);
+  const task = async (source, url, run) => {
+    const start = Date.now();
+    try { const d=await getObsJSON(url); const result=run(d,Date.now()); checks[source]={...result,ok:true,checkedAt:new Date().toISOString(),durationMs:Date.now()-start}; }
+    catch(e) { checks[source]={ok:false,checkedAt:new Date().toISOString(),error:String(e.message||e),durationMs:Date.now()-start}; }
+  };
+  const nwsUrl=`${NWS}/stations/${stationId}/observations?start=${encodeURIComponent(sinceISO)}&limit=500`;
+  const awcUrl=`${AVWX}?ids=${encodeURIComponent(stationId)}&format=json&hours=${hours}`;
+  await Promise.all([
+    task("NWS",nwsUrl,(d,received)=>{
+      if(!Array.isArray(d.features))throw new Error("Unexpected NWS observation schema");
+      let records=0,structuredRecords=0;const rejectionReasons={};
+      for(const f of d.features){const v=C.inspectNWS(f.properties,stationId,received,nwsUrl,[stationId]);
+        if(v.row){add(v.row);records++;if(v.row.structured)structuredRecords++;}
+        else rejectionReasons[v.reason]=(rejectionReasons[v.reason]||0)+1;
+      }
+      return {supplied:d.features.length,records,structuredRecords,rejected:d.features.length-records,rejectionReasons};
+    }),
+    task("AWC",awcUrl,(d,received)=>{
+      if(!Array.isArray(d))throw new Error("Unexpected AWC observation schema");
+      let records=0;for(const o of d){const r=C.parseMetar(o,"AWC",received,awcUrl,[stationId]);if(r){add(r);records++;}}
+      return {supplied:d.length,records,rejected:d.length-records};
+    })
+  ]);
+  const blocked = new Set((shared?.conflicts||[]).filter(r=>r.station===stationId).map(r=>Date.parse(r.t)));
+  const selected=C.selectRows(variants,Date.now()).filter(r=>!r.conflict&&!blocked.has(Date.parse(r.t)));
+  const rows=selected.map(r=>({...r,t:new Date(r.t)}));
+  rows.inputDiagnostics=checks;
+  rows.inputCadence=C.cadenceInfo(selected,Date.now());
+  return rows;
 }
 
 async function fetchDayObs(st, nowD) {
@@ -378,7 +396,7 @@ async function fetchDayObs(st, nowD) {
   const keep = prim.filter(r => climDate(r.t, st.tz) === today);
   // Nearby stations are collected once by the independent observation worker.
   // They appear in Data input health, not as fabricated target observations.
-  return { today, obs: keep, proxy: [] };
+  return { today, obs: keep, proxy: [], inputDiagnostics: prim.inputDiagnostics || {}, inputCadence: prim.inputCadence || null };
 }
 
 function inferSubHourly(obs, proxy) {
@@ -1122,7 +1140,7 @@ function sixHourWindowInDay(obsTime, tz, day) {
  * which is what they are for.
  */
 function observedMax(series, tz, day) {
-  const real = (series || []).filter(r => !r.inferred && !r.omo);
+  const real = (series || []).filter(r => !r.inferred && !r.omo && !r.advisoryOnly && !r.structured);
   const EMPTY = { max: null, precise: false, at: null, quantSd: 0,
                   loF: null, hiF: null, settles: null, quantized: false, source: null,
                   coarsePeak: null };
@@ -1135,6 +1153,7 @@ function observedMax(series, tz, day) {
   // a station gets called half a degree hot every day.
   let bp = null, bc = null;
   for (const r of real) {
+    if (!Number.isFinite(r.f)) continue;
     if (r.precise) { if (!bp || r.f > bp.f) bp = r; }
     else           { if (!bc || r.f > bc.f) bc = r; }
   }
@@ -1319,15 +1338,15 @@ function forecastDay(st, ctx, dayOffset) {
   // Projections are fine for "what is it doing right now"; they are not
   // evidence about what the station has recorded, nor about how wrong a model
   // has been today.
-  const realObs = obsSeries.filter(o => !o.inferred && !o.omo);
+  const realObs = obsSeries.filter(o => !o.inferred && !o.omo && Number.isFinite(o.f) && (!o.advisoryOnly || (o.structured && o.trendEligible)));
   if (dayOffset === 0 && obsSeries.length) {
     const om = observedMax(obsSeries, st.tz, date);
     obsMax = om.max; obsPrecise = om.precise; obsMaxAt = om.at; quantSd = om.quantSd;
     obsBand = om.loF == null ? null : [om.loF, om.hiF];
     obsSettles = om.settles; obsQuantized = om.quantized; obsSource = om.source; coarsePeak = om.coarsePeak;
-    current = obsSeries[obsSeries.length - 1];
+    current = obsSeries.filter(o => Number.isFinite(o.f)).at(-1) || null;
     currentInferred = !!(current && current.inferred);
-    const back = obsSeries.filter(r => nowD - r.t <= 50 * 60e3);
+    const back = realObs.filter(r => nowD - r.t <= 50 * 60e3);
     if (back.length >= 2) trend = back[back.length - 1].f - back[0].f;
   }
   // Today's preliminary CLI (e.g. "valid today as of 4 PM"): the station's own
@@ -1606,10 +1625,10 @@ async function runStation(st, cliCache, memory) {
     localDate: today, localClock: localClock(nowD, st.tz), localHour: localHour(nowD, st.tz),
     sunrise: sun && sun.daily ? sun.daily.sunrise[1] : null,
     sunset:  sun && sun.daily ? sun.daily.sunset[1]  : null,
-    obs: dayObs.obs.map(r => ({ t: r.t.toISOString(), f: r.f, precise: r.precise, source: r.source || null, omo: !!r.omo })),
+    obs: dayObs.obs.filter(r => r.f != null).map(r => ({ t: r.t.toISOString(), f: r.f, precise: r.precise, source: r.source || null, omo: !!r.omo, structured: !!r.structured })),
     inferredObs: inferred.map(r => ({ t: r.t.toISOString(), f: r.f })),
-    obsCadenceMin: dayObs.obs.length > 2
-      ? Math.round((dayObs.obs[dayObs.obs.length-1].t - dayObs.obs[0].t) / 60e3 / (dayObs.obs.length - 1)) : null,
+    obsCadenceMin: dayObs.inputCadence?.recentSpacingMinutes ?? null,
+    inputDiagnostics: dayObs.inputDiagnostics || {}, inputCadence: dayObs.inputCadence || null,
     today: d0, tomorrow: d1, cal, aliasedModels: alias, activeModels: models, diag,
     cli: cliRows.slice(0, 14), backtest, mae, within1, within2,
     memoryDays: (memory || []).length, modelVersion: MODEL_VERSION,
@@ -1897,6 +1916,9 @@ function snapshot(result, opts = {}) {
                          rising: !!d.hidden.rising, segFrom: d.hidden.segFrom, segMax: d.hidden.segMax } : null,
     current: d.current ? +d.current.f.toFixed(1) : null,
     currentInferred: !!d.currentInferred,
+    currentAt: d.current ? new Date(d.current.t).toISOString() : null,
+    currentStructured: !!d.current?.structured, currentPrecisionC: d.current?.precisionC ?? null,
+    currentQC: d.current?.temperatureQC || null,
     trend: d.trend == null ? null : +d.trend.toFixed(1),
     top: d.top.map(b => ({ f: b.f, p: +b.p.toFixed(3) })),
     models: d.perModel.map(m => ({ m: m.label, v: +m.cand.toFixed(1), b: +m.bias.toFixed(1) })),
@@ -1924,6 +1946,7 @@ function snapshot(result, opts = {}) {
     stations: result.stations.map(s => s.error ? { station: s.station, error: s.error } : ({
       station: s.station, name: s.name, site: s.site, localDate: s.localDate,
       localClock: s.localClock, caveat: s.caveat, obsCadenceMin: s.obsCadenceMin,
+      inputDiagnostics: s.inputDiagnostics || {}, inputCadence: s.inputCadence || null,
       today: day(s.today), tomorrow: day(s.tomorrow),
       curve: decimate(s.obs || [], maxCurve, o => o.f).map(o => [localHM(o.t, s.tz), +o.f.toFixed(1)]),
       inferredCurve: decimate((s.inferredObs || []).filter((_, i) => i % 3 === 0), maxCurve, o => o.f).map(o => [localHM(o.t, s.tz), +o.f.toFixed(1)]),

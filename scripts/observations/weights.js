@@ -12,28 +12,34 @@ function regime(row,tz) {
 }
 function features(rows,station,now,cfg) {
   const spec=cfg.targets[station];
-  const good=C.selectRows(rows,now).filter(r=>!r.conflict&&r.f!=null);
+  const selected=C.selectRows(rows,now);const good=selected.filter(C.usableTemperature);
   const targets=good.filter(r=>r.station===station&&r.precise);
   const anchor=targets.at(-1);
-  if(!anchor)return {ok:false,reason:'No precise target-station anchor yet'};
+  if(!anchor)return {ok:false,status:'NO_PRECISE_ANCHOR',reason:'No raw tenth-C target anchor yet. Structured/coarse readings remain visible but do not establish an exact anchor.',inputs:[],neighborDiagnostics:spec.neighbors.map(id=>({station:id,status:'WAITING_FOR_TARGET_ANCHOR'}))};
   const age=(now-C.ms(anchor.t))/60000;
-  if(age<5)return {ok:false,reason:'Fresh target reading; neighbor estimate not needed',anchor};
-  if(age>cfg.maxAnchorMinutes)return {ok:false,reason:'Target anchor too old; abstaining',anchor};
-  const deltas={},inputs=[];
+  if(age<5)return {ok:false,status:'FRESH_TARGET',reason:'A fresh precise target reading is available; a neighbor estimate is not needed.',anchor,anchorAgeMinutes:age};
+  if(age>cfg.maxAnchorMinutes)return {ok:false,status:'STALE_ANCHOR',reason:`Precise target anchor is ${Math.round(age)} minutes old (limit ${cfg.maxAnchorMinutes}); not extrapolating.`,anchor,anchorAgeMinutes:age};
+  const deltas={},inputs=[],neighborDiagnostics=[];
   for(const id of spec.neighbors) {
     const rr=good.filter(r=>r.station===id);
     const a=rr.filter(r=>C.ms(r.t)<=C.ms(anchor.t)&&C.ms(anchor.t)-C.ms(r.t)<=15*60000).at(-1);
     const b=rr.filter(r=>C.ms(r.t)<=now&&now-C.ms(r.t)<=cfg.maxNeighborAgeMinutes*60000).at(-1);
-    if(!a||!b||C.ms(b.t)<=C.ms(a.t))continue;
+    const latest=rr.at(-1);
+    const diagnostic={station:id,anchorAt:a?.t||null,latestAt:latest?.t||null,latestAgeMinutes:latest?(now-C.ms(latest.t))/60000:null};
+    if(!rr.length){neighborDiagnostics.push({...diagnostic,status:'NO_USABLE_NEIGHBOR_REPORT'});continue;}
+    if(!a){neighborDiagnostics.push({...diagnostic,status:'MISSING_ANCHOR_PAIR'});continue;}
+    if(!b){neighborDiagnostics.push({...diagnostic,status:'NEIGHBOR_TOO_OLD'});continue;}
+    if(C.ms(b.t)<=C.ms(a.t)){neighborDiagnostics.push({...diagnostic,status:'NO_NEWER_NEIGHBOR_REPORT'});continue;}
     const d=b.f-a.f;
-    if(Math.abs(d)>12)continue; // Abstain on extreme/local discontinuities rather than extrapolating.
+    if(Math.abs(d)>12){neighborDiagnostics.push({...diagnostic,status:'CHANGE_TOO_LARGE'});continue;} // Abstain on extreme/local discontinuities rather than extrapolating.
+    neighborDiagnostics.push({...diagnostic,status:'PAIRED'});
     deltas[id]=d;inputs.push({station:id,deltaF:d,anchorAt:a.t,latestAt:b.t,
-      latestAgeMinutes:(now-C.ms(b.t))/60000,precisionC:b.precisionC});
+      latestAgeMinutes:(now-C.ms(b.t))/60000,precisionC:b.precisionC,structured:!!b.structured,source:b.source});
   }
-  if(inputs.length<2)return {ok:false,reason:'Fewer than two fresh, paired neighbor changes',anchor,inputs};
+  if(inputs.length<2)return {ok:false,status:'INSUFFICIENT_NEIGHBORS',reason:`${inputs.length} of ${spec.neighbors.length} neighbors have fresh paired changes; at least 2 are required. See each neighbor below.`,anchor,anchorAgeMinutes:age,inputs,neighborDiagnostics};
   return {ok:true,station,at:C.iso(now),date:C.date(now,spec.offset),anchorAt:anchor.t,anchorId:anchor.id,
     anchorF:anchor.f,anchorAgeMinutes:age,horizon:bucket(age),regime:regime(anchor,spec.tz),deltas,inputs,
-    equalDelta:mean(Object.values(deltas))};
+    equalDelta:mean(Object.values(deltas)),neighborDiagnostics};
 }
 function fit(rows,ids) {
   const out={};
@@ -84,13 +90,16 @@ function train(training,station,horizon,currentDate,reg,cfg) {
     empiricalAbsErrorP90F:q(errors,.9),modelId:C.hash([weights,days.at(-1),horizon,reg]).slice(0,16)};
 }
 function nowcast(rows,station,now,state,cfg) {
-  const f=features(rows,station,now,cfg);
-  if(!f.ok)return {station,status:'ABSTAIN',reason:f.reason,anchorAt:f.anchor?.t||null,inputs:f.inputs||[],eligibleForLocks:false};
+  const f=features(rows,station,now,cfg);const limits={minPairs:2,maxNeighborAgeMinutes:cfg.maxNeighborAgeMinutes,maxAnchorMinutes:cfg.maxAnchorMinutes};
+  if(!f.ok)return {station,ok:false,limits,status:f.status||'ABSTAIN',reason:f.reason,anchorAt:f.anchor?.t||null,
+    anchorAgeMinutes:f.anchorAgeMinutes??null,inputs:f.inputs||[],neighborDiagnostics:f.neighborDiagnostics||[],eligibleForLocks:false,
+    candidateF:null,preferredF:f.status==='FRESH_TARGET'?f.anchor?.f:null,
+    validationRequirements:{trainingDays:cfg.minTrainingDays,trainingSamples:cfg.minTrainingSamples,validationDays:cfg.minValidationDays,validationSamples:cfg.minValidationSamples}};
   const model=train(state.training||[],station,f.horizon,f.date,f.regime,cfg);
   const learned=predict(model.weights,f.deltas),delta=learned==null?f.equalDelta:learned;
   const validated=model.mode==='VALIDATED_ADVISORY';
-  return {...f,status:model.mode,model,candidateF:f.anchorF+delta,preferredF:validated?f.anchorF+delta:f.anchorF,
-    baselineF:f.anchorF,eligibleForLocks:false,
+  return {...f,limits,status:model.mode,model,candidateF:f.anchorF+delta,preferredF:validated?f.anchorF+delta:f.anchorF,
+    baselineF:f.anchorF,eligibleForLocks:false,validationRequirements:{trainingDays:cfg.minTrainingDays,trainingSamples:cfg.minTrainingSamples,validationDays:cfg.minValidationDays,validationSamples:cfg.minValidationSamples},
     caveat:'Estimate of current temperature, not a measured peak or CLI probability. No effect on official floors or trade eligibility.'};
 }
 /** Grade only an estimate issued before the exact target observation time (<=2 min).

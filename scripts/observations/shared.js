@@ -8,9 +8,17 @@ function load(root,now=Date.now()){
 }
 function rowsFor(d,station,since,now=Date.now()){
  if(!d)return [];
- return d.rows.filter(r=>r.station===station&&!r.conflict&&!r.omo&&!r.inferred&&!r.advisoryOnly&&['AWC','NWS','NOAA_RAW'].includes(r.source)
-  &&Date.parse(r.t)>=since&&Date.parse(r.t)<=now&&Date.parse(r.firstReceivedAt)<=now&&typeof r.raw==='string')
-  .map(r=>({...r,t:new Date(r.t)}));
+ const C=require('./core');const rows=[];
+ for(const r of d.rows||[]) {
+  if(r.station!==station||r.conflict||r.omo||r.inferred||Date.parse(r.t)<since||Date.parse(r.t)>now||
+     !Number.isFinite(Date.parse(r.firstReceivedAt))||Date.parse(r.firstReceivedAt)>now)continue;
+  if(C.isStructured(r)) {
+   // Revalidate cached structured fields; do not trust a serialized precision/evidence flag.
+   const v=C.fromNWS(r.nws,station,Date.parse(r.firstReceivedAt),r.sourceUrl,[station]);
+   if(v&&v.id===r.id&&v.c===r.c&&v.t===r.t)rows.push({...v,t:new Date(v.t)});
+  } else if(!r.advisoryOnly&&['AWC','NWS','NOAA_RAW'].includes(r.source)&&typeof r.raw==='string')rows.push({...r,t:new Date(r.t)});
+ }
+ return rows;
 }
 function ingestShadow(collector){
  const now=collector.clock(),d=load(collector.root,now),status={aviation:false,cli:new Set()};

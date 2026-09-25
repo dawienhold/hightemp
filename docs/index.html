@@ -301,7 +301,7 @@ button[disabled]{opacity:.5; cursor:default}
       <p><strong>Settlement truth is the CLI daily climate report</strong> each station's NWS office issues overnight — the MAXIMUM line, in whole °F. Everything here aims at that number, not at a grid cell near the station.</p>
       <p><strong>Two calibrations, doing different jobs.</strong> The <em>bias</em> term is the station's reported high minus each model's own analysis over the trailing month, which captures the offset between the grid and the actual sensor. The <em>skill</em> term comes from what each model really forecast a day ahead, and it alone sets the width of the confidence interval — analysis error would understate the spread badly, because the analysis has already seen the weather.</p>
       <p><strong>Intraday the observations take over.</strong> Each model's running error against today's readings is carried forward with a three-hour decay, the forecast can never fall below what has already been reported, and the interval narrows on both how little heating day is left and how much rise the models still expect. A day locks in only once the temperature is falling and no model still reaches above the observed maximum.</p>
-      <p><strong>Feed cadence.</strong> KMIA, KMDW, KLAX and KSFO transmit every ~5 minutes in whole °C, so a single reading carries about ±0.9°F of slack; the hourly METAR tenths and the 6-hourly remark group pin it precisely, and both are used when present. Nearby-station estimates are shown separately in Data input health; they never establish the official maximum.</p>
+      <p><strong>Observation spacing.</strong> The badge is the median gap between retained readings in the last six hours, not polling frequency or source latency. Raw whole-degree Celsius readings have rounding uncertainty. Structured NWS observations without usable raw text are retained with explicit provenance: quality-passed values can inform trends but never establish an evidence floor. Nearby estimates are separate research outputs, not measured highs.</p>
       <p><strong>Which day a reading belongs to.</strong> The CLI's climate day runs midnight to midnight <em>local standard time</em>. While daylight time is in force that is 1:00 AM to 1:00 AM on the wall clock, so a reading at 12:30 AM belongs to the previous day's report. Every observed maximum on this page is filed that way. Only a <em>final</em> CLI (issued after the day closes) settles a call; the afternoon preliminary report never does.</p>
       <p>Sources: <code>api.weather.gov</code>, <code>aviationweather.gov</code>, NOAA MADIS One-Minute ASOS when available, and <code>open-meteo.com</code>. Raw METARs, every call and every settlement are archived in the repository's <code>docs/data</code> folder.</p>
     </section>
@@ -523,9 +523,20 @@ function stationCard(s, opts = {}) {
   head.appendChild(idwrap);
 
   const cad = el("span", "cad" + (s.obsCadenceMin && s.obsCadenceMin > 30 ? " slow" : ""));
-  cad.textContent = s.obsCadenceMin ? `${s.obsCadenceMin} min feed` : "no feed";
+  cad.textContent = s.obsCadenceMin ? `${s.obsCadenceMin} min obs spacing` : "spacing unavailable";
+  cad.title = "Median spacing of retained readings in the last six hours, not polling frequency or delivery latency.";
   head.appendChild(cad);
   card.appendChild(head);
+  if (s.inputCadence || Object.keys(s.inputDiagnostics || {}).length) {
+    const detail = el("details", "detail"); detail.appendChild(el("summary", null, "Observation freshness and source health"));
+    const c = s.inputCadence || {};
+    const age = t => t ? Math.max(0, Math.round((Date.now() - Date.parse(t)) / 60000)) + " min" : "unknown";
+    detail.appendChild(el("p", "muted small", `Latest reading age: ${age(c.latestAt)}. Latest precise report age: ${age(c.latestPreciseAt)}. Spacing is not delivery latency.`));
+    for (const [source, x] of Object.entries(s.inputDiagnostics || {}))
+      detail.appendChild(el("p", "muted small", source + ": " + (x.ok ? `${x.records} retained / ${x.supplied} supplied; ${x.rejected || 0} rejected` + (x.rejected ? " " + JSON.stringify(x.rejectionReasons || {}) : "") : (x.error || "source failed"))));
+    card.appendChild(detail);
+  }
+
   if (s.stale) {
     card.appendChild(el("p", "caveat",
       "Feeds for this station failed on the latest pass (" + (s.staleError || "error") + "). Showing the last good pass, from " +
@@ -551,8 +562,12 @@ function stationCard(s, opts = {}) {
     if (d0.current != null) {
       const arrow = d0.trend == null ? "" : d0.trend > 0.4 ? " ↑" : d0.trend < -0.4 ? " ↓" : " →";
       const line = el("p", "obsline",
-        `now ${f1(d0.current)}°${arrow}${d0.upside ? `  ·  ${f1(d0.upside)}° of upside left` : ""}`);
+        `latest ${f1(d0.current)}°${arrow}${d0.upside ? `  ·  ${f1(d0.upside)}° of upside left` : ""}`);
       meta.appendChild(line);
+      if (d0.currentAt) meta.appendChild(el("p", "muted small",
+        `Observed ${new Date(d0.currentAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })} (your local time)` +
+        (d0.currentStructured ? " - structured NWS value; precision unverified, not a hard floor" : "")));
+
       // Between hourly readings this figure is carried on the neighbours'
       // movement, not sent by the station. Say so: a warm neighbour can put it
       // several degrees above anything this station has actually reported.

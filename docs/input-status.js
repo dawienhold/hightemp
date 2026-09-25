@@ -2,7 +2,7 @@
 (() => {
  'use strict';
  const e=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- const label=s=>({COLLECTING_VALIDATION:'Collecting validation data',VALIDATED_ADVISORY:'Validated advisory only',BASELINE_BETTER:'Baseline performed better',ABSTAIN:'Abstaining'}[s]||s||'unavailable');
+ const label=s=>({COLLECTING_VALIDATION:'Collecting validation data',VALIDATED_ADVISORY:'Validated advisory only',BASELINE_BETTER:'Baseline performed better',ABSTAIN:'No estimate available',FRESH_TARGET:'Fresh measured reading',STALE_ANCHOR:'Target anchor is too old',NO_PRECISE_ANCHOR:'Waiting for a precise anchor',INSUFFICIENT_NEIGHBORS:'Waiting for paired neighbor reports'}[s]||s||'unavailable');
  const n=(v,d=1)=>Number.isFinite(v)?v.toFixed(d):'--';
  const ago=iso=>{const t=Date.parse(iso),m=(Date.now()-t)/60000;return !Number.isFinite(m)?'unavailable':m<0?'future timestamp':m<1?'<1 minute':m<120?`${Math.round(m)} minutes`:`${(m/60).toFixed(1)} hours`;};
  let host=document.getElementById('input-status');
@@ -21,32 +21,40 @@
  @media(max-width:420px){#input-status{padding:10px}#input-status .ins-grid{grid-template-columns:1fr}}
  `;document.head.append(style);
  const link=r=>r?.sourceUrl&&/^https:\/\/(api\.weather\.gov|tgftp\.nws\.noaa\.gov|forecast\.weather\.gov|aviationweather\.gov)\//.test(r.sourceUrl)?`<a href="${e(r.sourceUrl)}" target="_blank" rel="noopener">source report</a>`:'';
+ const reasonLabel=s=>({PAIRED:'Usable pair',NO_USABLE_NEIGHBOR_REPORT:'No usable/QC-passed report',MISSING_ANCHOR_PAIR:'Missing reading near target anchor',NEIGHBOR_TOO_OLD:'Latest reading exceeds freshness limit',NO_NEWER_NEIGHBOR_REPORT:'No new report since anchor',CHANGE_TOO_LARGE:'Temperature jump rejected',WAITING_FOR_TARGET_ANCHOR:'Waiting for target anchor'}[s]||s);
+ const precision=o=>o?.structured?'structured NWS value; precision unverified':o?.precisionC===.1?'raw tenth-C report':'raw whole-C report';
+ const observedText=o=>!o?'unavailable':o.structured?n(o.f)+' F (structured, observation-only)':o.precisionC===.1?n(o.f)+' F':n(o.f-.9)+' to '+n(o.f+.9)+' F (whole-C range)';
+ const checkText=c=>!c.ok?e(c.error||'unavailable'):'checked '+ago(c.checkedAt)+' ago; '+(c.records||0)+' retained'+(Number.isFinite(c.supplied)?' / '+c.supplied+' supplied':'')+(c.structuredRecords?' ('+c.structuredRecords+' structured)':'')+(c.rejected?'; '+c.rejected+' rejected: '+e(JSON.stringify(c.rejectionReasons||{})):'');
  function station(s){const o=s.observed,p=s.neighbor||{},m=p.model||{},ev=s.evidence||{},v=ev.evidence;
   const rows=Object.entries(m.weights||{}).map(([id,x])=>`<tr><td>${e(id)}</td><td>${n(100*x.weight,0)}%</td><td>${n(x.slope,2)}</td><td>${x.n}</td></tr>`).join('');
   return `<article class="ins-card"><h3>${e(s.station)} <span class="ins-muted ins-small">${e(s.name)}</span></h3>
-   <p>Latest measured: <b>${o?(o.precisionC===.1?n(o.f)+' F':n(o.f-.9)+' to '+n(o.f+.9)+' F (whole-C range)'):'unavailable'}</b><br><span class="ins-muted">${o?e(o.source)+'; '+ago(o.at)+' old; '+(o.precisionC===.1?'tenth-C report':'whole-C report'):'No usable report'}</span></p>
+   <p>Latest measured: <b>${o?observedText(o):'unavailable'}</b><br><span class="ins-muted">${o?e(o.source)+'; '+ago(o.at)+' old; '+precision(o):'No usable report'}</span></p>
+   <p class="ins-small ins-muted">Recent median spacing: ${n(s.cadence?.recentSpacingMinutes,1)} min (${s.cadence?.recentRows||0} retained readings / 6h). Latest precise report: ${s.cadence?.latestPreciseAt?ago(s.cadence.latestPreciseAt)+' old':'unavailable'}. Spacing is not refresh speed.</p>
+   ${o?.structured?`<p class="ins-small ins-warn">QC ${e(o.temperatureQC||'not supplied')}: ${o.trendEligible?'eligible for trend research':'display only, excluded from trend fitting'}. This value cannot establish a hard floor.</p>`:''}
    <p>${v?`Published evidence floor: <b>${n(v.floorF,0)} F</b> (${e(v.kind)})`:'No qualifying climate/extrema floor yet'}${ev.conflict?'<br><b class="ins-warn">Conflicting reports: review required</b>':''}</p>
    <p class="ins-small ins-muted">Published evidence may be corrected; not exchange settlement. ${link(v)}</p>
-   <p><b>Current-temperature research estimate: ${p.ok?n(p.candidateF)+' F':'abstaining'}</b><br><span class="${p.status==='VALIDATED_ADVISORY'?'ins-good':'ins-warn'}">${e(label(p.status))}</span></p>
+   <p><b>Current-temperature research estimate: ${p.ok?n(p.candidateF)+' F':p.status==='FRESH_TARGET'?'not needed':'not available'}</b><br><span class="${p.status==='VALIDATED_ADVISORY'?'ins-good':'ins-warn'}">${e(label(p.status))}</span></p>
    <p class="ins-small">${e(m.reason||p.reason||'Collecting observations')}</p>
    ${p.ok?`<p class="ins-small ins-muted">Preferred advisory: ${n(p.preferredF)} F. Anchor age ${n(p.anchorAgeMinutes,0)} min; ${p.inputs.length} paired neighbors. Estimate is not a measured high or a CLI probability.</p>`:''}
+   ${p.neighborDiagnostics?.length?`<details><summary>Why an estimate is / is not available (${(p.inputs||[]).length} paired)</summary><div class="ins-scroll"><table><thead><tr><th>Neighbor</th><th>Pair status</th><th>Latest age</th></tr></thead><tbody>${p.neighborDiagnostics.map(x=>`<tr><td>${e(x.station)}</td><td>${e(reasonLabel(x.status))}</td><td>${x.latestAt?ago(x.latestAt):'--'}</td></tr>`).join('')}</tbody></table></div><p class="ins-small ins-muted">At least ${p.limits?.minPairs??2} paired neighbors, last readings within ${p.limits?.maxNeighborAgeMinutes??25} minutes, and a precise target anchor within ${p.limits?.maxAnchorMinutes??90} minutes are required. An unchanged temperature is still usable when a newer report exists.</p></details>`:''}
    <details><summary>Weights and held-out validation</summary><p class="ins-small">${s.trainingPairs||0} prospectively scored pairs. Horizon bucket means age of target anchor, not future forecast lead. Validation is by later days, not random rows.</p>
-   <p class="ins-small">${e(m.scope||'No trained weights yet')}; training ${m.trainSamples||0} samples / ${m.trainDays||0} days; validation ${m.validationSamples||0} samples / ${m.validationDays||0} days.</p>
+   <p class="ins-small ins-muted">Collecting validation is different from missing input data. These limits are not a timer; estimates are never forced to appear.</p>
+   <p class="ins-small">${e(m.scope||'No trained weights yet')}; bucket has ${m.samples||0} eligible samples / ${m.days||0} days; training ${m.trainSamples||0} samples / ${m.trainDays||0} days; validation ${m.validationSamples||0} samples / ${m.validationDays||0} days.</p>
    ${rows?`<div class="ins-scroll"><table><thead><tr><th>Neighbor</th><th>Weight</th><th>Slope</th><th>Train n</th></tr></thead><tbody>${rows}</tbody></table></div>`:'<p>Equal-change research baseline only until enough paired observations are available.</p>'}
    <p class="ins-small">Held-out MAE: weighted ${n(m.mae,2)} F; last-reading baseline ${n(m.persistenceMAE,2)} F; equal-change ${n(m.equalChangeMAE,2)} F.</p>
    <p class="ins-small">Historical validation 90th-percentile absolute error: ${n(m.empiricalAbsErrorP90F)} F. This is not a guaranteed prediction interval.</p></details>
    <details><summary>Timing, sources and DSM research</summary><p class="ins-small">Last reading first seen ${o?n(o.firstSeenDelaySeconds/60)+' min':'--'} after observation time. The delay includes report cadence, source processing and collection gaps.</p>
    <p class="ins-small">Last 24h first-seen delay: median ${n(s.latency?.firstSeenP50Seconds/60)} min, 90th percentile ${n(s.latency?.firstSeenP90Seconds/60)} min. Startup backfill can inflate this.</p>
    ${s.dsm?`<p class="ins-small">Research-only DSM: ${n(s.dsm.maxF,0)} F; issued ${e(s.dsm.issuedAt)}. ${link(s.dsm)} Not used for locks, paper entries or the forecast floor.</p>`:'<p class="ins-small">No current-date usable DSM. This does not block the other sources.</p>'}
-   <div class="ins-errors">${(s.checks||[]).map(c=>`<p class="ins-small ${c.ok?'':'ins-warn'}">${e(c.source)}: ${c.ok?'checked '+ago(c.checkedAt)+' ago; '+c.records+' parsed records':e(c.error||'not available')}</p>`).join('')}</div></details></article>`;
+   <div class="ins-errors">${(s.checks||[]).map(c=>`<p class="ins-small ${c.ok?'':'ins-warn'}">${e(c.source)}: ${checkText(c)}</p>`).join('')}</div></details></article>`;
  }
  function render(d){const stale=Date.now()-Date.parse(d.generatedAt)>10*60000;
   host.innerHTML=`<div class="ins-head"><h2>Data input health &amp; nearby estimates</h2><button id="input-refresh">Refresh</button></div>
-   <p class="${stale?'ins-warn':'ins-muted'}">Observation snapshot ${ago(d.generatedAt)} old. ${stale?'STALE: do not treat this as live.':''} <a href="observations.html">Detailed view</a></p>
+   <p class="${stale?'ins-warn':'ins-muted'}">Observation layer ${e(d.version||'unknown')}; snapshot ${ago(d.generatedAt)} old. ${stale?'STALE: do not treat this as live.':''} <a href="observations.html">Detailed view</a></p>
    <p class="ins-small">These observations refresh separately from the forecast model. Estimates and DSM research never trigger hard locks or paper entries. New data is published to GitHub at session end, with scheduling and deployment delays.</p>
    <p class="ins-small ins-muted">Last sampling gap ${n(d.sampling?.lastGapSeconds,0)} seconds; longest recorded ${n(d.sampling?.maxGapSeconds/60)} minutes. No promise of continuous coverage.</p>
    <div class="ins-grid">${d.stations.map(station).join('')}</div>
-   <details><summary>All provider diagnostics</summary><div class="ins-errors">${Object.entries(d.health?.checks||{}).map(([k,c])=>`<p class="ins-small ${c.ok?'':'ins-warn'}">${e(k)}: ${c.ok?'OK, checked '+ago(c.checkedAt)+' ago':e(c.error||'unavailable')}</p>`).join('')}</div></details>`;
+   <details><summary>All provider diagnostics</summary><div class="ins-errors">${Object.entries(d.health?.checks||{}).map(([k,c])=>`<p class="ins-small ${c.ok?'':'ins-warn'}">${e(k)}: ${checkText(c)}</p>`).join('')}</div></details>`;
   document.getElementById('input-refresh').onclick=load;
  }
  let busy=false,last=null;
