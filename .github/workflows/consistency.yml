@@ -25,19 +25,23 @@ jobs:
         with:
           node-version: '22'
       - name: Test consistency logic and read-only safeguards
-        run: node --test tools/consistency.test.js
+        id: safeguards
+        run: node --test tools/consistency.test.js tools/edge.test.js
       - name: Observe related contracts - NO ORDERS
         timeout-minutes: 5
         run: node scripts/consistency.js
-      - name: Save consistency research only
+      - name: Build 10 AM model-vs-market research snapshot - NO ORDERS
+        if: ${{ always() && steps.safeguards.outcome == 'success' }}
+        run: node scripts/edge.js
+      - name: Save consistency and market-edge research only
         if: always()
         run: |
           set -eu
-          if [ ! -d docs/data/consistency ]; then exit 0; fi
-          rm -f docs/data/consistency/.consistency.lock docs/data/consistency/*.tmp
+          if [ ! -d docs/data/consistency ] && [ ! -d docs/data/edge ]; then exit 0; fi
+          rm -f docs/data/consistency/.consistency.lock docs/data/consistency/*.tmp docs/data/edge/*.tmp
           git config user.name "hightemp-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/data/consistency
+          git add docs/data/consistency docs/data/edge
           if git diff --cached --quiet; then echo "No consistency changes"; exit 0; fi
           git commit -q -m "consistency $(date -u +%Y-%m-%dT%H:%MZ)"
           for i in 1 2 3 4 5; do
