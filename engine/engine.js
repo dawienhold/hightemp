@@ -1920,6 +1920,11 @@ function snapshot(result, opts = {}) {
     currentStructured: !!d.current?.structured, currentPrecisionC: d.current?.precisionC ?? null,
     currentQC: d.current?.temperatureQC || null,
     trend: d.trend == null ? null : +d.trend.toFixed(1),
+    // Full integer distribution is published for read-only market-band comparison.
+    // This does not alter the forecast; it exposes the same normalized `asc`
+    // probabilities already used internally so a two-degree exchange band can
+    // be compared with the sum of both model degrees instead of one card bar.
+    buckets: d.buckets.map(b => ({ f: b.f, p: +b.p.toFixed(4) })),
     top: d.top.map(b => ({ f: b.f, p: +b.p.toFixed(3) })),
     models: d.perModel.map(m => ({ m: m.label, v: +m.cand.toFixed(1), b: +m.bias.toFixed(1) })),
     pointBase: d.pointBase, regimeAdj: d.regimeAdj,
