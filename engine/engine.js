@@ -42,7 +42,7 @@ const HT = (() => {
 "use strict";
 
 /** Bumped whenever the forecast logic changes, so the scorecard can say so. */
-const MODEL_VERSION = "4.2.1";
+const MODEL_VERSION = "4.2.2";
 
 // ---------------------------------------------------------------- stations
 const STATIONS = [
@@ -1287,6 +1287,34 @@ function hiddenPeak(series, tz, day, K, sinceMs) {
   return { g: Math.max(g, 0), cls, rising: false, ...HIDDEN_PEAK[cls], segFrom: segFrom && segFrom.toISOString(), segMax };
 }
 
+/**
+ * Late-day KNYC-style reporting tail adjustment.
+ *
+ * This is deliberately post-peak only. It does not alter the daytime forecast,
+ * peak timing, model weights, bias calibration, or the total P(>=K+1) reporting
+ * uncertainty. Once an hourly-only station is settled, a preliminary CLI has
+ * covered the afternoon, and a fresh precise target-station reading is at least
+ * 2F below that official floor, only the K+2-or-more slice is allowed to decay.
+ *
+ * The first post-CLI hour is unchanged and 10% of the original K+2 tail is
+ * retained until final CLI settlement, so the model never claims zero residual
+ * reporting risk.
+ */
+function lateHourlyTailDecay(st, prelim, hidden, settled, nowD, floorK, current) {
+  const rawP2 = hidden && Number.isFinite(hidden.p2) ? Math.max(0, hidden.p2) : 0;
+  const base = { p2: rawP2, rawP2, scale: 1, ageH: null, active: false };
+  if (!(rawP2 > 0) || !settled || !st?.hourlyOnly || !prelim?.asOfUTC ||
+      !hidden || hidden.rising || hidden.g < 2 || !Number.isFinite(floorK) ||
+      !current || !Number.isFinite(current.f) || Math.round(current.f) > floorK - 2) return base;
+  const asOf = Date.parse(prelim.asOfUTC);
+  const nowMs = nowD instanceof Date ? nowD.getTime() : Date.parse(nowD);
+  if (!Number.isFinite(asOf) || !Number.isFinite(nowMs) || nowMs <= asOf) return base;
+  const ageH = (nowMs - asOf) / 3600000;
+  const decayH = Math.max(0, ageH - 1);
+  const scale = Math.max(0.10, Math.pow(0.5, decayH));
+  return { p2: rawP2 * scale, rawP2, scale, ageH, active: scale < 0.999 };
+}
+
 /** Mix integer distributions: [[dist, weight], ...] -> same shape as buildDist. */
 function mixDists(parts) {
   const acc = new Map();
@@ -1511,10 +1539,13 @@ function forecastDay(st, ctx, dayOffset) {
   // the same unseen peak); use the stronger of the two to avoid double counting.
   const coarseP1 = coarsePeak && coarsePeak.k === floorK ? coarsePeak.p1 : 0;
   const evidenceP1 = Math.max(hidden ? hidden.p1 : 0, coarseP1 || 0);
-  const evidenceP2 = hidden ? hidden.p2 : 0;
+  const tail = lateHourlyTailDecay(st, prelim, hidden, settled, nowD, floorK, current);
+  const evidenceP2 = tail.p2;
   const degreeEvidence = evidenceP1 > 0 ? {
     p1: evidenceP1, p2: Math.min(evidenceP2, evidenceP1),
-    hiddenP1: hidden ? hidden.p1 : 0, coarseP1: coarseP1 || 0,
+    hiddenP1: hidden ? hidden.p1 : 0, hiddenP2Raw: tail.rawP2,
+    lateTailScale: tail.scale, lateTailAgeH: tail.ageH, lateTailActive: tail.active,
+    coarseP1: coarseP1 || 0,
     source: coarseP1 > (hidden ? hidden.p1 : 0) ? "quantized observation" : "hidden-peak calibration"
   } : null;
 
@@ -1973,7 +2004,7 @@ return { STATIONS, MODELS, MODEL_LABEL, runAll, runStation, snapshot, parseCLI,
          wetClass, WET_LABEL, priorDayReport, ANALOG_DIMS, ANALOG_Z2_CAP,
          loadReports, saveReports, mergeReports, reportHistory,
          sixHourMaxC, tGroupC, fetchMetars, fetchObs, observedMax, obsLabel, loadMadisOMOFile,
-         sixHourWindowInDay, localHM, localDate, climDate, localHour, localClock, addDays, median, mad, normCdf };
+         sixHourWindowInDay, localHM, localDate, climDate, localHour, localClock, addDays, median, mad, normCdf, lateHourlyTailDecay };
 })();
 
 if (typeof module !== "undefined") module.exports = HT;
