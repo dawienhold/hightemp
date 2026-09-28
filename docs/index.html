@@ -12,7 +12,7 @@
 :root{
   --bg:#EDF1F3; --surface:#FFFFFF; --surface-2:#F5F8F9;
   --line:#D5DEE3; --line-soft:#E5EBEF;
-  --ink:#14212A; --ink-2:#43555F; --mut:#6C7F8A;
+  --ink:#14212A; --ink-2:#43555F; --mut:#6C7F8A; --chart-text:#000000;
   --obs:#C2410C; --mod:#0A7EA4;
   --obs-fill:rgba(194,65,12,.12); --mod-fill:rgba(10,126,164,.13);
   --good:#0F766E; --good-bg:#E2F1EE;
@@ -24,7 +24,7 @@
   :root:not([data-theme="light"]){
     --bg:#0E151A; --surface:#162027; --surface-2:#1C2831;
     --line:#2A3A45; --line-soft:#21303A;
-    --ink:#E4EDF3; --ink-2:#B0C2CD; --mut:#8298A5;
+    --ink:#E4EDF3; --ink-2:#B0C2CD; --mut:#8298A5; --chart-text:#F4F7F9;
     --obs:#DD7530; --mod:#2C9AC9;
     --obs-fill:rgba(221,117,48,.18); --mod-fill:rgba(44,154,201,.18);
     --good:#2DD4BF; --good-bg:#10312F;
@@ -36,7 +36,7 @@
 :root[data-theme="dark"]{
   --bg:#0E151A; --surface:#162027; --surface-2:#1C2831;
   --line:#2A3A45; --line-soft:#21303A;
-  --ink:#E4EDF3; --ink-2:#B0C2CD; --mut:#8298A5;
+  --ink:#E4EDF3; --ink-2:#B0C2CD; --mut:#8298A5; --chart-text:#F4F7F9;
   --obs:#DD7530; --mod:#2C9AC9;
   --obs-fill:rgba(221,117,48,.18); --mod-fill:rgba(44,154,201,.18);
   --good:#2DD4BF; --good-bg:#10312F;
@@ -100,6 +100,8 @@ button[disabled]{opacity:.5; cursor:default}
 .chead{display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:12px}
 .st{font-family:"IBM Plex Mono",monospace; font-size:16px; font-weight:600; letter-spacing:.04em}
 .site{font-size:12.5px; color:var(--mut); margin-top:1px}
+.nextobs{font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:var(--ink); margin-top:3px; font-variant-numeric:tabular-nums; white-space:nowrap}
+.nextobs.late{color:var(--warn)}
 .cad{
   font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.05em;
   color:var(--good); background:var(--good-bg); border-radius:20px; padding:3px 9px; white-space:nowrap; flex:none;
@@ -134,15 +136,15 @@ button[disabled]{opacity:.5; cursor:default}
 .chartwrap{margin:2px 0 6px}
 .chart{width:100%; height:auto; display:block; overflow:visible}
 .grid-line,.grid{stroke:var(--line-soft); stroke-width:1}
-.tick{fill:var(--mut); font-family:"IBM Plex Mono",monospace; font-size:9px}
+.tick{fill:var(--chart-text); font-family:"IBM Plex Mono",monospace; font-size:9px}
 .obs-line{fill:none; stroke:var(--obs); stroke-width:2; stroke-linejoin:round; stroke-linecap:round}
 .inf-line{fill:none; stroke:var(--obs); stroke-width:1.5; stroke-dasharray:3 3; opacity:.72}
 .obs-dot{fill:var(--obs); stroke:var(--surface); stroke-width:2}
 .now-dot{fill:var(--surface); stroke:var(--obs); stroke-width:2}
-.obs-label{fill:var(--obs); font-size:9.5px; font-weight:600; font-family:"IBM Plex Mono",monospace}
+.obs-label{fill:var(--chart-text); font-size:9.5px; font-weight:600; font-family:"IBM Plex Mono",monospace}
 .fc-band{fill:var(--mod-fill)}
 .fc-line{stroke:var(--mod); stroke-width:1.5; stroke-dasharray:5 4; fill:none}
-.fc-label{fill:var(--mod); font-size:10.5px; font-weight:600; font-family:"IBM Plex Mono",monospace}
+.fc-label{fill:var(--chart-text); font-size:10.5px; font-weight:600; font-family:"IBM Plex Mono",monospace}
 .legend{display:flex; flex-wrap:wrap; gap:6px 15px; font-size:11.5px; color:var(--mut); margin-top:2px}
 .lg{display:inline-flex; align-items:center; gap:6px}
 .sw{width:13px; height:3px; border-radius:2px; flex:none}
@@ -320,6 +322,44 @@ const SVGNS = "http://www.w3.org/2000/svg";
 const el = (tag, cls, txt) => { const n = document.createElement(tag); if (cls) n.className = cls; if (txt != null) n.textContent = txt; return n; };
 const svg = (tag, attrs) => { const n = document.createElementNS(SVGNS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); return n; };
 const f1 = v => v == null ? "–" : (Math.round(v * 10) / 10).toFixed(1);
+
+function effectiveRefreshMinutes(s) {
+  const published = Number(s && s.expectedRefreshMin);
+  if (Number.isFinite(published) && published > 0) return Math.round(published);
+  const source = Number(s && s.inputCadence && s.inputCadence.recentSpacingMinutes) ||
+                 Number(s && s.obsCadenceMin) || 5;
+  return Math.max(s && s.station === "KNYC" ? 60 : 5, Math.round(source), 25);
+}
+function countdownClock(ms) {
+  const total = Math.max(0, Math.floor(ms / 1000));
+  const h = Math.floor(total / 3600), m = Math.floor((total % 3600) / 60), sec = total % 60;
+  return h
+    ? h + ":" + String(m).padStart(2, "0") + ":" + String(sec).padStart(2, "0")
+    : String(m).padStart(2, "0") + ":" + String(sec).padStart(2, "0");
+}
+function observationCountdown(s) {
+  const cadence = effectiveRefreshMinutes(s);
+  const last = (s && s.inputCadence && s.inputCadence.latestAt) || (s && s.today && s.today.currentAt);
+  const lastMs = Date.parse(last || "");
+  if (!Number.isFinite(lastMs)) return null;
+  const n = el("p", "nextobs", "Next likely new reading · calculating…");
+  n.dataset.nextObsAt = String(lastMs + cadence * 60000);
+  n.dataset.obsCadence = String(cadence);
+  n.title = "Estimated model-visible refresh: the larger of recent source spacing, recent GitHub pass cadence, and the station floor. It is an estimate, not a guaranteed station report time.";
+  return n;
+}
+function updateObsCountdowns(root = document) {
+  const now = Date.now();
+  for (const n of root.querySelectorAll(".nextobs[data-next-obs-at]")) {
+    const next = Number(n.dataset.nextObsAt), cadence = Number(n.dataset.obsCadence);
+    if (!Number.isFinite(next)) continue;
+    const diff = next - now, late = diff < 0;
+    n.classList.toggle("late", late);
+    n.textContent = late
+      ? "Expected reading window passed · waiting " + countdownClock(-diff) + " · ~" + cadence + "m effective refresh"
+      : "Next likely new reading in " + countdownClock(diff) + " · ~" + cadence + "m effective refresh";
+  }
+}
 
 /* What is actually known about today's official high, and what isn't yet:
    the public readings, the NWS preliminary report, and (at an hourly station)
@@ -520,6 +560,8 @@ function stationCard(s, opts = {}) {
   const idwrap = el("div", "idwrap");
   idwrap.appendChild(el("h2", "st", s.station));
   idwrap.appendChild(el("p", "site", s.site + " · " + s.localClock + " local"));
+  const nextObs = observationCountdown(s);
+  if (nextObs) idwrap.appendChild(nextObs);
   head.appendChild(idwrap);
 
   const cad = el("span", "cad" + (s.obsCadenceMin && s.obsCadenceMin > 30 ? " slow" : ""));
@@ -955,7 +997,7 @@ function priorDayPanel(p) {
 }
 
 return { stationCard, summaryRow, dayChart, probBars, conditionsStrip, analogNote,
-         priorDayPanel, scorecard, compass, flowLabel, el, f1, pct, CONF_TONE };
+         priorDayPanel, scorecard, compass, flowLabel, updateObsCountdowns, el, f1, pct, CONF_TONE };
 })();
 </script>
 <script>/* Hosted mirror: draws whatever the last completed engine pass wrote. */
@@ -980,6 +1022,7 @@ function render(snap) {
   const grid = $("grid");
   grid.textContent = "";
   for (const st of snap.stations) grid.appendChild(UI.stationCard(st));
+  UI.updateObsCountdowns(grid);
 
   const age = (Date.now() - new Date(snap.ranAt)) / 60000;
   $("statusText").textContent = "last pass " + ago(snap.ranAt);
@@ -1066,6 +1109,7 @@ async function load() {
     const t = $("ranAt").dataset.iso;
     if (t) $("statusText").textContent = "last pass " + ago(t);
   }, 60000);
+  setInterval(() => UI.updateObsCountdowns(), 1000);
 })();
 })();
 </script>
