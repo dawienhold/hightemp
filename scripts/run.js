@@ -63,6 +63,31 @@ global.localStorage = {
 
 const HT = require(path.join(ROOT, "engine", "engine.js"));
 
+function recentPassCadenceMin() {
+  try {
+    const rows = fs.readFileSync(F.runs, "utf8").split("\n").filter(Boolean).map(JSON.parse)
+      .filter(x => x && x.ok && Number.isFinite(x.gapMin) && x.gapMin >= 5 && x.gapMin <= 120)
+      .slice(-30).map(x => x.gapMin);
+    if (!rows.length) return 25;
+    return Math.max(5, Math.round(HT.median(rows)));
+  } catch (_) { return 25; }
+}
+function applyExpectedRefreshCadence(snap, passCadenceMin) {
+  for (const s of snap.stations || []) {
+    if (!s || s.error) continue;
+    const sourceCadence = Number(s.inputCadence && s.inputCadence.recentSpacingMinutes) ||
+                          Number(s.obsCadenceMin) || 5;
+    const stationFloor = s.station === "KNYC" ? 60 : 5;
+    s.expectedRefreshMin = Math.max(stationFloor, Math.round(sourceCadence), passCadenceMin);
+    s.expectedRefreshBasis = {
+      sourceCadenceMin: Math.round(sourceCadence),
+      recentPassCadenceMin: passCadenceMin,
+      stationFloorMin: stationFloor,
+    };
+  }
+}
+
+
 // --------------------------------------------------------------- raw archive
 const ARCHIVE_IDS = ["KNYC", "KMIA", "KMDW", "KLAX", "KSFO", "KLGA", "KEWR", "KJRB", "KTEB"];
 async function archiveMetars() {
@@ -292,8 +317,12 @@ async function main() {
     });
   }
 
+  const passCadenceMin = recentPassCadenceMin();
+  applyExpectedRefreshCadence(snap, passCadenceMin);
+
   snap.meta = {
     source: "github-actions", modelVersion: HT.MODEL_VERSION, morningRun: morning,
+    recentPassCadenceMin: passCadenceMin,
     lastMorningDate: morning ? etDate : (state.lastMorningDate || null),
     missedMorning: (!morning && state.lastMorningDate !== etDate && state.missedMorning === etDate) ? etDate : null,
     climateDay: "midnight to midnight local standard time (NWS CLI convention)",
