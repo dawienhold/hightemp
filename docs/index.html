@@ -531,8 +531,10 @@ function dayChart(s) {
   if (!all.length || !d0) { wrap.appendChild(el("p", "muted small", "No observations yet today.")); return wrap; }
 
   const xs = [Math.min(4, Math.floor(Math.min(...all.map(p => p.x)))), Math.max(23, Math.ceil(Math.max(...all.map(p => p.x))))];
-  const lo = Math.min(...all.map(p => p.y), d0.i80[0]) - 2;
-  const hi = Math.max(...all.map(p => p.y), d0.i80[1]) + 2;
+  const observedHigh = Number.isFinite(d0.obsMax) ? d0.obsMax : null;
+  const highValues = observedHigh == null ? [] : [observedHigh];
+  const lo = Math.min(...all.map(p => p.y), ...highValues, d0.i80[0]) - 2;
+  const hi = Math.max(...all.map(p => p.y), ...highValues, d0.i80[1]) + 2;
   const X = h => P.l + (h - xs[0]) / (xs[1] - xs[0]) * (W - P.l - P.r);
   const Y = v => P.t + (hi - v) / (hi - lo) * (H - P.t - P.b);
 
@@ -564,14 +566,21 @@ function dayChart(s) {
   if (inf.length) node.appendChild(svg("path", { d: line(inf), class: "inf-line" }));
   node.appendChild(svg("path", { d: line(obs), class: "obs-line" }));
 
-  // the observed maximum so far
-  if (d0.obsMax != null) {
-    let peak = obs[0];
-    for (const p of obs) if (p.y > peak.y) peak = p;
-    node.appendChild(svg("circle", { cx: X(peak.x), cy: Y(peak.y), r: 4.5, class: "obs-dot" }));
-    const anchorX = Math.min(X(peak.x), X(xs[1]) - 26);
-    const t2 = svg("text", { x: anchorX, y: Y(peak.y) - 11, class: "obs-label", "text-anchor": "middle" });
-    t2.textContent = Math.round(peak.y) + "° so far";
+  // Use the same evidence maximum as the card, never the mixed-precision
+  // curve's peak. Structured NWS readings can exceed the precise maximum;
+  // conversely, a six-hour maximum need not appear in the sampled curve.
+  // A horizontal guide avoids inventing an observation time for either case.
+  if (observedHigh != null) {
+    const guide = svg("line", { x1: P.l, x2: W - P.r,
+      y1: Y(observedHigh), y2: Y(observedHigh), stroke: "var(--obs)",
+      "stroke-width": 1, "stroke-dasharray": "3 4", opacity: 0.7 });
+    const title = svg("title", {});
+    title.textContent = `${f1(observedHigh)}°F · ${d0.obsSource || "station observation"}`;
+    guide.appendChild(title);
+    node.appendChild(guide);
+    const t2 = svg("text", { x: X(12), y: Y(observedHigh) - 11,
+      class: "obs-label", "text-anchor": "middle" });
+    t2.textContent = f1(observedHigh) + (d0.obsPrecise ? "° precise high" : "° coarse high");
     node.appendChild(t2);
   }
   // last reading
@@ -581,10 +590,14 @@ function dayChart(s) {
   wrap.appendChild(node);
 
   const leg = el("div", "legend");
-  leg.appendChild(swatch("obs", "Reported" + (inf.length ? " (Central Park)" : "")));
+  leg.appendChild(swatch("obs", "Station readings · mixed precision"));
   if (inf.length) leg.appendChild(swatch("inf", "Inferred between readings"));
   leg.appendChild(swatch("fc", "Forecast high · 80%"));
   wrap.appendChild(leg);
+  if (observedHigh != null && obs.some(p => p.y > observedHigh + 0.05)) {
+    wrap.appendChild(el("p", "muted small",
+      "The curve includes readings with unverified or coarse precision. Its plotted peak is not the validated daily high; the dashed orange guide matches the card's observed maximum."));
+  }
   return wrap;
 }
 
