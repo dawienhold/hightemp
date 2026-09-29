@@ -1141,6 +1141,18 @@ function applyDirectNwsObservation(obs) {
   n.appendChild(el("span", "liveobs-note",
     (obs.raw ? "Raw report available. " : "Structured NWS temperature; source precision not assumed. ") +
     "Display only — probabilities, observed-high floors, hard locks and settlement evidence are unchanged until the next forecast pass."));
+
+  const ev = document.querySelector('[data-evidence-latest-station="' + obs.station + '"]');
+  if (ev) {
+    const modelAt2 = Date.parse(ev.dataset.evidenceModelAt || "");
+    if (!Number.isFinite(modelAt2) || obsAt >= modelAt2) {
+      ev.innerHTML = "<strong>" + Math.round(obs.f) + "°F</strong> · " +
+        new Date(obs.at).toLocaleTimeString([], {
+          timeZone: STATION_TZ_UI[obs.station] || undefined, hour:"numeric", minute:"2-digit"
+        }) + " local <span class=\"muted\">· public NWS display feed" +
+        (obs.raw ? " · raw report available" : " · structured precision unverified") + "</span>";
+    }
+  }
 }
 
 async function refreshDirectNwsObservations() {
