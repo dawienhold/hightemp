@@ -649,6 +649,7 @@ function stationCard(s, opts = {}) {
   liveObs.appendChild(el("span", "liveobs-note",
     "Display only — does not change forecast probabilities, hard locks, or the model until the next forecast pass."));
   card.appendChild(liveObs);
+  card.appendChild(settlementEvidencePanel(s, d0));
 
   if (s.inputCadence || Object.keys(s.inputDiagnostics || {}).length) {
     const detail = el("details", "detail"); detail.appendChild(el("summary", null, "Observation freshness and source health"));
