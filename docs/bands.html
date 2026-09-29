@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>2°F Bands · High-Temp Desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#EDF1F3;--surface:#fff;--surface-2:#F5F8F9;--line:#D5DEE3;--line-soft:#E5EBEF;--ink:#14212A;--ink-2:#43555F;--mut:#6C7F8A;--mod:#0A7EA4;--shadow:0 1px 2px rgba(20,33,42,.06),0 8px 20px -14px rgba(20,33,42,.28)}
+@media(prefers-color-scheme:dark){:root{--bg:#0E151A;--surface:#162027;--surface-2:#1C2831;--line:#2A3A45;--line-soft:#21303A;--ink:#E4EDF3;--ink-2:#B0C2CD;--mut:#8298A5;--mod:#2C9AC9;--shadow:0 1px 2px rgba(0,0,0,.4),0 10px 26px -18px rgba(0,0,0,.8)}}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans","Segoe UI",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding:22px 16px 56px}.topnav{display:flex;gap:4px;margin-bottom:14px;font-size:13px}.topnav a{color:var(--ink-2);text-decoration:none;padding:5px 11px;border-radius:7px;border:1px solid transparent}.topnav a:hover{background:var(--surface)}.topnav a[aria-current="page"]{color:var(--ink);background:var(--surface);border-color:var(--line);font-weight:500}
+.masthead{display:flex;flex-wrap:wrap;gap:14px 20px;align-items:flex-end;justify-content:space-between;margin-bottom:6px}h1,h2{margin:0;font-family:"IBM Plex Sans Condensed","IBM Plex Sans",sans-serif}.masthead h1{font-size:25px}.kicker{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);margin:0 0 3px}.status{font-size:12.5px;color:var(--ink-2)}.note{margin:16px 0 22px;padding:11px 13px;background:var(--surface);border:1px solid var(--line);border-radius:10px;color:var(--ink-2);font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:18px;align-items:start}.card{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:18px;box-shadow:var(--shadow)}.chead{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:14px}.st{font-family:"IBM Plex Mono",monospace;font-size:16px;letter-spacing:.04em}.site{font-size:12.5px;color:var(--mut)}.point{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-2);white-space:nowrap}
+.probs{display:flex;flex-direction:column;gap:5px}.prow{display:grid;grid-template-columns:70px 1fr 44px;gap:9px;align-items:center}.pf,.pp{font-family:"IBM Plex Mono",monospace;font-size:12px;font-variant-numeric:tabular-nums}.pf{color:var(--ink-2);text-align:right}.pp{color:var(--mut)}.ptrack{height:10px;background:var(--surface-2);border-radius:3px;overflow:hidden}.pfill{display:block;height:100%;background:var(--mod);opacity:.55;border-radius:3px}.prow.modal .pfill{opacity:1}.prow.modal .pf{font-weight:600;color:var(--ink)}
+.foot{margin-top:13px;padding-top:10px;border-top:1px solid var(--line-soft);font-size:11.5px;color:var(--mut)}
+</style>
+</head>
+<body><div class="wrap">
+<nav class="topnav" aria-label="Pages">
+  <a href="./">High-Temp Desk</a>
+  <a href="bands.html" aria-current="page">2°F Bands</a>
+  <a href="nfl.html">NFL Rain Watch</a>
+</nav>
+<header class="masthead"><div><p class="kicker">KNYC · KMIA · KMDW · KLAX · KSFO</p><h1>2°F Band View</h1></div><div class="status" id="status">loading…</div></header>
+<p class="note"><strong>Display-only grouping.</strong> Each bar is the sum of two adjacent whole-degree probabilities from the same forecast shown on the main desk. Nothing here changes the model. Contract boundaries can differ, so verify the actual market wording before comparing prices.</p>
+<main class="grid" id="grid"></main>
+</div>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const el=(tag,cls,txt)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(txt!=null)n.textContent=txt;return n;};
+function grouped(d){
+  const src=(d&&Array.isArray(d.buckets)&&d.buckets.length)?d.buckets:(d&&d.top)||[];
+  if(!src.length)return[];
+  const map=new Map(src.map(x=>[Number(x.f),Number(x.p)||0]));
+  const min=Math.min(...src.map(x=>Number(x.f))), max=Math.max(...src.map(x=>Number(x.f)));
+  const start=Math.floor(min/2)*2, out=[];
+  for(let lo=start;lo<=max;lo+=2){
+    const p=(map.get(lo)||0)+(map.get(lo+1)||0);
+    out.push({lo,hi:lo+1,p});
+  }
+  const nonzero=out.filter(x=>x.p>=0.001);
+  if(!nonzero.length)return out;
+  const loI=Math.max(0,out.indexOf(nonzero[0])-1), hiI=Math.min(out.length-1,out.indexOf(nonzero[nonzero.length-1])+1);
+  return out.slice(loI,hiI+1);
+}
+function card(s){
+  const c=el("article","card"),h=el("div","chead"),left=el("div");
+  left.appendChild(el("h2","st",s.station));left.appendChild(el("p","site",s.site+" · "+s.localClock+" local"));h.appendChild(left);
+  h.appendChild(el("div","point",s.today?"point "+s.today.point+"° · 80% "+s.today.i80[0]+"–"+s.today.i80[1]:""));
+  c.appendChild(h);
+  const rows=grouped(s.today), box=el("div","probs");
+  const max=Math.max(...rows.map(x=>x.p),.01);
+  let best=-1; rows.forEach((x,i)=>{if(best<0||x.p>rows[best].p)best=i;});
+  rows.forEach((x,i)=>{
+    const r=el("div","prow"+(i===best?" modal":""));
+    r.appendChild(el("span","pf",x.lo+"–"+x.hi+"°"));
+    const t=el("span","ptrack"),f=el("span","pfill");f.style.width=Math.max(2,x.p/max*100)+"%";t.appendChild(f);r.appendChild(t);
+    r.appendChild(el("span","pp",Math.round(x.p*100)+"%"));box.appendChild(r);
+  });
+  c.appendChild(box);
+  c.appendChild(el("p","foot","Grouped from the full integer distribution in the latest completed forecast pass."));
+  return c;
+}
+async function load(){
+  try{
+    const r=await fetch("data/latest.json?t="+Date.now(),{cache:"no-store"});if(!r.ok)throw Error("HTTP "+r.status);
+    const d=await r.json();$("grid").replaceChildren(...d.stations.filter(x=>!x.error&&x.today).map(card));
+    $("status").textContent="last pass · "+new Date(d.ranAt).toLocaleString([],{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"});
+  }catch(e){$("status").textContent="could not load latest pass";$("grid").replaceChildren(el("p","note",String(e.message||e)));}
+}
+load();setInterval(load,2*60000);
+</script></body></html>
