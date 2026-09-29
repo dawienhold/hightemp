@@ -95,6 +95,8 @@ function perfMetric(rows) {
   const dist = rows.filter(r => Number.isFinite(r.brier));
   return {
     n: rows.length,
+    days: new Set(rows.map(r => r.date)).size,
+    stationDays: new Set(rows.map(r => r.station + "|" + r.date)).size,
     mae: +(err.reduce((s,e)=>s+Math.abs(e),0)/rows.length).toFixed(2),
     bias: +(err.reduce((s,e)=>s+e,0)/rows.length).toFixed(2),
     within1: +(err.filter(e=>Math.abs(e)<=1).length/rows.length).toFixed(3),
@@ -116,7 +118,7 @@ function buildPerformance(ledger, stats) {
     const truth = full ? full.find(b => b.f === actual) : null;
     let brier = null;
     if (full) {
-      brier = 0;
+      brier = truth ? 0 : 1;
       for (const b of full) brier += Math.pow(Number(b.p || 0) - (b.f === actual ? 1 : 0), 2);
       brier = +brier.toFixed(4);
     }

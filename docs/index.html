@@ -946,7 +946,8 @@ function scorecard(agg, perf = null) {
     const current = perf.currentVersion;
     const versionCols = [
       { h:"version", get:r => r.v.version + (r.v.version === current ? " · current" : ""), cls:"mname" },
-      { h:"n", get:r => String(r.v.n), cls:"mnum" },
+      { h:"calls", get:r => String(r.v.n), cls:"mnum" },
+      { h:"days", get:r => r.v.days == null ? "–" : String(r.v.days), cls:"mnum" },
       { h:"MAE", get:r => r.v.mae + "°", cls:"mnum" },
       { h:"bias", get:r => (r.v.bias > 0 ? "+" : "") + r.v.bias, cls:"mnum" },
       { h:"±1°", get:r => pctCell(r.v.within1), cls:"mnum" },
@@ -956,7 +957,7 @@ function scorecard(agg, perf = null) {
     ];
     mk("By model version", perf.versions.map(v => ({ k:v.version, v })), versionCols);
     wrap.appendChild(el("p", "muted small",
-      "Version rows isolate forecast changes from one another. Older rows are assigned using recorded version-change timestamps; new rows carry their version explicitly. Full-distribution Brier scoring begins only where the complete integer distribution was logged."));
+      "These are all logged forecast calls, including repeated calls on the same day, not independent daily samples or the checkpoint scorecard above. Fewer than 20 distinct dates is a limited sample. Version rows isolate forecast changes from one another. Older rows are assigned using recorded version-change timestamps; new rows carry their version explicitly. Full-distribution Brier scoring begins only where the complete integer distribution was logged."));
   }
 
   wrap.appendChild(el("h4", "sec", "Prospective station × local-hour bias"));
@@ -968,7 +969,8 @@ function scorecard(agg, perf = null) {
   } else {
     const biasCols = [
       { h:"station · hour", get:r => r.v.station + " · " + String(r.v.hour).padStart(2,"0") + ":00", cls:"mname" },
-      { h:"n", get:r => String(r.v.n), cls:"mnum" },
+      { h:"calls", get:r => String(r.v.n), cls:"mnum" },
+      { h:"days", get:r => r.v.days == null ? "–" : String(r.v.days), cls:"mnum" },
       { h:"MAE", get:r => r.v.mae + "°", cls:"mnum" },
       { h:"bias", get:r => (r.v.bias > 0 ? "+" : "") + r.v.bias, cls:"mnum" },
       { h:"±1°", get:r => pctCell(r.v.within1), cls:"mnum" },
@@ -977,7 +979,7 @@ function scorecard(agg, perf = null) {
     wrap.appendChild(el("p", "muted small",
       "Nothing here is applied to the engine. A cell should accumulate at least " +
       (perf.stationHourMinSamplesBeforeConsideration || 20) +
-      " settled observations before it is even considered for a future calibration change."));
+      " distinct settled dates before it is even considered for a future calibration change. Multiple calls on one date are correlated; no correction is applied automatically."));
   }
 
   // reliability — stated vs realised
