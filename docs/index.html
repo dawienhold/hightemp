@@ -942,6 +942,44 @@ function scorecard(agg, perf = null) {
   mk("By station", toRows(agg.byStation), statCols);
   mk("By lead time", toRows(agg.byLead), statCols);
 
+  if (perf && Array.isArray(perf.versions) && perf.versions.length) {
+    const current = perf.currentVersion;
+    const versionCols = [
+      { h:"version", get:r => r.v.version + (r.v.version === current ? " · current" : ""), cls:"mname" },
+      { h:"n", get:r => String(r.v.n), cls:"mnum" },
+      { h:"MAE", get:r => r.v.mae + "°", cls:"mnum" },
+      { h:"bias", get:r => (r.v.bias > 0 ? "+" : "") + r.v.bias, cls:"mnum" },
+      { h:"±1°", get:r => pctCell(r.v.within1), cls:"mnum" },
+      { h:"80% band", get:r => pctCell(r.v.cover80), cls:"mnum" },
+      { h:"dist n", get:r => String(r.v.distN || 0), cls:"mnum" },
+      { h:"Brier", get:r => r.v.brier == null ? "–" : String(r.v.brier), cls:"mnum" },
+    ];
+    mk("By model version", perf.versions.map(v => ({ k:v.version, v })), versionCols);
+    wrap.appendChild(el("p", "muted small",
+      "Version rows isolate forecast changes from one another. Older rows are assigned using recorded version-change timestamps; new rows carry their version explicitly. Full-distribution Brier scoring begins only where the complete integer distribution was logged."));
+  }
+
+  wrap.appendChild(el("h4", "sec", "Prospective station × local-hour bias"));
+  const tracked = perf && Array.isArray(perf.stationHour) ? perf.stationHour
+    .filter(r => r.version === perf.currentVersion) : [];
+  if (!tracked.length) {
+    wrap.appendChild(el("p", "muted small",
+      "Tracking has started, but no newly instrumented station-hour cells have settled yet. This tracker is display-only and does not alter the forecast."));
+  } else {
+    const biasCols = [
+      { h:"station · hour", get:r => r.v.station + " · " + String(r.v.hour).padStart(2,"0") + ":00", cls:"mname" },
+      { h:"n", get:r => String(r.v.n), cls:"mnum" },
+      { h:"MAE", get:r => r.v.mae + "°", cls:"mnum" },
+      { h:"bias", get:r => (r.v.bias > 0 ? "+" : "") + r.v.bias, cls:"mnum" },
+      { h:"±1°", get:r => pctCell(r.v.within1), cls:"mnum" },
+    ];
+    mk("Current version · tracking only", tracked.map(v => ({ k:v.station+"|"+v.hour, v })), biasCols);
+    wrap.appendChild(el("p", "muted small",
+      "Nothing here is applied to the engine. A cell should accumulate at least " +
+      (perf.stationHourMinSamplesBeforeConsideration || 20) +
+      " settled observations before it is even considered for a future calibration change."));
+  }
+
   // reliability — stated vs realised
   const rel = (agg.reliability || []).filter(r => r.n > 0);
   if (rel.length) {
