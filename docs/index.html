@@ -414,6 +414,61 @@ function evidenceBox(s, d0) {
   }
   return box;
 }
+const STATION_TZ_UI = {
+  KNYC:"America/New_York", KMIA:"America/New_York", KMDW:"America/Chicago",
+  KLAX:"America/Los_Angeles", KSFO:"America/Los_Angeles",
+};
+function stationClock(station, iso) {
+  if (!iso) return "time unavailable";
+  try {
+    return new Date(iso).toLocaleTimeString([], {
+      timeZone: STATION_TZ_UI[station] || undefined, hour:"numeric", minute:"2-digit"
+    });
+  } catch (_) { return "time unavailable"; }
+}
+function settlementEvidencePanel(s, d0) {
+  const box = el("div", "evidence3");
+  const add = (label, html, attrs = {}) => {
+    const row = el("div", "evrow");
+    row.appendChild(el("span", "evlabel", label));
+    const val = el("span", "evval");
+    val.innerHTML = html;
+    for (const [k, v] of Object.entries(attrs)) val.dataset[k] = v;
+    row.appendChild(val); box.appendChild(row);
+  };
+  if (!d0) {
+    add("Latest station temp", "—");
+    add("Highest precise observed", "—");
+    add("CLI / 6-hour max", "—");
+    return box;
+  }
+  const current = d0.current == null ? "—" :
+    "<strong>" + f1(d0.current) + "°F</strong> · " + stationClock(s.station, d0.currentAt) + " local" +
+    (d0.currentStructured ? " <span class=\"muted\">· structured NWS; precision unverified</span>" : "");
+  add("Latest station temp", current, { evidenceLatestStation:s.station, evidenceModelAt:d0.currentAt || "" });
+
+  if (d0.obsPrecise && d0.obsMax != null) {
+    add("Highest precise observed", "<strong>" + f1(d0.obsMax) + "°F</strong>" +
+      (d0.obsSource ? " · " + d0.obsSource : "") +
+      " <span class=\"muted\">· current hard observation floor</span>");
+  } else if (d0.obsMax != null) {
+    add("Highest precise observed", "Awaiting precise report <span class=\"muted\">· coarse max currently " + f1(d0.obsMax) + "°F</span>");
+  } else {
+    add("Highest precise observed", "Awaiting a precise station report");
+  }
+
+  if (d0.prelim && Number.isFinite(d0.prelim.max)) {
+    add("CLI / 6-hour max", "<strong>" + d0.prelim.max + "°F preliminary CLI</strong>" +
+      " <span class=\"muted\">· settlement-grade floor; final CLI still controls</span>");
+  } else if (d0.obsSource === "6-hour max group" && d0.obsMax != null) {
+    add("CLI / 6-hour max", "<strong>" + f1(d0.obsMax) + "°F ASOS 6-hour max</strong>" +
+      " <span class=\"muted\">· strong peak evidence; final CLI still controls</span>");
+  } else {
+    add("CLI / 6-hour max", "Not published in this snapshot <span class=\"muted\">· final CLI remains settlement truth</span>");
+  }
+  return box;
+}
+
 function nextSixHourReport(tz) {
   const now = Date.now();
   for (let k = 0; k < 8; k++) {
