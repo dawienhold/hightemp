@@ -263,6 +263,7 @@ button[disabled]{opacity:.5; cursor:default}
 
   <nav class="topnav" aria-label="Pages">
     <a href="./" aria-current="page">High-Temp Desk</a>
+    <a href="bands.html">2°F Bands</a>
     <a href="nfl.html">NFL Rain Watch</a>
   </nav>
 
@@ -834,7 +835,7 @@ function pctCell(v) { return v == null ? "–" : Math.round(v * 100) + "%"; }
  * confidence can be traded on: a stated 30% has to come true about 30% of the
  * time, or the intervals are decoration.
  */
-function scorecard(agg) {
+function scorecard(agg, perf = null) {
   const wrap = el("section", "notes");
   wrap.appendChild(el("h2", null, "Scorecard"));
   if (!agg || !agg.overall || !agg.overall.n) {
@@ -1082,7 +1083,7 @@ async function refreshDirectNwsObservations() {
   for (const r of results) if (r.status === "fulfilled") applyDirectNwsObservation(r.value);
 }
 
-function render(snap) {
+function render(snap, performance = null) {
   if (!snap || !snap.stations) return;
   $("empty").hidden = true;
   $("live").hidden = false;
@@ -1110,7 +1111,7 @@ function render(snap) {
   }
 
   if (snap.scorecard) {
-    document.getElementById("scoring").replaceChildren(UI.scorecard(snap.scorecard));
+    document.getElementById("scoring").replaceChildren(UI.scorecard(snap.scorecard, performance));
   }
 
   if (snap.priorDay && snap.priorDay.rows && snap.priorDay.rows.length) {
@@ -1154,10 +1155,11 @@ async function getJSON(p) {
   return r.json();
 }
 async function load() {
-  let snap = null;
+  let snap = null, performance = null;
   try { snap = await getJSON("data/latest.json"); }
   catch (e) { $("emptyText").textContent = "Could not read the latest pass: " + String(e.message || e); }
-  if (snap && snap.stations) render(snap);
+  try { performance = await getJSON("data/performance.json"); } catch (e) { /* created by the next forecast pass */ }
+  if (snap && snap.stations) render(snap, performance);
   let st = null;
   try { st = await getJSON("data/status.json"); } catch (e) { /* first deploy: no status yet */ }
   const note = $("staleNote");
