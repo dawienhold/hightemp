@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "mode": "OBSERVE_ONLY",
   "liveOrdersPossible": false,
-  "generatedAt": "2026-09-30T09:30:25.585Z",
-  "startedAt": "2026-09-30T09:30:15.000Z",
-  "durationSeconds": 10.585,
-  "previousPublishedAt": "2026-09-30T09:11:18.152Z",
-  "runGapSeconds": 1136.848,
+  "generatedAt": "2026-09-30T09:49:53.431Z",
+  "startedAt": "2026-09-30T09:49:36.259Z",
+  "durationSeconds": 17.172,
+  "previousPublishedAt": "2026-09-30T09:30:25.585Z",
+  "runGapSeconds": 1150.674,
   "venue": "POLYMARKET_US",
   "settings": {
     "version": "1.0.0",
@@ -58,13 +58,13 @@
     "recentEpisodesLimit": 150
   },
   "summary": {
-    "eventsSelected": 5,
-    "eventsInspected": 5,
-    "marketsInspected": 30,
-    "verifiedMarkets": 30,
-    "booksReceived": 30,
-    "validBooks": 28,
-    "relationshipsChecked": 85,
+    "eventsSelected": 9,
+    "eventsInspected": 9,
+    "marketsInspected": 48,
+    "verifiedMarkets": 48,
+    "booksReceived": 48,
+    "validBooks": 33,
+    "relationshipsChecked": 136,
     "displayedLeadsObserved": 0,
     "currentDisplayedCandidateBaskets": 0,
     "twoSnapshotCandidateBaskets": 0,
@@ -72,18 +72,20 @@
     "scope": "Within-event, exact-template, integer-Fahrenheit daily CLI markets only",
     "noProfitTotal": "Alternative baskets can share liquidity; do not sum their modeled surpluses. No purchases or realized P/L."
   },
-  "health": "OBSERVATIONS_AVAILABLE",
+  "health": "PARTIAL_COVERAGE",
   "discovery": {
-    "checkedAt": "2026-09-30T09:30:15.339Z",
+    "checkedAt": "2026-09-30T09:49:36.534Z",
     "searchCoverageComplete": true,
-    "foundEvents": 5,
-    "inWindowEvents": 5,
-    "selectedEvents": 5,
+    "foundEvents": 9,
+    "inWindowEvents": 9,
+    "selectedEvents": 9,
     "omittedEvents": [],
     "notes": [],
     "caveat": "Search coverage, matched rules, and numeric partition coverage are separate. This is not an all-exchange scan."
   },
-  "errors": [],
+  "errors": [
+    "temp-laxhigh-2026-10-01: /v1/events/slug/temp-laxhigh-2026-10-01: HTTP 404"
+  ],
   "warnings": [],
   "groups": [
     {
@@ -225,7 +227,7 @@
       "verifiedMarkets": 6,
       "activeMarkets": 6,
       "booksReceived": 6,
-      "validBooks": 6,
+      "validBooks": 5,
       "groups": [
         {
           "familyKey": "deab57202e6451190f1048a1d461784e181dc4e5a403f50232d27338c2d75893",
@@ -244,7 +246,119 @@
       "relationships": 17,
       "rejected": [],
       "blockers": {
-        "NO_NET_SURPLUS_AT_REQUIRED_THRESHOLD": 17
+        "NO_NET_SURPLUS_AT_REQUIRED_THRESHOLD": 10,
+        "BOOK_SOURCE_TIME_TOO_OLD": 7,
+        "SOURCE_TIMESTAMPS_TOO_FAR_APART": 4
+      }
+    },
+    {
+      "eventSlug": "temp-laxhigh-2026-10-01",
+      "status": "EVENT_READ_FAILED",
+      "error": "/v1/events/slug/temp-laxhigh-2026-10-01: HTTP 404"
+    },
+    {
+      "eventSlug": "temp-mdwhigh-2026-10-01",
+      "title": "Highest temperature in Chicago on October 1?",
+      "status": "SCANNED",
+      "eventMarkets": 6,
+      "inWindowMarkets": 6,
+      "verifiedMarkets": 6,
+      "activeMarkets": 6,
+      "booksReceived": 6,
+      "validBooks": 2,
+      "groups": [
+        {
+          "familyKey": "524872f26aeb3cd273168859739abf4454cb48e50ebe2acda95a22962b3e4d0f",
+          "eventSlug": "temp-mdwhigh-2026-10-01",
+          "station": "KMDW",
+          "date": "2026-10-01",
+          "metric": "high",
+          "markets": 6,
+          "relationships": 17,
+          "relationshipsOmitted": 0,
+          "completeNumericPartition": true,
+          "gaps": [],
+          "overlaps": []
+        }
+      ],
+      "relationships": 17,
+      "rejected": [],
+      "blockers": {
+        "NO_NET_SURPLUS_AT_REQUIRED_THRESHOLD": 1,
+        "BOOK_SOURCE_TIME_TOO_OLD": 16,
+        "NO_NO_ASK_DEPTH": 15,
+        "SOURCE_TIMESTAMPS_TOO_FAR_APART": 10,
+        "NO_YES_ASK_DEPTH": 1
+      }
+    },
+    {
+      "eventSlug": "temp-miahigh-2026-10-01",
+      "title": "Highest temperature in Miami on October 1?",
+      "status": "SCANNED",
+      "eventMarkets": 6,
+      "inWindowMarkets": 6,
+      "verifiedMarkets": 6,
+      "activeMarkets": 6,
+      "booksReceived": 6,
+      "validBooks": 2,
+      "groups": [
+        {
+          "familyKey": "b8d2d29af73499f499a5529030c492ac61d2e7e937db9f07e9c4b1fda28fa02b",
+          "eventSlug": "temp-miahigh-2026-10-01",
+          "station": "KMIA",
+          "date": "2026-10-01",
+          "metric": "high",
+          "markets": 6,
+          "relationships": 17,
+          "relationshipsOmitted": 0,
+          "completeNumericPartition": true,
+          "gaps": [],
+          "overlaps": []
+        }
+      ],
+      "relationships": 17,
+      "rejected": [],
+      "blockers": {
+        "NO_NET_SURPLUS_AT_REQUIRED_THRESHOLD": 1,
+        "BOOK_SOURCE_TIME_TOO_OLD": 16,
+        "NO_NO_ASK_DEPTH": 15,
+        "SOURCE_TIMESTAMPS_TOO_FAR_APART": 10,
+        "NO_YES_ASK_DEPTH": 1
+      }
+    },
+    {
+      "eventSlug": "temp-nychigh-2026-10-01",
+      "title": "Highest temperature in NYC on October 1?",
+      "status": "SCANNED",
+      "eventMarkets": 6,
+      "inWindowMarkets": 6,
+      "verifiedMarkets": 6,
+      "activeMarkets": 6,
+      "booksReceived": 6,
+      "validBooks": 2,
+      "groups": [
+        {
+          "familyKey": "c5cbab7943c33ce63f879e9e0ea42a6a743bd11254010907956c477494e68f85",
+          "eventSlug": "temp-nychigh-2026-10-01",
+          "station": "KNYC",
+          "date": "2026-10-01",
+          "metric": "high",
+          "markets": 6,
+          "relationships": 17,
+          "relationshipsOmitted": 0,
+          "completeNumericPartition": true,
+          "gaps": [],
+          "overlaps": []
+        }
+      ],
+      "relationships": 17,
+      "rejected": [],
+      "blockers": {
+        "NO_NET_SURPLUS_AT_REQUIRED_THRESHOLD": 1,
+        "BOOK_SOURCE_TIME_TOO_OLD": 16,
+        "NO_NO_ASK_DEPTH": 15,
+        "SOURCE_TIMESTAMPS_TOO_FAR_APART": 10,
+        "NO_YES_ASK_DEPTH": 1
       }
     }
   ],
@@ -264,16 +378,14 @@
       "url": "https://polymarket.us/event/temp-laxhigh-2026-09-30",
       "description": "Will the highest temperature recorded at Los Angeles International Airport (KLAX) in Los Angeles for 2026-09-30 as reported by the National Weather Service's Climatological Report (Daily) be less than or equal to 77F? Outcome verified from NWS Climatological Report.",
       "book": {
-        "valid": false,
-        "issues": [
-          "BOOK_SOURCE_TIME_TOO_OLD"
-        ],
-        "asOf": "2026-09-30T09:27:08.421Z",
-        "receivedAt": "2026-09-30T09:30:15.663Z",
+        "valid": true,
+        "issues": [],
+        "asOf": "2026-09-30T09:49:05.914Z",
+        "receivedAt": "2026-09-30T09:49:36.876Z",
         "yesAsk": 30000,
         "noAsk": 980000,
-        "yesQty": 103,
-        "noQty": 1342
+        "yesQty": 102,
+        "noQty": 200
       }
     },
     {
@@ -293,12 +405,12 @@
       "book": {
         "valid": true,
         "issues": [],
-        "asOf": "2026-09-30T09:29:33.197Z",
-        "receivedAt": "2026-09-30T09:30:15.963Z",
+        "asOf": "2026-09-30T09:49:15.036Z",
+        "receivedAt": "2026-09-30T09:49:37.180Z",
         "yesAsk": 120000,
-        "noAsk": 890000,
-        "yesQty": 3,
-        "noQty": 64
+        "noAsk": 900000,
+        "yesQty": 67,
+        "noQty": 112
       }
     },
     {
@@ -318,9 +430,9 @@
       "book": {
         "valid": true,
         "issues": [],
-        "asOf": "2026-09-30T09:30:00.731Z",
-        "receivedAt": "2026-09-30T09:30:16.262Z",
-        "yesAsk": 480000,
+        "asOf": "2026-09-30T09:49:09.001Z",
+        "receivedAt": "2026-09-30T09:49:37.480Z",
+        "yesAsk": 490000,
         "noAsk": 530000,
         "yesQty": 64,
         "noQty": 1
@@ -343,12 +455,12 @@
       "book": {
         "valid": true,
         "issues": [],
-        "asOf": "2026-09-30T09:30:05.183Z",
-        "receivedAt": "2026-09-30T09:30:16.589Z",
+        "asOf": "2026-09-30T09:49:09.484Z",
+        "receivedAt": "2026-09-30T09:49:37.785Z",
         "yesAsk": 340000,
-        "noAsk": 680000,
-        "yesQty": 3,
-        "noQty": 11
+        "noAsk": 690000,
+        "yesQty": 68,
+        "noQty": 3
       }
     },
     {
@@ -368,11 +480,11 @@
       "book": {
         "valid": true,
         "issues": [],
-        "asOf": "2026-09-30T09:30:10.927Z",
-        "receivedAt": "2026-09-30T09:30:16.891Z",
-        "yesAsk": 100000,
+        "asOf": "2026-09-30T09:49:15.540Z",
+        "receivedAt": "2026-09-30T09:49:38.080Z",
+        "yesAsk": 110000,
         "noAsk": 920000,
-        "yesQty": 64,
+        "yesQty": 69,
         "noQty": 3
       }
     },
@@ -391,13 +503,15 @@
       "url": "https://polymarket.us/event/temp-laxhigh-2026-09-30",
       "description": "Will the highest temperature recorded at Los Angeles International Airport (KLAX) in Los Angeles for 2026-09-30 as reported by the National Weather Service's Climatological Report (Daily) be greater than or equal to 86F? Outcome verified from NWS Climatological Report.",
       "book": {
-        "valid": true,
-        "issues": [],
-        "asOf": "2026-09-30T09:30:08.474Z",
-        "receivedAt": "2026-09-30T09:30:17.189Z",
-        "yesAsk": 40000,
+        "valid": false,
+        "issues": [
+          "BOOK_SOURCE_TIME_TOO_OLD"
+        ],
+        "asOf": "2026-09-30T09:46:34.106Z",
+        "receivedAt": "2026-09-30T09:49:38.386Z",
+        "yesAsk": 50000,
         "noAsk": 980000,
-        "yesQty": 3,
+        "yesQty": 64,
         "noQty": 1646
       }
     },
@@ -418,11 +532,11 @@
       "book": {
         "valid": true,
         "issues": [],
-        "asOf": "2026-09-30T09:29:57.704Z",
-        "receivedAt": "2026-09-30T09:30:17.790Z",
+        "asOf": "2026-09-30T09:48:56.889Z",
+        "receivedAt": "2026-09-30T09:49:38.983Z",
         "yesAsk": 10000,
         "noAsk": null,
-        "yesQty": 24475,
+        "yesQty": 23540,
         "noQty": 0
       }
     },
@@ -443,12 +557,12 @@
       "book": {
         "valid": true,
         "issues": [],
-        "asOf": "2026-09-30T09:29:57.804Z",
-        "receivedAt": "2026-09-30T09:30:18.062Z",
-        "yesAsk": 800000,
+        "asOf": "2026-09-30T09:49:13.207Z",
+        "receivedAt": "2026-09-30T09:49:39.282Z",
+        "yesAsk": 810000,
         "noAsk": 240000,
-        "yesQty": 5,
-        "noQty": 3
+        "yesQty": 17,
+        "noQty": 9
       }
     },
     {
@@ -468,11 +582,11 @@
       "book": {
         "valid": true,
         "issues": [],
-        "asOf": "2026-09-30T09:29:58.478Z",
-        "receivedAt": "2026-09-30T09:30:18.363Z",
-        "yesAsk": 200000,
+        "asOf": "2026-09-30T09:49:12.163Z",
+        "receivedAt": "2026-09-30T09:49:39.586Z",
+        "yesAsk": 210000,
         "noAsk": 820000,
-        "yesQty": 1,
+        "yesQty": 11,
         "noQty": 3
       }
     },
@@ -493,11 +607,11 @@
       "book": {
         "valid": true,
         "issues": [],
-        "asOf": "2026-09-30T09:29:33.186Z",
-        "receivedAt": "2026-09-30T09:30:18.664Z",
+        "asOf": "2026-09-30T09:49:33.640Z",
+        "receivedAt": "2026-09-30T09:49:39.925Z",
         "yesAsk": 20000,
         "noAsk": 990000,
-        "yesQty": 50,
+        "yesQty": 25,
         "noQty": 291
       }
     },
@@ -518,11 +632,11 @@
       "book": {
         "valid": true,
         "issues": [],
-        "asOf": "2026-09-30T09:29:58.109Z",
-        "receivedAt": "2026-09-30T09:30:18.999Z",
+        "asOf": "2026-09-30T09:49:28.068Z",
+        "receivedAt": "2026-09-30T09:49:40.220Z",
         "yesAsk": 20000,
         "noAsk": 990000,
-        "yesQty": 449,
+        "yesQty": 448,
         "noQty": 147
       }
     },
@@ -543,11 +657,11 @@
       "book": {
         "valid": true,
         "issues": [],
-        "asOf": "2026-09-30T09:29:58.206Z",
-        "receivedAt": "2026-09-30T09:30:19.293Z",
+        "asOf": "2026-09-30T09:48:57.391Z",
+        "receivedAt": "2026-09-30T09:49:40.484Z",
         "yesAsk": 20000,
         "noAsk": null,
-        "yesQty": 2058,
+        "yesQty": 2059,
         "noQty": 0
       }
     },
@@ -568,12 +682,12 @@
       "book": {
         "valid": true,
         "issues": [],
-        "asOf": "2026-09-30T09:30:15.462Z",
-        "receivedAt": "2026-09-30T09:30:19.893Z",
+        "asOf": "2026-09-30T09:49:07.417Z",
+        "receivedAt": "2026-09-30T09:49:41.091Z",
         "yesAsk": 30000,
         "noAsk": 990000,
         "yesQty": 7,
-        "noQty": 995
+        "noQty": 27
       }
     },
     {
@@ -593,12 +707,12 @@
       "book": {
         "valid": true,
         "issues": [],
-        "asOf": "2026-09-30T09:30:12.535Z",
-        "receivedAt": "2026-09-30T09:30:20.193Z",
-        "yesAsk": 90000,
-        "noAsk": 920000,
-        "yesQty": 1,
-        "noQty": 1
+        "asOf": "2026-09-30T09:48:43.838Z",
+        "receivedAt": "2026-09-30T09:49:41.392Z",
+        "yesAsk": 70000,
+        "noAsk": 940000,
+        "yesQty": 8,
+        "noQty": 6
       }
     },
     {
@@ -618,12 +732,12 @@
       "book": {
         "valid": true,
         "issues": [],
-        "asOf": "2026-09-30T09:29:48.042Z",
-        "receivedAt": "2026-09-30T09:30:20.465Z",
+        "asOf": "2026-09-30T09:49:38.486Z",
+        "receivedAt": "2026-09-30T09:49:41.721Z",
         "yesAsk": 250000,
-        "noAsk": 780000,
+        "noAsk": 800000,
         "yesQty": 64,
-        "noQty": 3
+        "noQty": 95
       }
     },
     {
@@ -643,12 +757,12 @@
       "book": {
         "valid": true,
         "issues": [],
-        "asOf": "2026-09-30T09:29:39.867Z",
-        "receivedAt": "2026-09-30T09:30:20.768Z",
+        "asOf": "2026-09-30T09:49:36.911Z",
+        "receivedAt": "2026-09-30T09:49:42.080Z",
         "yesAsk": 560000,
-        "noAsk": 460000,
-        "yesQty": 65,
-        "noQty": 203
+        "noAsk": 450000,
+        "yesQty": 1,
+        "noQty": 259
       }
     },
     {
@@ -668,12 +782,12 @@
       "book": {
         "valid": true,
         "issues": [],
-        "asOf": "2026-09-30T09:30:06.010Z",
-        "receivedAt": "2026-09-30T09:30:21.097Z",
+        "asOf": "2026-09-30T09:49:06.310Z",
+        "receivedAt": "2026-09-30T09:49:42.290Z",
         "yesAsk": 160000,
         "noAsk": 860000,
         "yesQty": 3,
-        "noQty": 127
+        "noQty": 431
       }
     },
     {
@@ -693,11 +807,11 @@
       "book": {
         "valid": true,
         "issues": [],
-        "asOf": "2026-09-30T09:29:36.269Z",
-        "receivedAt": "2026-09-30T09:30:21.395Z",
+        "asOf": "2026-09-30T09:49:08.291Z",
+        "receivedAt": "2026-09-30T09:49:42.593Z",
         "yesAsk": 40000,
         "noAsk": 970000,
-        "yesQty": 152,
+        "yesQty": 88,
         "noQty": 14
       }
     },
@@ -718,8 +832,8 @@
       "book": {
         "valid": true,
         "issues": [],
-        "asOf": "2026-09-30T09:29:44.511Z",
-        "receivedAt": "2026-09-30T09:30:21.993Z",
+        "asOf": "2026-09-30T09:49:34.773Z",
+        "receivedAt": "2026-09-30T09:49:43.220Z",
         "yesAsk": 100000,
         "noAsk": 930000,
         "yesQty": 15,
@@ -743,12 +857,12 @@
       "book": {
         "valid": true,
         "issues": [],
-        "asOf": "2026-09-30T09:29:57.557Z",
-        "receivedAt": "2026-09-30T09:30:22.296Z",
-        "yesAsk": 560000,
-        "noAsk": 450000,
-        "yesQty": 61,
-        "noQty": 1
+        "asOf": "2026-09-30T09:49:27.736Z",
+        "receivedAt": "2026-09-30T09:49:43.493Z",
+        "yesAsk": 530000,
+        "noAsk": 480000,
+        "yesQty": 90,
+        "noQty": 119
       }
     },
     {
@@ -768,12 +882,12 @@
       "book": {
         "valid": true,
         "issues": [],
-        "asOf": "2026-09-30T09:29:54.665Z",
-        "receivedAt": "2026-09-30T09:30:22.595Z",
-        "yesAsk": 360000,
-        "noAsk": 670000,
-        "yesQty": 64,
-        "noQty": 3
+        "asOf": "2026-09-30T09:49:41.402Z",
+        "receivedAt": "2026-09-30T09:49:43.825Z",
+        "yesAsk": 370000,
+        "noAsk": 650000,
+        "yesQty": 3,
+        "noQty": 67
       }
     },
     {
@@ -793,12 +907,12 @@
       "book": {
         "valid": true,
         "issues": [],
-        "asOf": "2026-09-30T09:30:03.670Z",
-        "receivedAt": "2026-09-30T09:30:22.896Z",
+        "asOf": "2026-09-30T09:49:07.028Z",
+        "receivedAt": "2026-09-30T09:49:44.092Z",
         "yesAsk": 40000,
         "noAsk": 970000,
         "yesQty": 141,
-        "noQty": 55
+        "noQty": 48
       }
     },
     {
@@ -818,11 +932,11 @@
       "book": {
         "valid": true,
         "issues": [],
-        "asOf": "2026-09-30T09:30:06.585Z",
-        "receivedAt": "2026-09-30T09:30:23.198Z",
-        "yesAsk": 20000,
+        "asOf": "2026-09-30T09:49:07.700Z",
+        "receivedAt": "2026-09-30T09:49:44.392Z",
+        "yesAsk": 30000,
         "noAsk": null,
-        "yesQty": 64,
+        "yesQty": 20,
         "noQty": 0
       }
     },
@@ -845,11 +959,11 @@
         "issues": [
           "BOOK_SOURCE_TIME_TOO_OLD"
         ],
-        "asOf": "2026-09-30T09:27:09.302Z",
-        "receivedAt": "2026-09-30T09:30:23.496Z",
+        "asOf": "2026-09-30T09:32:27.371Z",
+        "receivedAt": "2026-09-30T09:49:44.696Z",
         "yesAsk": 10000,
         "noAsk": null,
-        "yesQty": 7624,
+        "yesQty": 7625,
         "noQty": 0
       }
     },
@@ -870,12 +984,12 @@
       "book": {
         "valid": true,
         "issues": [],
-        "asOf": "2026-09-30T09:29:52.484Z",
-        "receivedAt": "2026-09-30T09:30:24.071Z",
+        "asOf": "2026-09-30T09:49:36.337Z",
+        "receivedAt": "2026-09-30T09:49:45.325Z",
         "yesAsk": 290000,
         "noAsk": 720000,
-        "yesQty": 28,
-        "noQty": 75
+        "yesQty": 1,
+        "noQty": 9
       }
     },
     {
@@ -895,12 +1009,12 @@
       "book": {
         "valid": true,
         "issues": [],
-        "asOf": "2026-09-30T09:30:01.566Z",
-        "receivedAt": "2026-09-30T09:30:24.372Z",
+        "asOf": "2026-09-30T09:49:44.489Z",
+        "receivedAt": "2026-09-30T09:49:45.625Z",
         "yesAsk": 270000,
         "noAsk": 740000,
         "yesQty": 8,
-        "noQty": 194
+        "noQty": 212
       }
     },
     {
@@ -920,11 +1034,11 @@
       "book": {
         "valid": true,
         "issues": [],
-        "asOf": "2026-09-30T09:30:01.872Z",
-        "receivedAt": "2026-09-30T09:30:24.674Z",
+        "asOf": "2026-09-30T09:49:19.049Z",
+        "receivedAt": "2026-09-30T09:49:45.893Z",
         "yesAsk": 320000,
         "noAsk": 690000,
-        "yesQty": 5,
+        "yesQty": 4,
         "noQty": 539
       }
     },
@@ -945,12 +1059,12 @@
       "book": {
         "valid": true,
         "issues": [],
-        "asOf": "2026-09-30T09:29:41.212Z",
-        "receivedAt": "2026-09-30T09:30:24.975Z",
-        "yesAsk": 170000,
-        "noAsk": 840000,
-        "yesQty": 70,
-        "noQty": 1
+        "asOf": "2026-09-30T09:49:17.210Z",
+        "receivedAt": "2026-09-30T09:49:46.191Z",
+        "yesAsk": 160000,
+        "noAsk": 850000,
+        "yesQty": 127,
+        "noQty": 17
       }
     },
     {
@@ -970,11 +1084,11 @@
       "book": {
         "valid": true,
         "issues": [],
-        "asOf": "2026-09-30T09:30:19.519Z",
-        "receivedAt": "2026-09-30T09:30:25.275Z",
+        "asOf": "2026-09-30T09:49:11.011Z",
+        "receivedAt": "2026-09-30T09:49:46.495Z",
         "yesAsk": 30000,
         "noAsk": 980000,
-        "yesQty": 127,
+        "yesQty": 94,
         "noQty": 83
       }
     },
@@ -993,297 +1107,507 @@
       "url": "https://polymarket.us/event/temp-sfohigh-2026-09-30",
       "description": "Will the highest temperature recorded at San Francisco International Airport (KSFO) in San Francisco for 2026-09-30 as reported by the National Weather Service's Climatological Report (Daily) be greater than or equal to 84F? Outcome verified from NWS Climatological Report.",
       "book": {
-        "valid": true,
-        "issues": [],
-        "asOf": "2026-09-30T09:30:08.736Z",
-        "receivedAt": "2026-09-30T09:30:25.579Z",
+        "valid": false,
+        "issues": [
+          "BOOK_SOURCE_TIME_TOO_OLD"
+        ],
+        "asOf": "2026-09-30T09:47:22.182Z",
+        "receivedAt": "2026-09-30T09:49:46.793Z",
         "yesAsk": 20000,
         "noAsk": 990000,
-        "yesQty": 98,
-        "noQty": 581
+        "yesQty": 128,
+        "noQty": 552
+      }
+    },
+    {
+      "slug": "tc-temp-mdwhigh-2026-10-01-lt69f",
+      "eventSlug": "temp-mdwhigh-2026-10-01",
+      "station": "KMDW",
+      "date": "2026-10-01",
+      "metric": "high",
+      "label": "<= 68 F",
+      "valid": true,
+      "active": true,
+      "rulesChanged": false,
+      "issues": [],
+      "rulesHash": "e55f7c34ab5fe857b362f0319b01747e08d071bd12f002ebecd2008befc5b9fd",
+      "url": "https://polymarket.us/event/temp-mdwhigh-2026-10-01",
+      "description": "Will the highest temperature recorded at Chicago Midway Airport (KMDW) in Chicago for 2026-10-01 as reported by the National Weather Service's Climatological Report (Daily) be less than or equal to 68F? Outcome verified from NWS Climatological Report.",
+      "book": {
+        "valid": false,
+        "issues": [
+          "BOOK_SOURCE_TIME_TOO_OLD"
+        ],
+        "asOf": "2026-09-30T09:45:23.441Z",
+        "receivedAt": "2026-09-30T09:49:47.726Z",
+        "yesAsk": null,
+        "noAsk": null,
+        "yesQty": 0,
+        "noQty": 0
+      }
+    },
+    {
+      "slug": "tc-temp-mdwhigh-2026-10-01-gte69lt70f",
+      "eventSlug": "temp-mdwhigh-2026-10-01",
+      "station": "KMDW",
+      "date": "2026-10-01",
+      "metric": "high",
+      "label": "69-70 F",
+      "valid": true,
+      "active": true,
+      "rulesChanged": false,
+      "issues": [],
+      "rulesHash": "afaf7c0685d4d1c84bc23773d76c649994245c5b0a48647bf018072e4d14f590",
+      "url": "https://polymarket.us/event/temp-mdwhigh-2026-10-01",
+      "description": "Will the highest temperature recorded at Chicago Midway Airport (KMDW) in Chicago for 2026-10-01 as reported by the National Weather Service's Climatological Report (Daily) be between 69F and 70F? Outcome verified from NWS Climatological Report.",
+      "book": {
+        "valid": true,
+        "issues": [],
+        "asOf": "2026-09-30T09:48:09.365Z",
+        "receivedAt": "2026-09-30T09:49:48.027Z",
+        "yesAsk": null,
+        "noAsk": 990000,
+        "yesQty": 0,
+        "noQty": 380
+      }
+    },
+    {
+      "slug": "tc-temp-mdwhigh-2026-10-01-gte71lt72f",
+      "eventSlug": "temp-mdwhigh-2026-10-01",
+      "station": "KMDW",
+      "date": "2026-10-01",
+      "metric": "high",
+      "label": "71-72 F",
+      "valid": true,
+      "active": true,
+      "rulesChanged": false,
+      "issues": [],
+      "rulesHash": "d603a464f8f802705ec968a6f6191bc97beaaacca7dd0140a29dff9825de87ce",
+      "url": "https://polymarket.us/event/temp-mdwhigh-2026-10-01",
+      "description": "Will the highest temperature recorded at Chicago Midway Airport (KMDW) in Chicago for 2026-10-01 as reported by the National Weather Service's Climatological Report (Daily) be between 71F and 72F? Outcome verified from NWS Climatological Report.",
+      "book": {
+        "valid": true,
+        "issues": [],
+        "asOf": "2026-09-30T09:48:09.366Z",
+        "receivedAt": "2026-09-30T09:49:48.332Z",
+        "yesAsk": null,
+        "noAsk": 990000,
+        "yesQty": 0,
+        "noQty": 380
+      }
+    },
+    {
+      "slug": "tc-temp-mdwhigh-2026-10-01-gte73lt74f",
+      "eventSlug": "temp-mdwhigh-2026-10-01",
+      "station": "KMDW",
+      "date": "2026-10-01",
+      "metric": "high",
+      "label": "73-74 F",
+      "valid": true,
+      "active": true,
+      "rulesChanged": false,
+      "issues": [],
+      "rulesHash": "96f6c5be65db58789b1f00c51cea571d450a9704e3e33a310e892ff22d9a0bcc",
+      "url": "https://polymarket.us/event/temp-mdwhigh-2026-10-01",
+      "description": "Will the highest temperature recorded at Chicago Midway Airport (KMDW) in Chicago for 2026-10-01 as reported by the National Weather Service's Climatological Report (Daily) be between 73F and 74F? Outcome verified from NWS Climatological Report.",
+      "book": {
+        "valid": false,
+        "issues": [
+          "BOOK_SOURCE_TIME_TOO_OLD"
+        ],
+        "asOf": "2026-09-30T09:45:27.845Z",
+        "receivedAt": "2026-09-30T09:49:48.637Z",
+        "yesAsk": null,
+        "noAsk": null,
+        "yesQty": 0,
+        "noQty": 0
+      }
+    },
+    {
+      "slug": "tc-temp-mdwhigh-2026-10-01-gte75lt76f",
+      "eventSlug": "temp-mdwhigh-2026-10-01",
+      "station": "KMDW",
+      "date": "2026-10-01",
+      "metric": "high",
+      "label": "75-76 F",
+      "valid": true,
+      "active": true,
+      "rulesChanged": false,
+      "issues": [],
+      "rulesHash": "814087f72d509acbf4de41f2e9ef8c4f00cdd0d5c66ebd614326fe508a06e327",
+      "url": "https://polymarket.us/event/temp-mdwhigh-2026-10-01",
+      "description": "Will the highest temperature recorded at Chicago Midway Airport (KMDW) in Chicago for 2026-10-01 as reported by the National Weather Service's Climatological Report (Daily) be between 75F and 76F? Outcome verified from NWS Climatological Report.",
+      "book": {
+        "valid": false,
+        "issues": [
+          "BOOK_SOURCE_TIME_TOO_OLD"
+        ],
+        "asOf": "2026-09-30T09:45:28.954Z",
+        "receivedAt": "2026-09-30T09:49:48.927Z",
+        "yesAsk": null,
+        "noAsk": null,
+        "yesQty": 0,
+        "noQty": 0
+      }
+    },
+    {
+      "slug": "tc-temp-mdwhigh-2026-10-01-gte77f",
+      "eventSlug": "temp-mdwhigh-2026-10-01",
+      "station": "KMDW",
+      "date": "2026-10-01",
+      "metric": "high",
+      "label": ">= 77 F",
+      "valid": true,
+      "active": true,
+      "rulesChanged": false,
+      "issues": [],
+      "rulesHash": "8d9716d11c5904e402c5ea37e205508de4fb9b74d60422f60329bdc9c5f23f2b",
+      "url": "https://polymarket.us/event/temp-mdwhigh-2026-10-01",
+      "description": "Will the highest temperature recorded at Chicago Midway Airport (KMDW) in Chicago for 2026-10-01 as reported by the National Weather Service's Climatological Report (Daily) be greater than or equal to 77F? Outcome verified from NWS Climatological Report.",
+      "book": {
+        "valid": false,
+        "issues": [
+          "BOOK_SOURCE_TIME_TOO_OLD"
+        ],
+        "asOf": "2026-09-30T09:45:30.126Z",
+        "receivedAt": "2026-09-30T09:49:49.232Z",
+        "yesAsk": null,
+        "noAsk": null,
+        "yesQty": 0,
+        "noQty": 0
+      }
+    },
+    {
+      "slug": "tc-temp-miahigh-2026-10-01-lt83f",
+      "eventSlug": "temp-miahigh-2026-10-01",
+      "station": "KMIA",
+      "date": "2026-10-01",
+      "metric": "high",
+      "label": "<= 82 F",
+      "valid": true,
+      "active": true,
+      "rulesChanged": false,
+      "issues": [],
+      "rulesHash": "7c2c1cabf9450ab7a861c4a51ce63d5ae1bd0c38941d05a952db5785402260dd",
+      "url": "https://polymarket.us/event/temp-miahigh-2026-10-01",
+      "description": "Will the highest temperature recorded at Miami International Airport (KMIA) in Miami for 2026-10-01 as reported by the National Weather Service's Climatological Report (Daily) be less than or equal to 82F? Outcome verified from NWS Climatological Report.",
+      "book": {
+        "valid": false,
+        "issues": [
+          "BOOK_SOURCE_TIME_TOO_OLD"
+        ],
+        "asOf": "2026-09-30T09:45:15.324Z",
+        "receivedAt": "2026-09-30T09:49:49.828Z",
+        "yesAsk": null,
+        "noAsk": null,
+        "yesQty": 0,
+        "noQty": 0
+      }
+    },
+    {
+      "slug": "tc-temp-miahigh-2026-10-01-gte83lt84f",
+      "eventSlug": "temp-miahigh-2026-10-01",
+      "station": "KMIA",
+      "date": "2026-10-01",
+      "metric": "high",
+      "label": "83-84 F",
+      "valid": true,
+      "active": true,
+      "rulesChanged": false,
+      "issues": [],
+      "rulesHash": "9388d3c0727aa124f7242539e8ed9014b3a7731d2bb2a18c1f0aba3eb03bb3e9",
+      "url": "https://polymarket.us/event/temp-miahigh-2026-10-01",
+      "description": "Will the highest temperature recorded at Miami International Airport (KMIA) in Miami for 2026-10-01 as reported by the National Weather Service's Climatological Report (Daily) be between 83F and 84F? Outcome verified from NWS Climatological Report.",
+      "book": {
+        "valid": true,
+        "issues": [],
+        "asOf": "2026-09-30T09:48:09.359Z",
+        "receivedAt": "2026-09-30T09:49:50.127Z",
+        "yesAsk": null,
+        "noAsk": 990000,
+        "yesQty": 0,
+        "noQty": 380
+      }
+    },
+    {
+      "slug": "tc-temp-miahigh-2026-10-01-gte85lt86f",
+      "eventSlug": "temp-miahigh-2026-10-01",
+      "station": "KMIA",
+      "date": "2026-10-01",
+      "metric": "high",
+      "label": "85-86 F",
+      "valid": true,
+      "active": true,
+      "rulesChanged": false,
+      "issues": [],
+      "rulesHash": "2f83fb6012a6e22c094d2998b93d26a07166bb58be965ad6e59fefbba0db43f2",
+      "url": "https://polymarket.us/event/temp-miahigh-2026-10-01",
+      "description": "Will the highest temperature recorded at Miami International Airport (KMIA) in Miami for 2026-10-01 as reported by the National Weather Service's Climatological Report (Daily) be between 85F and 86F? Outcome verified from NWS Climatological Report.",
+      "book": {
+        "valid": true,
+        "issues": [],
+        "asOf": "2026-09-30T09:48:09.360Z",
+        "receivedAt": "2026-09-30T09:49:50.430Z",
+        "yesAsk": null,
+        "noAsk": 990000,
+        "yesQty": 0,
+        "noQty": 380
+      }
+    },
+    {
+      "slug": "tc-temp-miahigh-2026-10-01-gte87lt88f",
+      "eventSlug": "temp-miahigh-2026-10-01",
+      "station": "KMIA",
+      "date": "2026-10-01",
+      "metric": "high",
+      "label": "87-88 F",
+      "valid": true,
+      "active": true,
+      "rulesChanged": false,
+      "issues": [],
+      "rulesHash": "9716093bedba1a00c0f0130684a551013198625d9f48cb5da49ad6e4e5011bc3",
+      "url": "https://polymarket.us/event/temp-miahigh-2026-10-01",
+      "description": "Will the highest temperature recorded at Miami International Airport (KMIA) in Miami for 2026-10-01 as reported by the National Weather Service's Climatological Report (Daily) be between 87F and 88F? Outcome verified from NWS Climatological Report.",
+      "book": {
+        "valid": false,
+        "issues": [
+          "BOOK_SOURCE_TIME_TOO_OLD"
+        ],
+        "asOf": "2026-09-30T09:45:18.942Z",
+        "receivedAt": "2026-09-30T09:49:50.728Z",
+        "yesAsk": null,
+        "noAsk": null,
+        "yesQty": 0,
+        "noQty": 0
+      }
+    },
+    {
+      "slug": "tc-temp-miahigh-2026-10-01-gte89lt90f",
+      "eventSlug": "temp-miahigh-2026-10-01",
+      "station": "KMIA",
+      "date": "2026-10-01",
+      "metric": "high",
+      "label": "89-90 F",
+      "valid": true,
+      "active": true,
+      "rulesChanged": false,
+      "issues": [],
+      "rulesHash": "d436be496310021a514a2da9cbdd186aafc074552f6bbb70759e3e3159800bbf",
+      "url": "https://polymarket.us/event/temp-miahigh-2026-10-01",
+      "description": "Will the highest temperature recorded at Miami International Airport (KMIA) in Miami for 2026-10-01 as reported by the National Weather Service's Climatological Report (Daily) be between 89F and 90F? Outcome verified from NWS Climatological Report.",
+      "book": {
+        "valid": false,
+        "issues": [
+          "BOOK_SOURCE_TIME_TOO_OLD"
+        ],
+        "asOf": "2026-09-30T09:45:20.002Z",
+        "receivedAt": "2026-09-30T09:49:51.031Z",
+        "yesAsk": null,
+        "noAsk": null,
+        "yesQty": 0,
+        "noQty": 0
+      }
+    },
+    {
+      "slug": "tc-temp-miahigh-2026-10-01-gte91f",
+      "eventSlug": "temp-miahigh-2026-10-01",
+      "station": "KMIA",
+      "date": "2026-10-01",
+      "metric": "high",
+      "label": ">= 91 F",
+      "valid": true,
+      "active": true,
+      "rulesChanged": false,
+      "issues": [],
+      "rulesHash": "131dc7aa69ec978f76b4c9d052af67a55504a437ec03312dffa5c7960b98980e",
+      "url": "https://polymarket.us/event/temp-miahigh-2026-10-01",
+      "description": "Will the highest temperature recorded at Miami International Airport (KMIA) in Miami for 2026-10-01 as reported by the National Weather Service's Climatological Report (Daily) be greater than or equal to 91F? Outcome verified from NWS Climatological Report.",
+      "book": {
+        "valid": false,
+        "issues": [
+          "BOOK_SOURCE_TIME_TOO_OLD"
+        ],
+        "asOf": "2026-09-30T09:45:21.161Z",
+        "receivedAt": "2026-09-30T09:49:51.329Z",
+        "yesAsk": null,
+        "noAsk": null,
+        "yesQty": 0,
+        "noQty": 0
+      }
+    },
+    {
+      "slug": "tc-temp-nychigh-2026-10-01-lt75f",
+      "eventSlug": "temp-nychigh-2026-10-01",
+      "station": "KNYC",
+      "date": "2026-10-01",
+      "metric": "high",
+      "label": "<= 74 F",
+      "valid": true,
+      "active": true,
+      "rulesChanged": false,
+      "issues": [],
+      "rulesHash": "801b0fc97fc9dfb2cf8b17d7fe6b21f7a9de311e358ba8538f750b5e8df90914",
+      "url": "https://polymarket.us/event/temp-nychigh-2026-10-01",
+      "description": "Will the highest temperature recorded at Central Park (KNYC) in New York City for 2026-10-01 as reported by the National Weather Service's Climatological Report (Daily) be less than or equal to 74F? Outcome verified from NWS Climatological Report.",
+      "book": {
+        "valid": false,
+        "issues": [
+          "BOOK_SOURCE_TIME_TOO_OLD"
+        ],
+        "asOf": "2026-09-30T09:45:08.465Z",
+        "receivedAt": "2026-09-30T09:49:51.899Z",
+        "yesAsk": null,
+        "noAsk": null,
+        "yesQty": 0,
+        "noQty": 0
+      }
+    },
+    {
+      "slug": "tc-temp-nychigh-2026-10-01-gte75lt76f",
+      "eventSlug": "temp-nychigh-2026-10-01",
+      "station": "KNYC",
+      "date": "2026-10-01",
+      "metric": "high",
+      "label": "75-76 F",
+      "valid": true,
+      "active": true,
+      "rulesChanged": false,
+      "issues": [],
+      "rulesHash": "dd5a855bd6c99dcfd37a9a7a5f1d9f9eb3fe3d1414f805d8b3938a58137a515a",
+      "url": "https://polymarket.us/event/temp-nychigh-2026-10-01",
+      "description": "Will the highest temperature recorded at Central Park (KNYC) in New York City for 2026-10-01 as reported by the National Weather Service's Climatological Report (Daily) be between 75F and 76F? Outcome verified from NWS Climatological Report.",
+      "book": {
+        "valid": true,
+        "issues": [],
+        "asOf": "2026-09-30T09:48:09.362Z",
+        "receivedAt": "2026-09-30T09:49:52.235Z",
+        "yesAsk": null,
+        "noAsk": 990000,
+        "yesQty": 0,
+        "noQty": 380
+      }
+    },
+    {
+      "slug": "tc-temp-nychigh-2026-10-01-gte77lt78f",
+      "eventSlug": "temp-nychigh-2026-10-01",
+      "station": "KNYC",
+      "date": "2026-10-01",
+      "metric": "high",
+      "label": "77-78 F",
+      "valid": true,
+      "active": true,
+      "rulesChanged": false,
+      "issues": [],
+      "rulesHash": "966da11cb3287b9e0515a9ac9c5cf31ce29ef44bd671f25c509467345a8c0e05",
+      "url": "https://polymarket.us/event/temp-nychigh-2026-10-01",
+      "description": "Will the highest temperature recorded at Central Park (KNYC) in New York City for 2026-10-01 as reported by the National Weather Service's Climatological Report (Daily) be between 77F and 78F? Outcome verified from NWS Climatological Report.",
+      "book": {
+        "valid": true,
+        "issues": [],
+        "asOf": "2026-09-30T09:48:09.363Z",
+        "receivedAt": "2026-09-30T09:49:52.533Z",
+        "yesAsk": null,
+        "noAsk": 990000,
+        "yesQty": 0,
+        "noQty": 380
+      }
+    },
+    {
+      "slug": "tc-temp-nychigh-2026-10-01-gte79lt80f",
+      "eventSlug": "temp-nychigh-2026-10-01",
+      "station": "KNYC",
+      "date": "2026-10-01",
+      "metric": "high",
+      "label": "79-80 F",
+      "valid": true,
+      "active": true,
+      "rulesChanged": false,
+      "issues": [],
+      "rulesHash": "899f0aad2768c76ef3abb5d88c6762793f65104b804e042154c621645edc1266",
+      "url": "https://polymarket.us/event/temp-nychigh-2026-10-01",
+      "description": "Will the highest temperature recorded at Central Park (KNYC) in New York City for 2026-10-01 as reported by the National Weather Service's Climatological Report (Daily) be between 79F and 80F? Outcome verified from NWS Climatological Report.",
+      "book": {
+        "valid": false,
+        "issues": [
+          "BOOK_SOURCE_TIME_TOO_OLD"
+        ],
+        "asOf": "2026-09-30T09:45:11.846Z",
+        "receivedAt": "2026-09-30T09:49:52.829Z",
+        "yesAsk": null,
+        "noAsk": null,
+        "yesQty": 0,
+        "noQty": 0
+      }
+    },
+    {
+      "slug": "tc-temp-nychigh-2026-10-01-gte81lt82f",
+      "eventSlug": "temp-nychigh-2026-10-01",
+      "station": "KNYC",
+      "date": "2026-10-01",
+      "metric": "high",
+      "label": "81-82 F",
+      "valid": true,
+      "active": true,
+      "rulesChanged": false,
+      "issues": [],
+      "rulesHash": "28a8daae850e2bdabbe8ae479d4dcd4c0f576dd7fb0757457952de28ab4358d7",
+      "url": "https://polymarket.us/event/temp-nychigh-2026-10-01",
+      "description": "Will the highest temperature recorded at Central Park (KNYC) in New York City for 2026-10-01 as reported by the National Weather Service's Climatological Report (Daily) be between 81F and 82F? Outcome verified from NWS Climatological Report.",
+      "book": {
+        "valid": false,
+        "issues": [
+          "BOOK_SOURCE_TIME_TOO_OLD"
+        ],
+        "asOf": "2026-09-30T09:45:12.907Z",
+        "receivedAt": "2026-09-30T09:49:53.129Z",
+        "yesAsk": null,
+        "noAsk": null,
+        "yesQty": 0,
+        "noQty": 0
+      }
+    },
+    {
+      "slug": "tc-temp-nychigh-2026-10-01-gte83f",
+      "eventSlug": "temp-nychigh-2026-10-01",
+      "station": "KNYC",
+      "date": "2026-10-01",
+      "metric": "high",
+      "label": ">= 83 F",
+      "valid": true,
+      "active": true,
+      "rulesChanged": false,
+      "issues": [],
+      "rulesHash": "996617515266d3505a6cf136e6a934fdde5f9b9ff5443606aeeb874254950c99",
+      "url": "https://polymarket.us/event/temp-nychigh-2026-10-01",
+      "description": "Will the highest temperature recorded at Central Park (KNYC) in New York City for 2026-10-01 as reported by the National Weather Service's Climatological Report (Daily) be greater than or equal to 83F? Outcome verified from NWS Climatological Report.",
+      "book": {
+        "valid": false,
+        "issues": [
+          "BOOK_SOURCE_TIME_TOO_OLD"
+        ],
+        "asOf": "2026-09-30T09:45:13.990Z",
+        "receivedAt": "2026-09-30T09:49:53.429Z",
+        "yesAsk": null,
+        "noAsk": null,
+        "yesQty": 0,
+        "noQty": 0
       }
     }
   ],
   "statusCounts": {
-    "NO_NET_EDGE": 57,
-    "BLOCKED": 28
+    "NO_NET_EDGE": 53,
+    "BLOCKED": 83
   },
   "blockers": {
-    "NO_NET_SURPLUS_AT_REQUIRED_THRESHOLD": 57,
-    "BOOK_SOURCE_TIME_TOO_OLD": 14,
-    "SOURCE_TIMESTAMPS_TOO_FAR_APART": 14,
-    "NO_NO_ASK_DEPTH": 20
+    "NO_NET_SURPLUS_AT_REQUIRED_THRESHOLD": 53,
+    "BOOK_SOURCE_TIME_TOO_OLD": 69,
+    "SOURCE_TIMESTAMPS_TOO_FAR_APART": 48,
+    "NO_NO_ASK_DEPTH": 65,
+    "NO_YES_ASK_DEPTH": 3
   },
   "candidates": [],
   "candidatesOmitted": 0,
   "nearMisses": [
-    {
-      "id": "9b6d122e73f252d1b40be28bb4548dd9a5057f319cd526ad3e1ae37c01f90a12",
-      "familyKey": "deab57202e6451190f1048a1d461784e181dc4e5a403f50232d27338c2d75893",
-      "eventSlug": "temp-sfohigh-2026-09-30",
-      "station": "KSFO",
-      "date": "2026-09-30",
-      "metric": "high",
-      "type": "MULTI_NO_PAYOFF_FLOOR",
-      "legs": [
-        {
-          "slug": "tc-temp-sfohigh-2026-09-30-gte76lt77f",
-          "side": "NO",
-          "label": "76-77 F"
-        },
-        {
-          "slug": "tc-temp-sfohigh-2026-09-30-gte78lt79f",
-          "side": "NO",
-          "label": "78-79 F"
-        },
-        {
-          "slug": "tc-temp-sfohigh-2026-09-30-gte80lt81f",
-          "side": "NO",
-          "label": "80-81 F"
-        },
-        {
-          "slug": "tc-temp-sfohigh-2026-09-30-gte82lt83f",
-          "side": "NO",
-          "label": "82-83 F"
-        },
-        {
-          "slug": "tc-temp-sfohigh-2026-09-30-gte84f",
-          "side": "NO",
-          "label": ">= 84 F"
-        },
-        {
-          "slug": "tc-temp-sfohigh-2026-09-30-lt76f",
-          "side": "NO",
-          "label": "<= 75 F"
-        }
-      ],
-      "proof": {
-        "minimumU": 5000000,
-        "maximumU": 5000000,
-        "outcomes": [
-          {
-            "low": null,
-            "high": 75,
-            "value": 75,
-            "label": "<= 75 F",
-            "legPayouts": [
-              1000000,
-              1000000,
-              1000000,
-              1000000,
-              1000000,
-              0
-            ],
-            "payoutU": 5000000
-          },
-          {
-            "low": 76,
-            "high": 77,
-            "value": 76,
-            "label": "76-77 F",
-            "legPayouts": [
-              0,
-              1000000,
-              1000000,
-              1000000,
-              1000000,
-              1000000
-            ],
-            "payoutU": 5000000
-          },
-          {
-            "low": 78,
-            "high": 79,
-            "value": 78,
-            "label": "78-79 F",
-            "legPayouts": [
-              1000000,
-              0,
-              1000000,
-              1000000,
-              1000000,
-              1000000
-            ],
-            "payoutU": 5000000
-          },
-          {
-            "low": 80,
-            "high": 81,
-            "value": 80,
-            "label": "80-81 F",
-            "legPayouts": [
-              1000000,
-              1000000,
-              0,
-              1000000,
-              1000000,
-              1000000
-            ],
-            "payoutU": 5000000
-          },
-          {
-            "low": 82,
-            "high": 83,
-            "value": 82,
-            "label": "82-83 F",
-            "legPayouts": [
-              1000000,
-              1000000,
-              1000000,
-              0,
-              1000000,
-              1000000
-            ],
-            "payoutU": 5000000
-          },
-          {
-            "low": 84,
-            "high": null,
-            "value": 84,
-            "label": ">= 84 F",
-            "legPayouts": [
-              1000000,
-              1000000,
-              1000000,
-              1000000,
-              0,
-              1000000
-            ],
-            "payoutU": 5000000
-          }
-        ],
-        "scope": "Every integer value of the shared CLI temperature; excludes nonnumeric/fair-market-price settlement and incomplete execution"
-      },
-      "at": "2026-09-30T09:30:25.579Z",
-      "ruleHashes": {
-        "tc-temp-sfohigh-2026-09-30-gte76lt77f": "cdc862ce05f9c56e544e7fb21bbd8a162f9af37066a0e959247f5534e6a2d639",
-        "tc-temp-sfohigh-2026-09-30-gte78lt79f": "d3ba684e56193555da3bb86fb7d1f1dc1a98bf8bdd0a7f45a430033f74f82e11",
-        "tc-temp-sfohigh-2026-09-30-gte80lt81f": "eb69c008c9284fa44094acb25dd7a730570c0557efa6de5c439b9dc8a4061943",
-        "tc-temp-sfohigh-2026-09-30-gte82lt83f": "5cf096cc528d3c19f547f2a2694951ccf6920f4406ca3311761f6073cd317c7d",
-        "tc-temp-sfohigh-2026-09-30-gte84f": "9d6de75255378f9c30917301d2f5d8dee6360cc10efc56d4b6894930cbadf688",
-        "tc-temp-sfohigh-2026-09-30-lt76f": "2a0926873bae1c579b1d1af252ae593213ccd1db6eb4ef69b9ba3c998c6f46b5"
-      },
-      "reasons": [
-        "NO_NET_SURPLUS_AT_REQUIRED_THRESHOLD"
-      ],
-      "displayed": null,
-      "stress": null,
-      "indicative": {
-        "bundles": 1,
-        "legs": [
-          {
-            "slug": "tc-temp-sfohigh-2026-09-30-gte76lt77f",
-            "side": "NO",
-            "label": "76-77 F",
-            "fills": [
-              {
-                "priceU": 740000,
-                "displayedPriceU": 740000,
-                "qty": 1
-              }
-            ],
-            "notionalU": 740000,
-            "feeU": 20000,
-            "costU": 760000,
-            "averagePrice": 0.74
-          },
-          {
-            "slug": "tc-temp-sfohigh-2026-09-30-gte78lt79f",
-            "side": "NO",
-            "label": "78-79 F",
-            "fills": [
-              {
-                "priceU": 690000,
-                "displayedPriceU": 690000,
-                "qty": 1
-              }
-            ],
-            "notionalU": 690000,
-            "feeU": 20000,
-            "costU": 710000,
-            "averagePrice": 0.69
-          },
-          {
-            "slug": "tc-temp-sfohigh-2026-09-30-gte80lt81f",
-            "side": "NO",
-            "label": "80-81 F",
-            "fills": [
-              {
-                "priceU": 840000,
-                "displayedPriceU": 840000,
-                "qty": 1
-              }
-            ],
-            "notionalU": 840000,
-            "feeU": 10000,
-            "costU": 850000,
-            "averagePrice": 0.84
-          },
-          {
-            "slug": "tc-temp-sfohigh-2026-09-30-gte82lt83f",
-            "side": "NO",
-            "label": "82-83 F",
-            "fills": [
-              {
-                "priceU": 980000,
-                "displayedPriceU": 980000,
-                "qty": 1
-              }
-            ],
-            "notionalU": 980000,
-            "feeU": 10000,
-            "costU": 990000,
-            "averagePrice": 0.98
-          },
-          {
-            "slug": "tc-temp-sfohigh-2026-09-30-gte84f",
-            "side": "NO",
-            "label": ">= 84 F",
-            "fills": [
-              {
-                "priceU": 990000,
-                "displayedPriceU": 990000,
-                "qty": 1
-              }
-            ],
-            "notionalU": 990000,
-            "feeU": 10000,
-            "costU": 1000000,
-            "averagePrice": 0.99
-          },
-          {
-            "slug": "tc-temp-sfohigh-2026-09-30-lt76f",
-            "side": "NO",
-            "label": "<= 75 F",
-            "fills": [
-              {
-                "priceU": 720000,
-                "displayedPriceU": 720000,
-                "qty": 1
-              }
-            ],
-            "notionalU": 720000,
-            "feeU": 20000,
-            "costU": 740000,
-            "averagePrice": 0.72
-          }
-        ],
-        "notionalU": 4960000,
-        "feeU": 90000,
-        "costU": 5050000,
-        "minimumPayoutU": 5000000,
-        "minimumSurplusU": -50000,
-        "minimumReturn": -0.009900990099009901,
-        "surplusPerBundleU": -50000,
-        "largestSingleLegCostU": 1000000,
-        "maxFullCostAtRiskIfRelationshipFailsU": 5050000,
-        "feeModel": "Exact taker formula rounded UP per leg to cents (conservative cumulative-fee cap estimate)",
-        "stress": false,
-        "assumption": "Displayed book-depth calculation only; NOT a fill"
-      },
-      "confirmation": null,
-      "status": "NO_NET_EDGE"
-    },
     {
       "id": "dc31bfcbb11304c892f7a61fb3d2cef3f1a0d2cb4b6def4611a61501d1d5edde",
       "familyKey": "5ed7f651f7ae173199873d379c6dd226fce56967df4bf847ff9b7728a826006b",
@@ -1421,7 +1745,7 @@
         ],
         "scope": "Every integer value of the shared CLI temperature; excludes nonnumeric/fair-market-price settlement and incomplete execution"
       },
-      "at": "2026-09-30T09:30:21.395Z",
+      "at": "2026-09-30T09:49:42.593Z",
       "ruleHashes": {
         "tc-temp-miahigh-2026-09-30-gte82lt83f": "2666fd9773b428d5712ab3940ae2580b2763d2d1630996a6d0c0d855bfe371b3",
         "tc-temp-miahigh-2026-09-30-gte84lt85f": "c82509aed89f24bd5fbbf49263dcb4735fffba4fb1b2ea36f19494c08dcf14c2",
@@ -1444,15 +1768,15 @@
             "label": "82-83 F",
             "fills": [
               {
-                "priceU": 920000,
-                "displayedPriceU": 920000,
+                "priceU": 940000,
+                "displayedPriceU": 940000,
                 "qty": 1
               }
             ],
-            "notionalU": 920000,
+            "notionalU": 940000,
             "feeU": 10000,
-            "costU": 930000,
-            "averagePrice": 0.92
+            "costU": 950000,
+            "averagePrice": 0.94
           },
           {
             "slug": "tc-temp-miahigh-2026-09-30-gte84lt85f",
@@ -1460,15 +1784,15 @@
             "label": "84-85 F",
             "fills": [
               {
-                "priceU": 780000,
-                "displayedPriceU": 780000,
+                "priceU": 800000,
+                "displayedPriceU": 800000,
                 "qty": 1
               }
             ],
-            "notionalU": 780000,
+            "notionalU": 800000,
             "feeU": 20000,
-            "costU": 800000,
-            "averagePrice": 0.78
+            "costU": 820000,
+            "averagePrice": 0.8
           },
           {
             "slug": "tc-temp-miahigh-2026-09-30-gte86lt87f",
@@ -1476,15 +1800,15 @@
             "label": "86-87 F",
             "fills": [
               {
-                "priceU": 460000,
-                "displayedPriceU": 460000,
+                "priceU": 450000,
+                "displayedPriceU": 450000,
                 "qty": 1
               }
             ],
-            "notionalU": 460000,
+            "notionalU": 450000,
             "feeU": 20000,
-            "costU": 480000,
-            "averagePrice": 0.46
+            "costU": 470000,
+            "averagePrice": 0.45
           },
           {
             "slug": "tc-temp-miahigh-2026-09-30-gte88lt89f",
@@ -1535,15 +1859,15 @@
             "averagePrice": 0.99
           }
         ],
-        "notionalU": 4980000,
+        "notionalU": 5010000,
         "feeU": 80000,
-        "costU": 5060000,
+        "costU": 5090000,
         "minimumPayoutU": 5000000,
-        "minimumSurplusU": -60000,
-        "minimumReturn": -0.011857707509881422,
-        "surplusPerBundleU": -60000,
+        "minimumSurplusU": -90000,
+        "minimumReturn": -0.01768172888015717,
+        "surplusPerBundleU": -90000,
         "largestSingleLegCostU": 1000000,
-        "maxFullCostAtRiskIfRelationshipFailsU": 5060000,
+        "maxFullCostAtRiskIfRelationshipFailsU": 5090000,
         "feeModel": "Exact taker formula rounded UP per leg to cents (conservative cumulative-fee cap estimate)",
         "stress": false,
         "assumption": "Displayed book-depth calculation only; NOT a fill"
@@ -1622,7 +1946,7 @@
         ],
         "scope": "Every integer value of the shared CLI temperature; excludes nonnumeric/fair-market-price settlement and incomplete execution"
       },
-      "at": "2026-09-30T09:30:19.293Z",
+      "at": "2026-09-30T09:49:40.484Z",
       "ruleHashes": {
         "tc-temp-mdwhigh-2026-09-30-gte69lt70f": "2c6ff868be4dafb0cd22893854d2cf073aada5a2d5ca45b0cd3978c2f82b17b2",
         "tc-temp-mdwhigh-2026-09-30-gte71lt72f": "e015171cf7a9a1c77b4b39f4a997c751af6db2e899829f7072564579c312a25b"
@@ -1821,7 +2145,7 @@
         ],
         "scope": "Every integer value of the shared CLI temperature; excludes nonnumeric/fair-market-price settlement and incomplete execution"
       },
-      "at": "2026-09-30T09:30:19.293Z",
+      "at": "2026-09-30T09:49:40.484Z",
       "ruleHashes": {
         "tc-temp-mdwhigh-2026-09-30-gte69lt70f": "2c6ff868be4dafb0cd22893854d2cf073aada5a2d5ca45b0cd3978c2f82b17b2",
         "tc-temp-mdwhigh-2026-09-30-gte71lt72f": "e015171cf7a9a1c77b4b39f4a997c751af6db2e899829f7072564579c312a25b",
@@ -1844,15 +2168,15 @@
             "label": "69-70 F",
             "fills": [
               {
-                "priceU": 800000,
-                "displayedPriceU": 800000,
+                "priceU": 810000,
+                "displayedPriceU": 810000,
                 "qty": 1
               }
             ],
-            "notionalU": 800000,
+            "notionalU": 810000,
             "feeU": 20000,
-            "costU": 820000,
-            "averagePrice": 0.8
+            "costU": 830000,
+            "averagePrice": 0.81
           },
           {
             "slug": "tc-temp-mdwhigh-2026-09-30-gte71lt72f",
@@ -1860,15 +2184,15 @@
             "label": "71-72 F",
             "fills": [
               {
-                "priceU": 200000,
-                "displayedPriceU": 200000,
+                "priceU": 210000,
+                "displayedPriceU": 210000,
                 "qty": 1
               }
             ],
-            "notionalU": 200000,
+            "notionalU": 210000,
             "feeU": 20000,
-            "costU": 220000,
-            "averagePrice": 0.2
+            "costU": 230000,
+            "averagePrice": 0.21
           },
           {
             "slug": "tc-temp-mdwhigh-2026-09-30-gte73lt74f",
@@ -1935,15 +2259,15 @@
             "averagePrice": 0.01
           }
         ],
-        "notionalU": 1070000,
+        "notionalU": 1090000,
         "feeU": 80000,
-        "costU": 1150000,
+        "costU": 1170000,
         "minimumPayoutU": 1000000,
-        "minimumSurplusU": -150000,
-        "minimumReturn": -0.13043478260869565,
-        "surplusPerBundleU": -150000,
-        "largestSingleLegCostU": 820000,
-        "maxFullCostAtRiskIfRelationshipFailsU": 1150000,
+        "minimumSurplusU": -170000,
+        "minimumReturn": -0.1452991452991453,
+        "surplusPerBundleU": -170000,
+        "largestSingleLegCostU": 830000,
+        "maxFullCostAtRiskIfRelationshipFailsU": 1170000,
         "feeModel": "Exact taker formula rounded UP per leg to cents (conservative cumulative-fee cap estimate)",
         "stress": false,
         "assumption": "Displayed book-depth calculation only; NOT a fill"
@@ -2022,7 +2346,7 @@
         ],
         "scope": "Every integer value of the shared CLI temperature; excludes nonnumeric/fair-market-price settlement and incomplete execution"
       },
-      "at": "2026-09-30T09:30:23.497Z",
+      "at": "2026-09-30T09:49:44.696Z",
       "ruleHashes": {
         "tc-temp-nychigh-2026-09-30-gte72lt73f": "29a745283f90aed5bd7f55c2f43cc0fc3793fee19fa991af0aa562272de6a4b5",
         "tc-temp-nychigh-2026-09-30-gte74lt75f": "d0d8cc59d081616162244f9c164808c72891856311c1026e3d90325373a60b7f"
@@ -2041,15 +2365,15 @@
             "label": "72-73 F",
             "fills": [
               {
-                "priceU": 450000,
-                "displayedPriceU": 450000,
+                "priceU": 480000,
+                "displayedPriceU": 480000,
                 "qty": 1
               }
             ],
-            "notionalU": 450000,
+            "notionalU": 480000,
             "feeU": 20000,
-            "costU": 470000,
-            "averagePrice": 0.45
+            "costU": 500000,
+            "averagePrice": 0.48
           },
           {
             "slug": "tc-temp-nychigh-2026-09-30-gte74lt75f",
@@ -2057,293 +2381,26 @@
             "label": "74-75 F",
             "fills": [
               {
-                "priceU": 670000,
-                "displayedPriceU": 670000,
+                "priceU": 650000,
+                "displayedPriceU": 650000,
                 "qty": 1
               }
             ],
-            "notionalU": 670000,
+            "notionalU": 650000,
             "feeU": 20000,
-            "costU": 690000,
-            "averagePrice": 0.67
+            "costU": 670000,
+            "averagePrice": 0.65
           }
         ],
-        "notionalU": 1120000,
+        "notionalU": 1130000,
         "feeU": 40000,
-        "costU": 1160000,
+        "costU": 1170000,
         "minimumPayoutU": 1000000,
-        "minimumSurplusU": -160000,
-        "minimumReturn": -0.13793103448275862,
-        "surplusPerBundleU": -160000,
-        "largestSingleLegCostU": 690000,
-        "maxFullCostAtRiskIfRelationshipFailsU": 1160000,
-        "feeModel": "Exact taker formula rounded UP per leg to cents (conservative cumulative-fee cap estimate)",
-        "stress": false,
-        "assumption": "Displayed book-depth calculation only; NOT a fill"
-      },
-      "confirmation": null,
-      "status": "NO_NET_EDGE"
-    },
-    {
-      "id": "a6d0d20616d1b44647985e1a8f2023a75df0a1cff3d38c218abd34c4f7072db7",
-      "familyKey": "deab57202e6451190f1048a1d461784e181dc4e5a403f50232d27338c2d75893",
-      "eventSlug": "temp-sfohigh-2026-09-30",
-      "station": "KSFO",
-      "date": "2026-09-30",
-      "metric": "high",
-      "type": "ALL_YES_COVER",
-      "legs": [
-        {
-          "slug": "tc-temp-sfohigh-2026-09-30-gte76lt77f",
-          "side": "YES",
-          "label": "76-77 F"
-        },
-        {
-          "slug": "tc-temp-sfohigh-2026-09-30-gte78lt79f",
-          "side": "YES",
-          "label": "78-79 F"
-        },
-        {
-          "slug": "tc-temp-sfohigh-2026-09-30-gte80lt81f",
-          "side": "YES",
-          "label": "80-81 F"
-        },
-        {
-          "slug": "tc-temp-sfohigh-2026-09-30-gte82lt83f",
-          "side": "YES",
-          "label": "82-83 F"
-        },
-        {
-          "slug": "tc-temp-sfohigh-2026-09-30-gte84f",
-          "side": "YES",
-          "label": ">= 84 F"
-        },
-        {
-          "slug": "tc-temp-sfohigh-2026-09-30-lt76f",
-          "side": "YES",
-          "label": "<= 75 F"
-        }
-      ],
-      "proof": {
-        "minimumU": 1000000,
-        "maximumU": 1000000,
-        "outcomes": [
-          {
-            "low": null,
-            "high": 75,
-            "value": 75,
-            "label": "<= 75 F",
-            "legPayouts": [
-              0,
-              0,
-              0,
-              0,
-              0,
-              1000000
-            ],
-            "payoutU": 1000000
-          },
-          {
-            "low": 76,
-            "high": 77,
-            "value": 76,
-            "label": "76-77 F",
-            "legPayouts": [
-              1000000,
-              0,
-              0,
-              0,
-              0,
-              0
-            ],
-            "payoutU": 1000000
-          },
-          {
-            "low": 78,
-            "high": 79,
-            "value": 78,
-            "label": "78-79 F",
-            "legPayouts": [
-              0,
-              1000000,
-              0,
-              0,
-              0,
-              0
-            ],
-            "payoutU": 1000000
-          },
-          {
-            "low": 80,
-            "high": 81,
-            "value": 80,
-            "label": "80-81 F",
-            "legPayouts": [
-              0,
-              0,
-              1000000,
-              0,
-              0,
-              0
-            ],
-            "payoutU": 1000000
-          },
-          {
-            "low": 82,
-            "high": 83,
-            "value": 82,
-            "label": "82-83 F",
-            "legPayouts": [
-              0,
-              0,
-              0,
-              1000000,
-              0,
-              0
-            ],
-            "payoutU": 1000000
-          },
-          {
-            "low": 84,
-            "high": null,
-            "value": 84,
-            "label": ">= 84 F",
-            "legPayouts": [
-              0,
-              0,
-              0,
-              0,
-              1000000,
-              0
-            ],
-            "payoutU": 1000000
-          }
-        ],
-        "scope": "Every integer value of the shared CLI temperature; excludes nonnumeric/fair-market-price settlement and incomplete execution"
-      },
-      "at": "2026-09-30T09:30:25.579Z",
-      "ruleHashes": {
-        "tc-temp-sfohigh-2026-09-30-gte76lt77f": "cdc862ce05f9c56e544e7fb21bbd8a162f9af37066a0e959247f5534e6a2d639",
-        "tc-temp-sfohigh-2026-09-30-gte78lt79f": "d3ba684e56193555da3bb86fb7d1f1dc1a98bf8bdd0a7f45a430033f74f82e11",
-        "tc-temp-sfohigh-2026-09-30-gte80lt81f": "eb69c008c9284fa44094acb25dd7a730570c0557efa6de5c439b9dc8a4061943",
-        "tc-temp-sfohigh-2026-09-30-gte82lt83f": "5cf096cc528d3c19f547f2a2694951ccf6920f4406ca3311761f6073cd317c7d",
-        "tc-temp-sfohigh-2026-09-30-gte84f": "9d6de75255378f9c30917301d2f5d8dee6360cc10efc56d4b6894930cbadf688",
-        "tc-temp-sfohigh-2026-09-30-lt76f": "2a0926873bae1c579b1d1af252ae593213ccd1db6eb4ef69b9ba3c998c6f46b5"
-      },
-      "reasons": [
-        "NO_NET_SURPLUS_AT_REQUIRED_THRESHOLD"
-      ],
-      "displayed": null,
-      "stress": null,
-      "indicative": {
-        "bundles": 1,
-        "legs": [
-          {
-            "slug": "tc-temp-sfohigh-2026-09-30-gte76lt77f",
-            "side": "YES",
-            "label": "76-77 F",
-            "fills": [
-              {
-                "priceU": 270000,
-                "displayedPriceU": 270000,
-                "qty": 1
-              }
-            ],
-            "notionalU": 270000,
-            "feeU": 20000,
-            "costU": 290000,
-            "averagePrice": 0.27
-          },
-          {
-            "slug": "tc-temp-sfohigh-2026-09-30-gte78lt79f",
-            "side": "YES",
-            "label": "78-79 F",
-            "fills": [
-              {
-                "priceU": 320000,
-                "displayedPriceU": 320000,
-                "qty": 1
-              }
-            ],
-            "notionalU": 320000,
-            "feeU": 20000,
-            "costU": 340000,
-            "averagePrice": 0.32
-          },
-          {
-            "slug": "tc-temp-sfohigh-2026-09-30-gte80lt81f",
-            "side": "YES",
-            "label": "80-81 F",
-            "fills": [
-              {
-                "priceU": 170000,
-                "displayedPriceU": 170000,
-                "qty": 1
-              }
-            ],
-            "notionalU": 170000,
-            "feeU": 10000,
-            "costU": 180000,
-            "averagePrice": 0.17
-          },
-          {
-            "slug": "tc-temp-sfohigh-2026-09-30-gte82lt83f",
-            "side": "YES",
-            "label": "82-83 F",
-            "fills": [
-              {
-                "priceU": 30000,
-                "displayedPriceU": 30000,
-                "qty": 1
-              }
-            ],
-            "notionalU": 30000,
-            "feeU": 10000,
-            "costU": 40000,
-            "averagePrice": 0.03
-          },
-          {
-            "slug": "tc-temp-sfohigh-2026-09-30-gte84f",
-            "side": "YES",
-            "label": ">= 84 F",
-            "fills": [
-              {
-                "priceU": 20000,
-                "displayedPriceU": 20000,
-                "qty": 1
-              }
-            ],
-            "notionalU": 20000,
-            "feeU": 10000,
-            "costU": 30000,
-            "averagePrice": 0.02
-          },
-          {
-            "slug": "tc-temp-sfohigh-2026-09-30-lt76f",
-            "side": "YES",
-            "label": "<= 75 F",
-            "fills": [
-              {
-                "priceU": 290000,
-                "displayedPriceU": 290000,
-                "qty": 1
-              }
-            ],
-            "notionalU": 290000,
-            "feeU": 20000,
-            "costU": 310000,
-            "averagePrice": 0.29
-          }
-        ],
-        "notionalU": 1100000,
-        "feeU": 90000,
-        "costU": 1190000,
-        "minimumPayoutU": 1000000,
-        "minimumSurplusU": -190000,
-        "minimumReturn": -0.15966386554621848,
-        "surplusPerBundleU": -190000,
-        "largestSingleLegCostU": 340000,
-        "maxFullCostAtRiskIfRelationshipFailsU": 1190000,
+        "minimumSurplusU": -170000,
+        "minimumReturn": -0.1452991452991453,
+        "surplusPerBundleU": -170000,
+        "largestSingleLegCostU": 670000,
+        "maxFullCostAtRiskIfRelationshipFailsU": 1170000,
         "feeModel": "Exact taker formula rounded UP per leg to cents (conservative cumulative-fee cap estimate)",
         "stress": false,
         "assumption": "Displayed book-depth calculation only; NOT a fill"
@@ -2488,7 +2545,7 @@
         ],
         "scope": "Every integer value of the shared CLI temperature; excludes nonnumeric/fair-market-price settlement and incomplete execution"
       },
-      "at": "2026-09-30T09:30:21.395Z",
+      "at": "2026-09-30T09:49:42.593Z",
       "ruleHashes": {
         "tc-temp-miahigh-2026-09-30-gte82lt83f": "2666fd9773b428d5712ab3940ae2580b2763d2d1630996a6d0c0d855bfe371b3",
         "tc-temp-miahigh-2026-09-30-gte84lt85f": "c82509aed89f24bd5fbbf49263dcb4735fffba4fb1b2ea36f19494c08dcf14c2",
@@ -2511,15 +2568,15 @@
             "label": "82-83 F",
             "fills": [
               {
-                "priceU": 90000,
-                "displayedPriceU": 90000,
+                "priceU": 70000,
+                "displayedPriceU": 70000,
                 "qty": 1
               }
             ],
-            "notionalU": 90000,
+            "notionalU": 70000,
             "feeU": 10000,
-            "costU": 100000,
-            "averagePrice": 0.09
+            "costU": 80000,
+            "averagePrice": 0.07
           },
           {
             "slug": "tc-temp-miahigh-2026-09-30-gte84lt85f",
@@ -2602,15 +2659,15 @@
             "averagePrice": 0.03
           }
         ],
-        "notionalU": 1130000,
+        "notionalU": 1110000,
         "feeU": 80000,
-        "costU": 1210000,
+        "costU": 1190000,
         "minimumPayoutU": 1000000,
-        "minimumSurplusU": -210000,
-        "minimumReturn": -0.17355371900826447,
-        "surplusPerBundleU": -210000,
+        "minimumSurplusU": -190000,
+        "minimumReturn": -0.15966386554621848,
+        "surplusPerBundleU": -190000,
         "largestSingleLegCostU": 580000,
-        "maxFullCostAtRiskIfRelationshipFailsU": 1210000,
+        "maxFullCostAtRiskIfRelationshipFailsU": 1190000,
         "feeModel": "Exact taker formula rounded UP per leg to cents (conservative cumulative-fee cap estimate)",
         "stress": false,
         "assumption": "Displayed book-depth calculation only; NOT a fill"
@@ -2689,7 +2746,7 @@
         ],
         "scope": "Every integer value of the shared CLI temperature; excludes nonnumeric/fair-market-price settlement and incomplete execution"
       },
-      "at": "2026-09-30T09:30:17.190Z",
+      "at": "2026-09-30T09:49:38.386Z",
       "ruleHashes": {
         "tc-temp-laxhigh-2026-09-30-gte80lt81f": "c05c35f3b87b4f08fe09c25c3da7767d2ab72a922761140c3836f9167bf032cf",
         "tc-temp-laxhigh-2026-09-30-gte82lt83f": "f4ba19c36f35304d4e3b93e82a2b039f5740d8221cba61bb1bd4b3da96e67bcd"
@@ -2724,26 +2781,314 @@
             "label": "82-83 F",
             "fills": [
               {
-                "priceU": 680000,
-                "displayedPriceU": 680000,
+                "priceU": 690000,
+                "displayedPriceU": 690000,
                 "qty": 1
               }
             ],
-            "notionalU": 680000,
+            "notionalU": 690000,
             "feeU": 20000,
-            "costU": 700000,
-            "averagePrice": 0.68
+            "costU": 710000,
+            "averagePrice": 0.69
           }
         ],
-        "notionalU": 1210000,
+        "notionalU": 1220000,
         "feeU": 40000,
-        "costU": 1250000,
+        "costU": 1260000,
         "minimumPayoutU": 1000000,
-        "minimumSurplusU": -250000,
-        "minimumReturn": -0.2,
-        "surplusPerBundleU": -250000,
-        "largestSingleLegCostU": 700000,
-        "maxFullCostAtRiskIfRelationshipFailsU": 1250000,
+        "minimumSurplusU": -260000,
+        "minimumReturn": -0.20634920634920634,
+        "surplusPerBundleU": -260000,
+        "largestSingleLegCostU": 710000,
+        "maxFullCostAtRiskIfRelationshipFailsU": 1260000,
+        "feeModel": "Exact taker formula rounded UP per leg to cents (conservative cumulative-fee cap estimate)",
+        "stress": false,
+        "assumption": "Displayed book-depth calculation only; NOT a fill"
+      },
+      "confirmation": null,
+      "status": "NO_NET_EDGE"
+    },
+    {
+      "id": "daf905ff6750a72a05f9097b20ecd74d4002be28088810e7341efe2c52ffc968",
+      "familyKey": "359a51a5c5cc06cb4ad28302f525b5590830749befb43c2f8f24c2252e6d0c9b",
+      "eventSlug": "temp-mdwhigh-2026-09-30",
+      "station": "KMDW",
+      "date": "2026-09-30",
+      "metric": "high",
+      "type": "EXCLUSIVE_NO_PAIR",
+      "legs": [
+        {
+          "slug": "tc-temp-mdwhigh-2026-09-30-gte69lt70f",
+          "side": "NO",
+          "label": "69-70 F"
+        },
+        {
+          "slug": "tc-temp-mdwhigh-2026-09-30-gte73lt74f",
+          "side": "NO",
+          "label": "73-74 F"
+        }
+      ],
+      "proof": {
+        "minimumU": 1000000,
+        "maximumU": 2000000,
+        "outcomes": [
+          {
+            "low": null,
+            "high": 68,
+            "value": 68,
+            "label": "<= 68 F",
+            "legPayouts": [
+              1000000,
+              1000000
+            ],
+            "payoutU": 2000000
+          },
+          {
+            "low": 69,
+            "high": 70,
+            "value": 69,
+            "label": "69-70 F",
+            "legPayouts": [
+              0,
+              1000000
+            ],
+            "payoutU": 1000000
+          },
+          {
+            "low": 71,
+            "high": 72,
+            "value": 71,
+            "label": "71-72 F",
+            "legPayouts": [
+              1000000,
+              1000000
+            ],
+            "payoutU": 2000000
+          },
+          {
+            "low": 73,
+            "high": 74,
+            "value": 73,
+            "label": "73-74 F",
+            "legPayouts": [
+              1000000,
+              0
+            ],
+            "payoutU": 1000000
+          },
+          {
+            "low": 75,
+            "high": null,
+            "value": 75,
+            "label": ">= 75 F",
+            "legPayouts": [
+              1000000,
+              1000000
+            ],
+            "payoutU": 2000000
+          }
+        ],
+        "scope": "Every integer value of the shared CLI temperature; excludes nonnumeric/fair-market-price settlement and incomplete execution"
+      },
+      "at": "2026-09-30T09:49:40.484Z",
+      "ruleHashes": {
+        "tc-temp-mdwhigh-2026-09-30-gte69lt70f": "2c6ff868be4dafb0cd22893854d2cf073aada5a2d5ca45b0cd3978c2f82b17b2",
+        "tc-temp-mdwhigh-2026-09-30-gte73lt74f": "f075241e13b92110cf4a82042b5e121876e70f8f250182865dea9c678ef6a555"
+      },
+      "reasons": [
+        "NO_NET_SURPLUS_AT_REQUIRED_THRESHOLD"
+      ],
+      "displayed": null,
+      "stress": null,
+      "indicative": {
+        "bundles": 1,
+        "legs": [
+          {
+            "slug": "tc-temp-mdwhigh-2026-09-30-gte69lt70f",
+            "side": "NO",
+            "label": "69-70 F",
+            "fills": [
+              {
+                "priceU": 240000,
+                "displayedPriceU": 240000,
+                "qty": 1
+              }
+            ],
+            "notionalU": 240000,
+            "feeU": 20000,
+            "costU": 260000,
+            "averagePrice": 0.24
+          },
+          {
+            "slug": "tc-temp-mdwhigh-2026-09-30-gte73lt74f",
+            "side": "NO",
+            "label": "73-74 F",
+            "fills": [
+              {
+                "priceU": 990000,
+                "displayedPriceU": 990000,
+                "qty": 1
+              }
+            ],
+            "notionalU": 990000,
+            "feeU": 10000,
+            "costU": 1000000,
+            "averagePrice": 0.99
+          }
+        ],
+        "notionalU": 1230000,
+        "feeU": 30000,
+        "costU": 1260000,
+        "minimumPayoutU": 1000000,
+        "minimumSurplusU": -260000,
+        "minimumReturn": -0.20634920634920634,
+        "surplusPerBundleU": -260000,
+        "largestSingleLegCostU": 1000000,
+        "maxFullCostAtRiskIfRelationshipFailsU": 1260000,
+        "feeModel": "Exact taker formula rounded UP per leg to cents (conservative cumulative-fee cap estimate)",
+        "stress": false,
+        "assumption": "Displayed book-depth calculation only; NOT a fill"
+      },
+      "confirmation": null,
+      "status": "NO_NET_EDGE"
+    },
+    {
+      "id": "0a63d2271f32f9ed8e13cb4867bde6d195770f4c3ba44054cdf51e125240fa21",
+      "familyKey": "359a51a5c5cc06cb4ad28302f525b5590830749befb43c2f8f24c2252e6d0c9b",
+      "eventSlug": "temp-mdwhigh-2026-09-30",
+      "station": "KMDW",
+      "date": "2026-09-30",
+      "metric": "high",
+      "type": "EXCLUSIVE_NO_PAIR",
+      "legs": [
+        {
+          "slug": "tc-temp-mdwhigh-2026-09-30-gte69lt70f",
+          "side": "NO",
+          "label": "69-70 F"
+        },
+        {
+          "slug": "tc-temp-mdwhigh-2026-09-30-gte75lt76f",
+          "side": "NO",
+          "label": "75-76 F"
+        }
+      ],
+      "proof": {
+        "minimumU": 1000000,
+        "maximumU": 2000000,
+        "outcomes": [
+          {
+            "low": null,
+            "high": 68,
+            "value": 68,
+            "label": "<= 68 F",
+            "legPayouts": [
+              1000000,
+              1000000
+            ],
+            "payoutU": 2000000
+          },
+          {
+            "low": 69,
+            "high": 70,
+            "value": 69,
+            "label": "69-70 F",
+            "legPayouts": [
+              0,
+              1000000
+            ],
+            "payoutU": 1000000
+          },
+          {
+            "low": 71,
+            "high": 74,
+            "value": 71,
+            "label": "71-74 F",
+            "legPayouts": [
+              1000000,
+              1000000
+            ],
+            "payoutU": 2000000
+          },
+          {
+            "low": 75,
+            "high": 76,
+            "value": 75,
+            "label": "75-76 F",
+            "legPayouts": [
+              1000000,
+              0
+            ],
+            "payoutU": 1000000
+          },
+          {
+            "low": 77,
+            "high": null,
+            "value": 77,
+            "label": ">= 77 F",
+            "legPayouts": [
+              1000000,
+              1000000
+            ],
+            "payoutU": 2000000
+          }
+        ],
+        "scope": "Every integer value of the shared CLI temperature; excludes nonnumeric/fair-market-price settlement and incomplete execution"
+      },
+      "at": "2026-09-30T09:49:40.484Z",
+      "ruleHashes": {
+        "tc-temp-mdwhigh-2026-09-30-gte69lt70f": "2c6ff868be4dafb0cd22893854d2cf073aada5a2d5ca45b0cd3978c2f82b17b2",
+        "tc-temp-mdwhigh-2026-09-30-gte75lt76f": "931711efab7fe5a37ed0d65564b2031543b34cb8def59e1e54f63cb89d08141d"
+      },
+      "reasons": [
+        "NO_NET_SURPLUS_AT_REQUIRED_THRESHOLD"
+      ],
+      "displayed": null,
+      "stress": null,
+      "indicative": {
+        "bundles": 1,
+        "legs": [
+          {
+            "slug": "tc-temp-mdwhigh-2026-09-30-gte69lt70f",
+            "side": "NO",
+            "label": "69-70 F",
+            "fills": [
+              {
+                "priceU": 240000,
+                "displayedPriceU": 240000,
+                "qty": 1
+              }
+            ],
+            "notionalU": 240000,
+            "feeU": 20000,
+            "costU": 260000,
+            "averagePrice": 0.24
+          },
+          {
+            "slug": "tc-temp-mdwhigh-2026-09-30-gte75lt76f",
+            "side": "NO",
+            "label": "75-76 F",
+            "fills": [
+              {
+                "priceU": 990000,
+                "displayedPriceU": 990000,
+                "qty": 1
+              }
+            ],
+            "notionalU": 990000,
+            "feeU": 10000,
+            "costU": 1000000,
+            "averagePrice": 0.99
+          }
+        ],
+        "notionalU": 1230000,
+        "feeU": 30000,
+        "costU": 1260000,
+        "minimumPayoutU": 1000000,
+        "minimumSurplusU": -260000,
+        "minimumReturn": -0.20634920634920634,
+        "surplusPerBundleU": -260000,
+        "largestSingleLegCostU": 1000000,
+        "maxFullCostAtRiskIfRelationshipFailsU": 1260000,
         "feeModel": "Exact taker formula rounded UP per leg to cents (conservative cumulative-fee cap estimate)",
         "stress": false,
         "assumption": "Displayed book-depth calculation only; NOT a fill"
@@ -2754,13 +3099,13 @@
   ],
   "recentEpisodes": [],
   "counts": {
-    "runs": 431,
+    "runs": 432,
     "displayedObservations": 0,
     "twoSnapshotObservations": 0
   },
   "transport": {
-    "requests": 36,
-    "errors": 0
+    "requests": 58,
+    "errors": 1
   },
   "caveat": "All quoted minimum payouts are CONDITIONAL on all legs filling in equal size and numeric settlement under matching rules. Exchange fallback settlement, rules changes, and failed legs are not hedged."
 }
