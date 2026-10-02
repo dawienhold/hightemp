@@ -66,3 +66,29 @@ morning call. That run also grades the previous morning's calls.
 
 `node tools/selftest.js` runs four passes against fake feeds (normal, morning,
 one station down, all down) in a temporary copy.
+
+### Market Openings
+
+`openings.html` tracks the five stations' next-day Polymarket US daily-high bands.
+The independent `market-openings` workflow checks discovery every five minutes,
+records quotes every five minutes during the first recorded hour, then every
+15 minutes through 10 AM station-local time. GitHub scheduling is best effort;
+receipt timestamps, source-update timestamps, and gaps are retained.
+
+The first installation run is an unbracketed baseline. A later first appearance
+can be bracketed by the last successful complete search plus a 404 for the
+expected event. Provider `createdAt` and `openPx` statistics are separate from
+observed listing and quote times. A quiet order book's old source update time is
+retained, rather than treated as proof that a freshly fetched book is cached.
+First-hour checkpoints allow up to ten minutes of delay; midnight/7 AM/10 AM
+checkpoints allow twenty. Missing snapshots are not interpolated.
+
+Run `node scripts/openings.js` to collect a snapshot and
+`node --test tools/openings.test.js` to verify date transitions, quotes, and
+checkpoint behavior. State, per-event quote history, and compressed audit logs
+live under `docs/data/openings/`. The latest page index includes 45 days; older
+per-event files and audit logs remain available in the repository. CSV export
+uses dollar prices and UTC timestamps.
+
+The shared navigation list in `tools/sync-nav.js` keeps Contract Consistency and
+Shadow Trader hidden (`visible = false`), without changing their pages or jobs.

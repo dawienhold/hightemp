@@ -1,0 +1,50 @@
+name: market-openings
+
+on:
+  schedule:
+    # Actual run times are logged; GitHub scheduling is best effort.
+    - cron: '2-59/5 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/openings.js'
+      - 'scripts/openings/**'
+      - 'tools/openings.test.js'
+      - '.github/workflows/openings.yml'
+
+permissions:
+  contents: write
+concurrency:
+  group: market-openings
+  cancel-in-progress: false
+jobs:
+  observe:
+    if: ${{ github.event.repository.private == false }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify opening and overnight tracking
+        run: node --test tools/openings.test.js
+      - name: Collect public listings and quotes
+        run: node scripts/openings.js
+      - name: Save tracker observations
+        if: always()
+        run: |
+          set -eu
+          if [ ! -d docs/data/openings ]; then exit 0; fi
+          rm -f docs/data/openings/.openings.lock docs/data/openings/*.tmp
+          git config user.name "hightemp-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data/openings
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -q -m "openings $(date -u +%Y-%m-%dT%H:%MZ)"
+          for i in 1 2 3 4 5; do
+            git pull -q --rebase origin "${GITHUB_REF_NAME}" && git push -q origin "HEAD:${GITHUB_REF_NAME}" && exit 0
+            sleep 3
+          done
+          echo "Tracker push failed after retries"; exit 1

@@ -8,9 +8,10 @@ const pages = [
   ['index.html', 'High-Temp Desk', './'],
   ['bands.html', '2°F Bands'],
   ['observations.html', 'Data inputs'],
-  ['consistency.html', 'Contract Consistency'],
+  ['consistency.html', 'Contract Consistency', null, false],
   ['edge.html', '10 AM Market Edge'],
-  ['shadow.html', 'Shadow Trader'],
+  ['openings.html', 'Market Openings'],
+  ['shadow.html', 'Shadow Trader', null, false],
   ['nfl.html', 'NFL Rain Watch'],
   ['mlb.html', 'MLB'],
 ];
@@ -25,7 +26,7 @@ for (const [file] of pages) {
   const before = fs.readFileSync(target, 'utf8');
   const navs = before.match(/<nav\b[^>]*>[\s\S]*?<\/nav>/g) || [];
   if (navs.length !== 1) throw new Error(`Expected one page menu in ${file}`);
-  const nav = '<nav class="site-nav" aria-label="Pages">\n' + pages.map(([p, label, href]) =>
+  const nav = '<nav class="site-nav" aria-label="Pages">\n' + pages.filter(([, , , visible]) => visible !== false).map(([p, label, href]) =>
     `  <a href="${href || p}"${p === file ? ' aria-current="page"' : ''}>${label}</a>`
   ).join('\n') + '\n</nav>';
   let after = before.replace(navs[0], nav);

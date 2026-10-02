@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Market Openings · High-Temp Desk</title>
+<link rel="stylesheet" href="nav.css"><link rel="stylesheet" href="openings.css"></head>
+<body><main class="wrap">
+<nav class="site-nav" aria-label="Pages">
+  <a href="./">High-Temp Desk</a>
+  <a href="bands.html">2°F Bands</a>
+  <a href="observations.html">Data inputs</a>
+  <a href="edge.html">10 AM Market Edge</a>
+  <a href="openings.html" aria-current="page">Market Openings</a>
+  <a href="nfl.html">NFL Rain Watch</a>
+  <a href="mlb.html">MLB</a>
+</nav>
+<header><div><p class="eyebrow">POLYMARKET US · WEATHER</p><h1>Market Openings</h1><p class="muted">Follow tomorrow’s temperature bands from their first quotes through the next morning.</p></div><span class="badge">QUOTE TRACKER</span></header>
+<div class="toolbar"><span id="stamp" class="muted">Loading tracker…</span><button id="refresh" type="button">Refresh</button></div>
+<div id="health" class="notice" hidden role="status"></div>
+<section aria-label="Next-day listing status"><div id="stations" class="tiles"></div></section>
+<div class="notice"><strong>First observed, with the opening window preserved.</strong> Five-minute listing checks and first-hour quote snapshots; 15-minute snapshots afterward, through 10 AM station-local time. Actual collection gaps are recorded. Listings already present when tracking starts are marked <strong>initial baseline</strong>; their true opening quotes are unavailable.</div>
+<section class="card">
+<div class="filters"><label>Station<select id="station"></select></label><label>Contract date<select id="date"></select></label><label>View<select id="window"><option value="all">Full timeline</option><option value="hour">First recorded hour</option><option value="overnight">Overnight → today</option></select></label><label>Price<select id="price"><option value="midpoint">YES midpoint</option><option value="yesAsk">YES buy price</option><option value="noAsk">NO buy price</option></select></label></div>
+<div id="empty" class="empty" hidden>Waiting for the first next-day listings. This page will fill automatically as the collector runs.</div>
+<div id="detail" hidden>
+<div class="eventhead"><h2 id="eventtitle"></h2><a id="marketlink" target="_blank" rel="noopener">View on Polymarket US ↗</a></div>
+<div id="facts" class="facts"></div>
+<div id="legend" class="legend" aria-label="Visible temperature bands"></div>
+<div id="chart" class="chart" aria-label="Temperature-band price history"></div>
+<p id="chartnote" class="muted small"></p>
+<h3>Band prices and first-hour changes</h3><p class="muted small">Prices are cents per $1 payout. NO quotes come from the opposite side of the same YES instrument. Midpoints are indicative. Changes use the same price measure selected above.</p>
+<div class="tablewrap"><table><thead><tr><th>Temperature band</th><th>First usable quote</th><th>First price</th><th>+5m Δ</th><th>+15m Δ</th><th>+30m Δ</th><th>+60m Δ</th><th>Latest price</th><th>Total Δ</th><th>YES bid / ask</th><th>NO bid / ask</th><th>Spread</th></tr></thead><tbody id="bands"></tbody></table></div>
+<h3>Midnight and morning checkpoints</h3><p class="muted small">Checkpoint snapshots are the first usable observation at or after the target, within 20 minutes. Hover or tap a recorded price to see the actual time. Missing points are never filled in.</p>
+<div class="tablewrap"><table><thead><tr><th>Band</th><th>Local midnight</th><th>7 AM local</th><th>10 AM local</th><th>YES bid size</th><th>YES ask size</th><th>Latest quote status</th></tr></thead><tbody id="overnight"></tbody></table></div>
+<div class="toolbar"><span class="muted small">Download every recorded quote for this station and date.</span><button id="export" type="button">Export CSV</button></div>
+<details><summary>Listing times and data quality</summary><div id="quality"></div></details>
+</div></section>
+<p class="foot">Collection is independent of weather forecasts and existing research pages. Times use each station’s local time zone, including daylight saving time. The contract’s date and ID remain fixed as tomorrow becomes today. First observed is not a guaranteed exchange opening timestamp; provider creation and trade-open statistics are shown separately.</p>
+</main><script src="openings.js"></script></body></html>
