@@ -71,8 +71,9 @@ one station down, all down) in a temporary copy.
 
 `openings.html` tracks the five stations' next-day Polymarket US daily-high bands.
 The independent `market-openings` workflow checks discovery every five minutes,
-records quotes every five minutes during the first recorded hour, then every
-15 minutes through 10 AM station-local time. GitHub scheduling is best effort;
+records quotes every five minutes throughout the day before the contract date,
+then every 15 minutes after local midnight through 10 AM station-local time (new
+bands retain five-minute first-hour sampling). GitHub scheduling is best effort;
 receipt timestamps, source-update timestamps, and gaps are retained.
 
 The first installation run is an unbracketed baseline. A later first appearance
@@ -84,11 +85,43 @@ First-hour checkpoints allow up to ten minutes of delay; midnight/7 AM/10 AM
 checkpoints allow twenty. Missing snapshots are not interpolated.
 
 Run `node scripts/openings.js` to collect a snapshot and
-`node --test tools/openings.test.js` to verify date transitions, quotes, and
+`node --test tools/openings.test.js tools/openings-research.test.js` to verify date transitions, quotes, and
 checkpoint behavior. State, per-event quote history, and compressed audit logs
 live under `docs/data/openings/`. The latest page index includes 45 days; older
 per-event files and audit logs remain available in the repository. CSV export
 uses dollar prices and UTC timestamps.
+
+Research upgrade v1.1 archives every returned bid/ask level, fractional sizes,
+volume/open interest, original forecast timestamp and model version, all
+degree probabilities, individual model inputs, and per-band probabilities/ranks.
+Forecasts must match the station/contract date, be at most 90 minutes old, and
+not be marked stale or future-dated. Unique forecasts are stored in each event's
+`forecasts` map; quotes refer to them by hash. Old records keep missing forecasts
+and depth rather than receiving reconstructed values. The price index remains
+small by omitting full depth and model payloads; permanent per-event archives
+and compressed audit logs retain them.
+
+Each new quote includes station-local hour, elapsed minutes since first quote
+and listing, and minutes until the contract-date midnight. Hypothetical YES
+buy/sell sweeps at 10, 50, and 100 contracts preserve partial-depth results and
+estimate fees using a timestamped standard-taker assumption stored in the event.
+They do not assume maker queue fills or represent executed trades. Prices in
+raw JSON/depth are integer millionths of USD; quantities are contracts. CSV
+top-of-book price columns use dollars, while nested depth uses millionths.
+
+`docs/data/openings/timing.json` gives separate station summaries by elapsed
+opening window and local hour. Only completed event days with forecast leaders
+captured within 20 minutes of a bracketed first quote enter those aggregates;
+event days are equally weighted and missing observations remain missing.
+Per-band day-before minima/maxima include all recorded bands, including losers,
+and show ties. A highest bid occurring before the first ask is excluded from
+the later-exit comparison. These are hindsight descriptions, not optimized
+trade rules or evidence of profitability. Collection gaps and changing sample
+counts must be considered in later analysis; averages across clock hours can
+include different event-day cohorts. No 50-cent target is baked into collection.
+The page offers YES sell prices, day-before views, research tables, CSV and full
+JSON export. The active index/report covers 45 days; archived event files and
+logs are not deleted.
 
 The shared navigation list in `tools/sync-nav.js` keeps Contract Consistency and
 Shadow Trader hidden (`visible = false`), without changing their pages or jobs.

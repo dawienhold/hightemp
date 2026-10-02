@@ -2,7 +2,7 @@
 (() => {
 const $=id=>document.getElementById(id),zones={KNYC:'America/New_York',KMIA:'America/New_York',KMDW:'America/Chicago',KLAX:'America/Los_Angeles',KSFO:'America/Los_Angeles'};
 const colors=['#287bc1','#e28b2d','#9c6fc4','#2f9e8a','#d06580','#94a332','#a87550','#647cd0'];
-let snap=null,event=null,visible=new Set(),request=0;
+let snap=null,event=null,report=null,visible=new Set(),request=0;
 const esc=s=>String(s??'').replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));
 function time(iso,station,full=false){if(!iso||!Number.isFinite(Date.parse(iso)))return '—';return new Date(iso).toLocaleString('en-US',{timeZone:zones[station],...(full?{month:'short',day:'numeric'}:{}),hour:'numeric',minute:'2-digit',timeZoneName:'short'});}
 function cents(u){return Number.isFinite(u)?(u/10000).toFixed(u%10000?1:0)+'¢':'—';}
@@ -40,7 +40,20 @@ function renderEvent(){
  const phase=event.summary.phase;
  $('facts').innerHTML=fact('First listing observed',time(event.firstSeenAt,event.station,true))+fact('Last confirmed absent',time(event.lastAbsentAt,event.station,true))+fact('First usable quote',time(event.firstQuoteAt,event.station,true))+fact('Tracking',phase==='COMPLETE'?'Morning collection complete':phase==='TODAY'?'Today · through 10 AM local':'Tomorrow')+fact('Opening coverage',event.capture==='BRACKETED'?'Observed absence → listing':'Initial baseline / unbracketed');
  $('legend').replaceChildren(...marketRows().map((m,i)=>{const l=document.createElement('label'),c=document.createElement('input'),dot=document.createElement('i');c.type='checkbox';c.checked=visible.has(m.slug);dot.style.background=colors[i%colors.length];l.append(c,dot,document.createTextNode(m.label.replace(/ F$/,'°F')));c.addEventListener('change',()=>{if(c.checked)visible.add(m.slug);else visible.delete(m.slug);renderChart();});return l;}));
- renderTables();renderChart();renderQuality();
+ renderTables();renderChart();renderQuality();renderResearch();
+}
+function renderResearch(){
+ const point=p=>p?cents(p.value)+'<small>'+esc(time(p.at,event.station,true))+(p.tiedObservations>1?' · '+esc(p.tiedObservations)+' ties; last '+esc(time(p.lastAt,event.station)):'')+'</small>':'—';
+ $('research-bands').innerHTML=marketRows().map(m=>{const r=event.summary.markets.find(x=>x.slug===m.slug)?.research;
+   if(!r)return '<tr><td>'+esc(m.label)+'</td><td colspan="6">Awaiting research snapshot.</td></tr>';
+   return `<tr><td>${esc(m.label)}</td><td>${point(r.firstAsk)}</td><td>${point(r.minimumAsk)}</td><td>${point(r.maximumBid)}</td><td>${point(r.maximumBidAfterFirstAsk)}</td><td>${r.firstForecastRank!=null?'Rank '+esc(r.firstForecastRank)+' · '+(r.firstForecastProbability*100).toFixed(1)+'%':'Not saved'}<small>${esc(time(r.firstForecastAt,event.station,true))} · ${r.hasOpeningForecast?'opening coverage':'late or unavailable opening forecast'}</small></td><td>${esc(r.fullDepthObservations)} / ${esc(r.forecastObservations)}<small>Largest collection gap ${r.maxGapMinutes!=null?r.maxGapMinutes.toFixed(1)+' min':'—'}</small></td></tr>`;
+ }).join('');
+ const s=report?.stations?.find(s=>s.station===event.station);
+ if(!s){$('station-timing').textContent='Timing report will populate after an upgraded collection run.';return;}
+ $('station-timing').innerHTML='<p>'+esc(s.eventsRecorded)+' event days archived; '+esc(s.completedEventDays)+' completed; '+esc(s.openingForecastEventDays)+' completed with a leading band selected from an opening forecast. '+(s.status==='ACCUMULATING'?'Still accumulating data; no dependable best buying or selling time established.':'Descriptive averages are available; validate trading rules on later days before drawing conclusions.')+'</p>'+
+ '<p>Each event day receives equal weight. Forecast leaders are fixed using the first saved forecast within 20 minutes of a bracketed first quote. Missing observations are excluded, never filled in.</p>'+
+ '<div class="tablewrap"><table><thead><tr><th>Time after first quote</th><th>Event days</th><th>Average YES buy ask</th></tr></thead><tbody>'+s.entryByElapsed.map(x=>'<tr><td>'+esc(x.label)+'</td><td>'+esc(x.eventDays)+'</td><td>'+cents(x.meanU)+'</td></tr>').join('')+'</tbody></table></div>'+
+ '<div class="tablewrap"><table><thead><tr><th>Station-local hour</th><th>Buy days</th><th>Average YES buy ask</th><th>Sell days</th><th>Average YES sell bid</th></tr></thead><tbody>'+s.buyByLocalHour.map((x,i)=>{const y=s.sellByLocalHour[i];return '<tr><td>'+esc(String(x.hour).padStart(2,'0'))+':00</td><td>'+esc(x.eventDays)+'</td><td>'+cents(x.meanU)+'</td><td>'+esc(y.eventDays)+'</td><td>'+cents(y.meanU)+'</td></tr>';}).join('')+'</tbody></table></div>';
 }
 function renderTables(){
  const ms=marketRows();
@@ -53,6 +66,7 @@ function renderChart(){
  let lo=-Infinity,hi=Infinity;
  const anchor=Date.parse(event.firstQuoteAt||event.firstSeenAt);
  if($('window').value==='hour'){lo=anchor;hi=lo+3600000;}
+ if($('window').value==='prior')hi=Date.parse(event.summary.markets[0]?.research?.contractMidnightAt||event.summary.markets[0]?.checkpoints?.local0?.targetAt||'')-1;
  if($('window').value==='overnight'){
    const cp=event.summary.markets[0]?.checkpoints?.local0;lo=cp?.targetAt?Date.parse(cp.targetAt)-4*3600000:anchor;
  }
@@ -78,13 +92,18 @@ function renderQuality(){
  (event.rejected?.length?'<p>Unmapped bands: '+esc(event.rejected.map(x=>x.slug+': '+x.issues.join(', ')).join('; '))+'</p>':'');
 }
 function exportCSV(){
- if(!event)return;const keys=['station','date','event','market','band','capture','firstSeenAt','lastAbsentAt','firstQuoteAt','at','asOf','phase','usable','yesBid','yesAsk','noBid','noAsk','midpoint','spread','yesBidQty','yesAskQty','noBidQty','noAskQty','lastTrade','lastTradeAt','providerOpen','providerOpenAt','sourceAgeSeconds','issues'];
+ if(!event)return;const keys=['station','date','event','market','band','capture','firstSeenAt','lastAbsentAt','firstQuoteAt','at','asOf','phase','usable','yesBid','yesAsk','noBid','noAsk','midpoint','spread','yesBidQty','yesAskQty','noBidQty','noAskQty','lastTrade','lastTradeAt','providerOpen','providerOpenAt','sourceAgeSeconds','sharesTraded','openInterest','notionalTraded','researchVersion','localDate','localHour','minutesSinceFirstQuote','minutesSinceFirstListing','minutesToContractMidnight','forecastStatus','forecastId','forecastAt','forecastAgeMinutes','modelProbability','modelRank','forecastModels','forecastBuckets','forecastModelVersion','feeAssumption','minimumTradeQty','orderPriceMinTickSize','providerFeeCoefficient','depth','hypotheticalFills','issues'];
  const csvCell=x=>'"'+String(x??'').replace(/"/g,'""')+'"',rows=[keys.join(',')];
- for(const m of marketRows())for(const q of m.quotes){const r={station:event.station,date:event.date,event:event.slug,market:m.slug,band:m.label,capture:m.capture,firstSeenAt:m.firstSeenAt,lastAbsentAt:m.lastAbsentAt,firstQuoteAt:m.firstQuoteAt,...q,issues:(q.issues||[]).join('|')};rows.push(keys.map(k=>csvCell(['yesBid','yesAsk','noBid','noAsk','midpoint','spread','lastTrade','providerOpen'].includes(k)&&Number.isFinite(r[k])?r[k]/1000000:r[k])).join(','));}
+ for(const m of marketRows())for(const q of m.quotes){const f=event.forecasts?.[q.forecastId],r={station:event.station,date:event.date,event:event.slug,market:m.slug,band:m.label,capture:m.capture,firstSeenAt:m.firstSeenAt,lastAbsentAt:m.lastAbsentAt,firstQuoteAt:m.firstQuoteAt,minimumTradeQty:m.minimumTradeQty,orderPriceMinTickSize:m.orderPriceMinTickSize,providerFeeCoefficient:m.providerFeeCoefficient,...q,...q.timing,forecastAt:f?.ranAt,forecastModels:f?.models,forecastBuckets:f?.buckets,forecastModelVersion:f?.modelVersion,feeAssumption:event.feeAssumptions?.[q.feeAssumptionId],issues:(q.issues||[]).join('|')};rows.push(keys.map(k=>{const v=r[k];return csvCell(['yesBid','yesAsk','noBid','noAsk','midpoint','spread','lastTrade','providerOpen'].includes(k)&&Number.isFinite(v)?v/1000000:typeof v==='object'&&v!==null?JSON.stringify(v):v);}).join(','));}
  const url=URL.createObjectURL(new Blob([rows.join('\r\n')],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download=`market-openings-${event.station}-${event.date}.csv`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function exportJSON(){
+ if(!event)return;const archive={...event};delete archive.summary;
+ const url=URL.createObjectURL(new Blob([JSON.stringify(archive,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download=`market-research-${event.station}-${event.date}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 async function load(){
  try {snap=await json('data/openings/latest.json');if(snap.schemaVersion!==1||snap.venue!=='POLYMARKET_US')throw new Error('Unknown tracker snapshot');
+ try{report=await json('data/openings/timing.json');}catch{report=null;}
  const old=$('station').value;$('station').replaceChildren(...Object.keys(zones).map(s=>option(s,s)));if(old)$('station').value=old;
  const generated=Date.parse(snap.generatedAt),age=(Date.now()-generated)/60000;let status=null;try{status=await json('data/openings/status.json');}catch{}
  $('stamp').textContent='Updated '+new Date(generated).toLocaleString()+' · Polymarket US';
@@ -93,6 +112,6 @@ async function load(){
  renderTiles();chooseDates();await loadEvent();}
  catch(e){$('stamp').textContent='Tracker snapshot unavailable';$('health').hidden=false;$('health').textContent=e.message+' — the page will populate after the first successful collector run.';$('empty').hidden=false;}
 }
-$('station').addEventListener('change',()=>{chooseDates();loadEvent();});$('date').addEventListener('change',loadEvent);$('window').addEventListener('change',renderChart);$('price').addEventListener('change',()=>{if(event){renderTables();renderChart();}});$('refresh').addEventListener('click',load);$('export').addEventListener('click',exportCSV);
+$('station').addEventListener('change',()=>{chooseDates();loadEvent();});$('date').addEventListener('change',loadEvent);$('window').addEventListener('change',renderChart);$('price').addEventListener('change',()=>{if(event){renderTables();renderChart();}});$('refresh').addEventListener('click',load);$('export').addEventListener('click',exportCSV);$('export-json').addEventListener('click',exportJSON);
 load();setInterval(load,60000);
 })();

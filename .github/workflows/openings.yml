@@ -11,6 +11,7 @@ on:
       - 'scripts/openings.js'
       - 'scripts/openings/**'
       - 'tools/openings.test.js'
+      - 'tools/openings-research.test.js'
       - '.github/workflows/openings.yml'
 
 permissions:
@@ -29,7 +30,7 @@ jobs:
         with:
           node-version: '22'
       - name: Verify opening and overnight tracking
-        run: node --test tools/openings.test.js
+        run: node --test tools/openings.test.js tools/openings-research.test.js
       - name: Collect public listings and quotes
         run: node scripts/openings.js
       - name: Save tracker observations

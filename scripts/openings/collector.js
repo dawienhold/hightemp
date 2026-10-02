@@ -1,6 +1,7 @@
 'use strict';
 const fs=require('node:fs'),path=require('node:path'),zlib=require('node:zlib');
 const C=require('../consistency/core.js'),D=require('../consistency/collector.js'),O=require('./core.js');
+const R=require('./research.js');
 const BASE='https://gateway.polymarket.us';
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 function createReader(cfg,{transport=global.fetch,clock=Date.now,pause=wait}={}) {
@@ -22,15 +23,18 @@ function readJSON(file,fallback) {return D.readJSON(file,fallback);}
 function validate(cfg) {
   if(cfg.venue!=='POLYMARKET_US'||!Array.isArray(cfg.stations)||cfg.stations.some(s=>!O.ZONES[s])||new Set(cfg.stations).size!==cfg.stations.length)throw new Error('Invalid station/venue configuration');
   for(const [key,low,high] of [['requestTimeoutSeconds',2,15],['requestSpacingMs',250,2000],['searchPageSize',1,100],['searchMaxPages',1,6],['maxEventsPerRun',5,20],['maxRunSeconds',30,180],['indexDays',7,90]])if(!Number.isInteger(cfg[key])||cfg[key]<low||cfg[key]>high)throw new Error('Invalid '+key);
+  if(!Number.isInteger(cfg.forecastMaxAgeMinutes)||cfg.forecastMaxAgeMinutes<20||cfg.forecastMaxAgeMinutes>180||!Array.isArray(cfg.researchQuantities)||!cfg.researchQuantities.length||cfg.researchQuantities.some(n=>!Number.isInteger(n)||n<=0||n>10000)||!cfg.feeAssumption?.id||!Number.isFinite(cfg.feeAssumption.takerCoefficient)||cfg.feeAssumption.takerCoefficient<0||cfg.feeAssumption.takerCoefficient>1)throw new Error('Invalid research configuration');
   return cfg;
 }
 class Collector {
   constructor(root,cfg,{read,clock=Date.now}={}) {
     this.cfg=validate(cfg);this.clock=clock;this.read=read||createReader(cfg);this.out=path.join(root,'docs/data/openings');
+    try{this.forecast=readJSON(path.join(root,'docs/data/latest.json'),null);}catch(err){this.forecast=null;this.forecastLoadError=err.message;}
     this.state=readJSON(path.join(this.out,'state.json'),{schemaVersion:1,startedAt:C.iso(clock()),events:{},watch:{}});
     if(this.state.schemaVersion!==1||!this.state.events||!this.state.watch)throw new Error('Unknown tracker state; refusing to reset');
     this.mapping={...require('../consistency/config.json'),stations:cfg.stations};
     this.logs=[];this.errors=[];this.warnings=[];this.events=new Map();
+    if(this.forecastLoadError)this.warnings.push('Weather forecast could not be archived: '+this.forecastLoadError);
   }
   log(kind,data){this.logs.push({kind,at:C.iso(this.clock()),...data});}
   async get(url){if(this.clock()>=this.deadline)throw new Error('Collection time budget exhausted');return this.read(url);}
@@ -108,6 +112,14 @@ class Collector {
     }
     e.rejected=parsed.filter(x=>!x.m.valid).map(x=>({slug:x.m.slug,issues:x.m.issues}));
     if(e.rejected.length)this.warnings.push(slug+': '+e.rejected.length+' band(s) require rule review');
+    e.researchStartedAt=e.researchStartedAt||response.receivedAt;e.forecasts=e.forecasts||{};e.feeAssumptions=e.feeAssumptions||{};
+    e.feeAssumptions[this.cfg.feeAssumption.id]=this.cfg.feeAssumption;
+    const forecast=R.captureForecast(this.forecast,e,response.receivedAt,this.cfg.forecastMaxAgeMinutes);
+    if(forecast.status==='RECORDED'&&!e.forecasts[forecast.id]) {
+      e.forecasts[forecast.id]={...forecast.snapshot,firstCapturedAt:response.receivedAt};
+      this.log('FORECAST',{event:slug,forecastId:forecast.id,snapshot:e.forecasts[forecast.id]});
+    }
+    const probabilities=forecast.status==='RECORDED'?R.bandProbabilities(forecast.snapshot,valid.map(x=>x.m)):{};
     const lastDetailsAt=e.lastDetailsAt,previousSlugs=e.listedSlugs||[];
     for(const {raw:r,m} of valid) {
       let market=e.markets[m.slug];
@@ -123,26 +135,40 @@ class Collector {
       }
       if(market.rulesChanged){this.warnings.push(m.slug+': price series remains paused after a rule change');continue;}
       market.active=m.active;
-      if(!m.active){market.quotes.push({at:response.receivedAt,usable:false,issues:['MARKET_INACTIVE'],phase:O.phase(e,this.clock())});continue;}
+      market.minimumTradeQty=r.minimumTradeQty??null;market.orderPriceMinTickSize=r.orderPriceMinTickSize??null;
+      market.providerFeeCoefficient=r.feeCoefficient??null;
+      if(!m.active){market.quotes.push(R.enrichQuote({at:response.receivedAt,usable:false,issues:['MARKET_INACTIVE'],phase:O.phase(e,this.clock())},e,market,forecast,probabilities[m.slug],this.cfg));continue;}
       try {
         const r=await this.get(`${BASE}/v1/markets/${m.slug}/book`),q=O.parseQuote(r.data,m.slug,r.receivedAt,{url:r.url,startedAt:r.startedAt,httpDate:r.httpDate,httpAge:r.httpAge});
-        q.phase=O.phase(e,Date.parse(q.at));market.quotes.push(q);
-        if(q.usable&&!market.firstQuoteAt){market.firstQuoteAt=q.at;if(!e.firstQuoteAt)e.firstQuoteAt=q.at;this.log('FIRST_USABLE_QUOTE',{event:slug,market:m.slug,quote:q});}
+        q.phase=O.phase(e,Date.parse(q.at));
+        const firstUsable=q.usable&&!market.firstQuoteAt;
+        if(firstUsable)market.firstQuoteAt=q.at;
+        R.enrichQuote(q,e,market,forecast,probabilities[m.slug],this.cfg);market.quotes.push(q);
+        if(firstUsable){if(!e.firstQuoteAt)e.firstQuoteAt=q.at;this.log('FIRST_USABLE_QUOTE',{event:slug,market:m.slug,quote:q});}
         this.log('QUOTE',{event:slug,market:m.slug,quote:q});
       }catch(err) {
         const q={at:C.iso(this.clock()),usable:false,issues:['BOOK_REQUEST_FAILED'],error:err.message,phase:O.phase(e,this.clock())};
-        market.quotes.push(q);this.errors.push(m.slug+': '+err.message);this.log('QUOTE_GAP',{event:slug,market:m.slug,quote:q});
+        R.enrichQuote(q,e,market,forecast,probabilities[m.slug],this.cfg);market.quotes.push(q);this.errors.push(m.slug+': '+err.message);this.log('QUOTE_GAP',{event:slug,market:m.slug,quote:q});
       }
     }
     // Preserve all bands even if omitted on a later successful detail response.
     for(const m of Object.values(e.markets))if(!valid.some(x=>x.m.slug===m.slug))m.missingFromLatestDetail=true;else delete m.missingFromLatestDetail;
     e.listedSlugs=raw.markets.map(m=>m.slug);e.lastDetailsAt=response.receivedAt;e.lastSampleAt=C.iso(this.clock());
-    e.nextTargetMinutes=e.firstQuoteAt&&this.clock()-Date.parse(e.firstQuoteAt)>65*O.MIN?15:5;
+    e.nextTargetMinutes=O.phase(e,this.clock())==='TOMORROW'||!e.firstQuoteAt||this.clock()-Date.parse(e.firstQuoteAt)<=65*O.MIN?5:15;
   }
   save(started) {
     const now=this.clock(),cutoff=O.addDay(C.iso(now).slice(0,10),-this.cfg.indexDays),summaries=[];
     for(const [slug,e] of this.events)if(e) {
-      const summary=O.summarizeEvent(e,now);this.state.events[slug]=summary;
+      const summary=O.summarizeEvent(e,now);
+      // Forecast payloads stay in the permanent event archive, not the page index.
+      delete summary.forecasts;
+      const light=q=>q?Object.fromEntries(Object.entries(q).filter(([key])=>!['depth','hypotheticalFills'].includes(key))):q;
+      for(const m of summary.markets) {
+        m.research=R.summarizeMarket(e.markets[m.slug],e,now);
+        m.first=light(m.first);m.last=light(m.last);
+        for(const cp of Object.values(m.checkpoints))cp.quote=light(cp.quote);
+      }
+      this.state.events[slug]=summary;
       D.atomic(path.join(this.out,'events',slug+'.json'),e);
     }
     for(const [slug,s] of Object.entries(this.state.events)) {
@@ -161,12 +187,14 @@ class Collector {
     const snap={schemaVersion:1,version:this.cfg.version,venue:this.cfg.venue,startedAt:this.state.startedAt,generatedAt:C.iso(now),durationSeconds:(now-started)/1000,
       previousRunAt:this.previousRunAt,runGapMinutes:this.previousRunAt?(started-Date.parse(this.previousRunAt))/O.MIN:null,
       health:this.errors.length?'PARTIAL':this.discovery.complete?'OK':'PARTIAL',errors:this.errors,warnings:this.warnings,discovery:this.discovery,
-      sampling:{discoveryMinutes:5,firstHourMinutes:5,overnightMinutes:15,stopLocalHour:10,checkpointToleranceMinutes:10},waiting,
+      sampling:{discoveryMinutes:5,firstHourMinutes:5,dayPriorMinutes:5,overnightMinutes:15,stopLocalHour:10,checkpointToleranceMinutes:10},waiting,
+      research:{version:1,report:'timing.json',forecastMaxAgeMinutes:this.cfg.forecastMaxAgeMinutes,quantities:this.cfg.researchQuantities,feeAssumption:this.cfg.feeAssumption},
       events:summaries.sort((a,b)=>b.date.localeCompare(a.date)||a.station.localeCompare(b.station)),requests:this.read.metrics||null,
       note:'First seen is an observation, not an exchange opening timestamp. Initial unbracketed listings are baselines. YES/NO quotes are executable top-of-book prices; midpoints are indicative. All times and gaps are retained. No quotes are interpolated.'};
     this.log('RUN',{generatedAt:snap.generatedAt,health:snap.health,discovery:snap.discovery,errors:snap.errors,warnings:snap.warnings});
     const file=path.join(this.out,'history',C.iso(now).slice(0,10)+'.jsonl.gz');fs.mkdirSync(path.dirname(file),{recursive:true});fs.appendFileSync(file,zlib.gzipSync(this.logs.map(x=>JSON.stringify(x)).join('\n')+'\n'));
     D.atomic(path.join(this.out,'state.json'),this.state);D.atomic(path.join(this.out,'latest.json'),snap);D.atomic(path.join(this.out,'status.json'),{generatedAt:snap.generatedAt,health:snap.health,errors:snap.errors,warnings:snap.warnings});
+    D.atomic(path.join(this.out,'timing.json'),R.stationReport(summaries,now));
     return snap;
   }
   async run() {

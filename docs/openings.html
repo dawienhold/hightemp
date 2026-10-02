@@ -15,9 +15,9 @@
 <div class="toolbar"><span id="stamp" class="muted">Loading tracker…</span><button id="refresh" type="button">Refresh</button></div>
 <div id="health" class="notice" hidden role="status"></div>
 <section aria-label="Next-day listing status"><div id="stations" class="tiles"></div></section>
-<div class="notice"><strong>First observed, with the opening window preserved.</strong> Five-minute listing checks and first-hour quote snapshots; 15-minute snapshots afterward, through 10 AM station-local time. Actual collection gaps are recorded. Listings already present when tracking starts are marked <strong>initial baseline</strong>; their true opening quotes are unavailable.</div>
+<div class="notice"><strong>First observed, with the opening window preserved.</strong> Five-minute listing checks and quote snapshots throughout the day before the contract date; 15-minute snapshots after local midnight, through 10 AM station-local time. Scheduling is best effort and actual gaps are recorded. Initial baselines retain their coverage labels. Full book depth and forecasts are archived from the research upgrade onward.</div>
 <section class="card">
-<div class="filters"><label>Station<select id="station"></select></label><label>Contract date<select id="date"></select></label><label>View<select id="window"><option value="all">Full timeline</option><option value="hour">First recorded hour</option><option value="overnight">Overnight → today</option></select></label><label>Price<select id="price"><option value="midpoint">YES midpoint</option><option value="yesAsk">YES buy price</option><option value="noAsk">NO buy price</option></select></label></div>
+<div class="filters"><label>Station<select id="station"></select></label><label>Contract date<select id="date"></select></label><label>View<select id="window"><option value="all">Full timeline</option><option value="hour">First recorded hour</option><option value="prior">Day before only</option><option value="overnight">Overnight → today</option></select></label><label>Price<select id="price"><option value="midpoint">YES midpoint</option><option value="yesAsk">YES buy price</option><option value="yesBid">YES sell price</option><option value="noAsk">NO buy price</option><option value="noBid">NO sell price</option></select></label></div>
 <div id="empty" class="empty" hidden>Waiting for the first next-day listings. This page will fill automatically as the collector runs.</div>
 <div id="detail" hidden>
 <div class="eventhead"><h2 id="eventtitle"></h2><a id="marketlink" target="_blank" rel="noopener">View on Polymarket US ↗</a></div>
@@ -25,12 +25,16 @@
 <div id="legend" class="legend" aria-label="Visible temperature bands"></div>
 <div id="chart" class="chart" aria-label="Temperature-band price history"></div>
 <p id="chartnote" class="muted small"></p>
+<h3>Day-before buying and selling observations</h3>
+<p class="muted small">Lowest asks and highest bids are observed extremes, including ties; they describe this day and do not establish a repeatable trading window. Peak-after-entry uses bids observed strictly after the first ask. All prices are before fees. Forecast ranks use the first saved forecast; late captures are labeled.</p>
+<div class="tablewrap"><table><thead><tr><th>Band</th><th>First buy ask</th><th>Lowest buy ask / local time</th><th>Highest sell bid / local time</th><th>Peak bid after first ask</th><th>First saved forecast</th><th>Depth / forecast observations</th></tr></thead><tbody id="research-bands"></tbody></table></div>
+<details><summary>Station timing archive</summary><div id="station-timing" class="muted small">Accumulating completed event days.</div></details>
 <h3>Band prices and first-hour changes</h3><p class="muted small">Prices are cents per $1 payout. NO quotes come from the opposite side of the same YES instrument. Midpoints are indicative. Changes use the same price measure selected above.</p>
 <div class="tablewrap"><table><thead><tr><th>Temperature band</th><th>First usable quote</th><th>First price</th><th>+5m Δ</th><th>+15m Δ</th><th>+30m Δ</th><th>+60m Δ</th><th>Latest price</th><th>Total Δ</th><th>YES bid / ask</th><th>NO bid / ask</th><th>Spread</th></tr></thead><tbody id="bands"></tbody></table></div>
 <h3>Midnight and morning checkpoints</h3><p class="muted small">Checkpoint snapshots are the first usable observation at or after the target, within 20 minutes. Hover or tap a recorded price to see the actual time. Missing points are never filled in.</p>
 <div class="tablewrap"><table><thead><tr><th>Band</th><th>Local midnight</th><th>7 AM local</th><th>10 AM local</th><th>YES bid size</th><th>YES ask size</th><th>Latest quote status</th></tr></thead><tbody id="overnight"></tbody></table></div>
-<div class="toolbar"><span class="muted small">Download every recorded quote for this station and date.</span><button id="export" type="button">Export CSV</button></div>
+<div class="toolbar"><span class="muted small">Download quotes, book depth, timing, forecast probabilities, model inputs and fee assumptions.</span><button id="export" type="button">Export CSV</button><button id="export-json" type="button">Export full archive</button></div>
 <details><summary>Listing times and data quality</summary><div id="quality"></div></details>
 </div></section>
-<p class="foot">Collection is independent of weather forecasts and existing research pages. Times use each station’s local time zone, including daylight saving time. The contract’s date and ID remain fixed as tomorrow becomes today. First observed is not a guaranteed exchange opening timestamp; provider creation and trade-open statistics are shown separately.</p>
+<p class="foot">The tracker archives existing weather forecasts alongside quotes. Each forecast retains its original timestamp, contract date, degree probabilities and model inputs; stale or unavailable forecasts are marked missing. Times use the station’s local time zone. Historical depth and forecasts are never reconstructed. First observed is not a guaranteed exchange opening timestamp.</p>
 </main><script src="openings.js"></script></body></html>

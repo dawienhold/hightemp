@@ -32,7 +32,7 @@ function samplingDue(event, now) {
   }
   const warm=!event.firstQuoteAt || now-Date.parse(event.firstQuoteAt)<=65*MIN ||
     Object.values(event.markets||{}).some(m=>!m.firstQuoteAt || now-Date.parse(m.firstQuoteAt)<=65*MIN);
-  return !event.lastSampleAt || now-Date.parse(event.lastSampleAt)>=(warm?4:14)*MIN;
+  return !event.lastSampleAt || now-Date.parse(event.lastSampleAt)>=(warm||phase(event,now)==='TOMORROW'?4:14)*MIN;
 }
 function price(px) {
   if(px==null)return null;
@@ -60,7 +60,8 @@ function parseQuote(payload, slug, receivedAt, transport={}) {
     midpoint:bid&&ask?(bid.p+ask.p)/2:null,spread:bid&&ask?ask.p-bid.p:null,
     lastTrade:price(b.stats?.lastTradePx),lastTradeAt:b.stats?.lastTradeSetTime||null,
     providerOpen:price(b.stats?.openPx),providerOpenAt:b.stats?.openSetTime||null,
-    sharesTraded:b.stats?.sharesTraded??null,bookState:b.state,usable:issues.length===0,issues,transport};
+    sharesTraded:b.stats?.sharesTraded??null,openInterest:b.stats?.openInterest??null,notionalTraded:b.stats?.notionalTraded??null,
+    depth:{bids,asks,completeResponse:true},bookState:b.state,usable:issues.length===0,issues,transport};
 }
 function checkpoint(market, target, toleranceMinutes, now) {
   if(!target)return {status:'NO_BASELINE',targetAt:null,quote:null};
