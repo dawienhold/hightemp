@@ -10,12 +10,25 @@ Dashboard: **https://dawienhold.github.io/hightemp/**
 A GitHub Actions job (`.github/workflows/pass.yml`) runs every 20 minutes. Each
 run fetches observations, CLI reports and model guidance, makes the forecast,
 scores anything that has settled, and commits the results to `docs/data/`.
-If GitHub delays the forecast schedule, completion of the market-openings or
-weather observer workflow also checks for a snapshot at least 18 minutes old
-and refreshes it. Fresh snapshots are skipped; forecast jobs share one concurrency
-group and check the current `main` branch to avoid duplicate recovery. Forecast
-code changes also trigger a pass. These recovery triggers still depend on GitHub
-Actions availability and cannot guarantee an exact update interval.
+If GitHub delays the forecast schedule, completion of any of the five existing
+collectors (market-openings, shadow-observer, NFL, MLB, or consistency) checks
+for a snapshot at least 18 minutes old and refreshes it. Automatic starts skip
+healthy recent snapshots, but retry missing or failed station cards. Forecast
+jobs share one concurrency group and check the current `main` branch. Code
+changes and explicit requests always run. Optional MADIS installation/downloads
+have deadlines and cannot prevent the main forecast from running.
+
+Publication stages only forecast-owned data. Unrelated collector commits are
+rebased normally. A forecast data conflict is aborted, then a new pass is
+computed from current upstream state and history, with at most three attempts;
+no force push or manual mixing of forecast JSON/state is used. This also handles
+an older queued pass encountering newer published data.
+
+GitHub schedules can delay or drop starts. Recovery triggers on GitHub alone
+cannot guarantee an update interval; an independent hourly ChatGPT recovery
+check is configured separately to restart an overdue updater through the
+authenticated GitHub connector. It does not change the normal 20-minute
+schedule or the forecast probability logic.
 
 GitHub Pages serves `docs/` as the dashboard. No laptop, browser or AI is
 involved in producing the numbers.
@@ -73,6 +86,10 @@ morning call. That run also grades the previous morning's calls.
 
 `node tools/selftest.js` runs four passes against fake feeds (normal, morning,
 one station down, all down) in a temporary copy.
+
+`node --test tools/forecast-recovery.test.js` verifies freshness decisions and
+publication against concurrent commits, including history preservation and
+bounded conflict recovery, using temporary local Git repositories.
 
 ### Market Openings
 
