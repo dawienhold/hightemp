@@ -10,6 +10,13 @@ Dashboard: **https://dawienhold.github.io/hightemp/**
 A GitHub Actions job (`.github/workflows/pass.yml`) runs every 20 minutes. Each
 run fetches observations, CLI reports and model guidance, makes the forecast,
 scores anything that has settled, and commits the results to `docs/data/`.
+If GitHub delays the forecast schedule, completion of the market-openings or
+weather observer workflow also checks for a snapshot at least 18 minutes old
+and refreshes it. Fresh snapshots are skipped; forecast jobs share one concurrency
+group and check the current `main` branch to avoid duplicate recovery. Forecast
+code changes also trigger a pass. These recovery triggers still depend on GitHub
+Actions availability and cannot guarantee an exact update interval.
+
 GitHub Pages serves `docs/` as the dashboard. No laptop, browser or AI is
 involved in producing the numbers.
 

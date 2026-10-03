@@ -1231,16 +1231,16 @@ function render(snap, performance = null) {
 
   const age = (Date.now() - new Date(snap.ranAt)) / 60000;
   $("statusText").textContent = "last pass " + ago(snap.ranAt);
-  $("statusDot").className = "dot" + (age > 150 ? " bad" : age > 75 ? " stale" : "");
+  $("statusDot").className = "dot" + (age > 90 ? " bad" : age > 40 ? " stale" : "");
   $("ranAt").textContent = new Date(snap.ranAt).toLocaleString([], {
     month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
   $("ranAt").dataset.iso = snap.ranAt;
 
   const stale = $("staleNote");
-  if (age > 90) {
+  if (age > 40) {
     stale.hidden = false;
-    stale.textContent = "This is a stored pass, not a live reading. Anything that has happened at these stations in the last "
-      + ago(snap.ranAt).replace(" ago", "") + " is not in these numbers.";
+    stale.textContent = "The forecast updater is overdue. Forecast probabilities and observed highs below are from a stored pass; station changes in the last "
+      + ago(snap.ranAt).replace(" ago", "") + " are not included. Live NWS readings, when available, are shown separately.";
   } else {
     stale.hidden = true;
   }
