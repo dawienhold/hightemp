@@ -12,9 +12,9 @@ if (process.env.MOCK_NOW) {
 }
 const MODELS = ["gfs_hrrr","gfs_seamless","ecmwf_ifs025","ecmwf_aifs025_single","icon_seamless","gem_seamless",
                 "ukmo_seamless","jma_seamless","meteofrance_seamless","gfs_graphcast025"];
-const BASE = { KNYC: 70, KMIA: 88, KMDW: 66, KLAX: 77, KSFO: 67, KLGA: 70, KEWR: 71, KJRB: 70, KTEB: 70 };
-const CLI_LOC = { NYC: "KNYC", MIA: "KMIA", MDW: "KMDW", LAX: "KLAX", SFO: "KSFO" };
-const STD = { KNYC: -5, KMIA: -5, KMDW: -6, KLAX: -8, KSFO: -8 };
+const BASE = { KPHL: 71, KNYC: 70, KMIA: 88, KMDW: 66, KLAX: 77, KSFO: 67, KLGA: 70, KEWR: 71, KJRB: 70, KTEB: 70 };
+const CLI_LOC = { PHL: "KPHL", NYC: "KNYC", MIA: "KMIA", MDW: "KMDW", LAX: "KLAX", SFO: "KSFO" };
+const STD = { KPHL: -5, KNYC: -5, KMIA: -5, KMDW: -6, KLAX: -8, KSFO: -8 };
 const fail = new Set((process.env.MOCK_FAIL || "").split(",").filter(Boolean));
 const ymd = d => d.toISOString().slice(0, 10);
 const addDays = (s, n) => { const d = new Date(s + "T12:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return ymd(d); };
@@ -23,7 +23,7 @@ const diurnal = (base, h) => base - 8 + 8 * Math.max(0, Math.sin(Math.PI * (h - 
 const json = v => ({ ok: true, status: 200, json: async () => v, text: async () => JSON.stringify(v) });
 const text = v => ({ ok: true, status: 200, json: async () => JSON.parse(v), text: async () => v });
 const q = (u, k) => new URL(u).searchParams.get(k);
-const latKey = u => { const lat = +q(u, "latitude"); return lat > 40.7 && lat < 40.8 ? "KNYC" : lat < 26 ? "KMIA" : lat > 41.7 && lat < 41.8 ? "KMDW" : lat < 34 ? "KLAX" : "KSFO"; };
+const latKey = u => { const lat = +q(u, "latitude"); return lat > 39.8 && lat < 40 ? "KPHL" : lat > 40.7 && lat < 40.8 ? "KNYC" : lat < 26 ? "KMIA" : lat > 41.7 && lat < 41.8 ? "KMDW" : lat < 34 ? "KLAX" : "KSFO"; };
 
 function localHours(tz, days0, days1) {
   // time strings in local wall time, hourly, from today-days0 to today+days1
@@ -48,6 +48,7 @@ function metarRows(id, hours) {
 
 global.fetch = async (url, init) => {
   const u = String(url);
+  if (u.includes('/points/')) return json({properties:{gridId:'PHI',gridX:49,gridY:75}});
   if (u.includes("ntfy.sh")) {
     console.log("[mock push]", init && init.headers && init.headers.Title, "|", init && init.body);
     return { ok: true, status: 200, json: async () => ({}), text: async () => "" };
@@ -126,3 +127,4 @@ global.fetch = async (url, init) => {
   }
   throw new Error("mock: unhandled " + u);
 };
+

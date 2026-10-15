@@ -4,7 +4,7 @@ const path = require("node:path");
 const { spawnSync } = require("node:child_process");
 
 const OWNED = ["latest.json", "stats.json", "state.json", "status.json", "runs.jsonl",
-  "cli.json", "performance.json", "madis_omo.json", "history", "raw/metar"]
+  "cli.json", "performance.json", "low", "madis_omo.json", "history", "raw/metar"]
   .map(p => "docs/data/" + p);
 
 function publishForecast({ cwd = path.join(__dirname, ".."), regenerate } = {}) {
@@ -78,3 +78,4 @@ if (require.main === module) {
   } catch (error) { console.error(error.message); process.exitCode = 1; }
 }
 module.exports = { publishForecast };
+

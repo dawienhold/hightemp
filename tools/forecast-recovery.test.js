@@ -11,7 +11,7 @@ const { publishForecast } = require("../scripts/publish-forecast");
 test("only healthy recent automatic passes are skipped", () => {
   const now = Date.parse("2026-10-03T20:20:00Z");
   const snap = { ranAt: "2026-10-03T20:10:00Z", stations:
-    ["KNYC", "KMIA", "KMDW", "KLAX", "KSFO"].map(station => ({ station })) };
+    ["KPHL", "KNYC", "KMIA", "KMDW", "KLAX", "KSFO"].map(station => ({ station, low:{today:{},tomorrow:{}} })) };
   for (const trigger of ["schedule", "workflow_run"]) {
     assert.equal(refreshNeeded(snap, trigger, now), false);
     assert.equal(refreshNeeded({ ...snap, ranAt: "2026-10-03T20:02:00Z" }, trigger, now), true);
@@ -103,3 +103,4 @@ test("unrelated staged edits cannot enter a forecast commit", t => {
   put(worker, "docs/data/latest.json", "fresh forecast\n");
   assert.throws(() => publishForecast({ cwd: worker }), /outside forecast ownership/);
 });
+

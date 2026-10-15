@@ -12,7 +12,7 @@ function training(){const a=[];for(let day=1;day<=12;day++)for(let i=0;i<12;i++)
  const d=`2026-09-${String(day).padStart(2,'0')}`,changeF=Math.sin(i*.8+day)*3;
  a.push({station:'KNYC',date:d,at:d+`T${String(i+5).padStart(2,'0')}:00:00Z`,horizon:'60',regime:'dry|N|day',changeF,deltas:{KLGA:changeF,KEWR:2*changeF},equalDelta:1.5*changeF});}
  return a;}
-test('configuration bounds and station count',()=>{assert.equal(C.validate(cfg).enabled,true);assert.equal(C.allStations(cfg).length,21);assert.throws(()=>C.validate({...cfg,pollSeconds:1}));});
+test('configuration bounds and station count',()=>{assert.equal(C.validate(cfg).enabled,true);assert.equal(C.allStations(cfg).length,25);assert.throws(()=>C.validate({...cfg,pollSeconds:1}));});
 test('precise T-group decoded independently of rounded body',()=>{const r=C.parseMetar({rawOb:raw(),obsTime:Date.parse('2026-09-22T17:51Z')/1000},'AWC',now,'url',['KNYC']);assert.equal(r.c,21.7);assert.equal(r.precise,true);});
 test('whole-C observation is not invented precision',()=>{const r=C.parseMetar({rawOb:raw('KNYC','221751','22/10',''),temp:22.000001},'NWS',now,'url',['KNYC']);assert.equal(r.precise,false);assert.equal(r.c,22);});
 test('missing raw message cannot enter weather evidence',()=>assert.equal(C.fromNWS({timestamp:C.iso(now-60000),temperature:{value:22.222222}},'KNYC',now,'url',['KNYC']),null));
@@ -307,3 +307,4 @@ test('precise target requirement and validation minimums remain unchanged',()=>{
  assert.equal(cfg.minTrainingDays,5);assert.equal(cfg.minTrainingSamples,40);
  assert.equal(cfg.minValidationDays,3);assert.equal(cfg.minValidationSamples,12);assert.equal(cfg.improvementRequired,.05);
 });
+

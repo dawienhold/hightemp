@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Low-Temp Desk</title><link rel="stylesheet" href="nav.css">
+<style>
+:root{color-scheme:dark;--bg:#101719;--card:#192326;--ink:#eff5f3;--muted:#a9bcb8;--line:#344440;--accent:#8ed6c7}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,sans-serif}.wrap{max-width:1180px;margin:auto;padding:24px}header{display:flex;align-items:end;justify-content:space-between;gap:20px;margin:30px 0 20px}h1{font-size:36px;line-height:1.1;margin:8px 0}.kicker{text-transform:uppercase;letter-spacing:.14em;color:var(--accent);font-size:12px}p{margin:8px 0}.muted,small{color:var(--muted)}.intro{max-width:850px}.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:26px 0}button{background:transparent;color:var(--ink);border:1px solid var(--line);border-radius:7px;padding:9px 18px;cursor:pointer;font:inherit}button[aria-pressed=true]{background:var(--accent);color:#112923;border-color:var(--accent)}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:24px}.card h2{margin:0;font-size:24px}.cardhead{display:flex;align-items:center;justify-content:space-between;gap:12px}.tag{border:1px solid #56746d;border-radius:5px;color:var(--accent);font-size:11px;letter-spacing:.08em;padding:3px 7px;text-transform:uppercase}.point{font-size:76px;letter-spacing:-.06em;line-height:1.1;margin:22px 0 4px}.point span{font-size:24px;letter-spacing:0;color:var(--muted)}.interval{font-size:18px;margin-bottom:22px}.facts{display:grid;grid-template-columns:1fr 1fr;gap:20px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:16px 0}.facts dt{font-size:12px;color:var(--muted)}.facts dd{margin:5px 0 0;font-size:17px}.bars{margin-top:22px}.barrow{display:grid;grid-template-columns:50px 1fr 48px;gap:10px;align-items:center;font-variant-numeric:tabular-nums;font-size:13px;margin:9px 0}.track{height:10px;border-radius:3px;background:#273736;overflow:hidden}.fill{height:100%;background:var(--accent);border-radius:3px}.warn{color:#f2cf95}.notes{border-top:1px solid var(--line);padding-top:22px;margin-top:30px}.notes h2{font-size:20px;margin-bottom:10px}table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}th{color:var(--muted);font-weight:500}.scroll{overflow-x:auto}a{color:var(--accent)}[hidden]{display:none!important}#status{font-size:13px;color:var(--muted)}@media(max-width:720px){.wrap{padding:16px}.grid{grid-template-columns:1fr}header{display:block}h1{font-size:32px}.card{padding:20px}.point{font-size:68px}}
+</style></head><body><div class="wrap">
+<nav class="site-nav" aria-label="Pages">
+  <a href="./">High-Temp Desk</a>
+  <a href="bands.html">2°F Bands</a>
+  <a href="lows.html" aria-current="page">Low-Temp Desk</a>
+  <a href="observations.html">Data inputs</a>
+  <a href="edge.html">10 AM Market Edge</a>
+  <a href="openings.html">Market Openings</a>
+  <a href="nfl.html">NFL Rain Watch</a>
+  <a href="mlb.html">MLB</a>
+</nav>
+<header><div><p class="kicker">KNYC · Central Park &nbsp; / &nbsp; KMDW · Chicago Midway</p><h1>Low-Temp Desk</h1></div><p id="status" role="status">Loading the latest pass…</p></header>
+<p class="intro muted">The lowest temperature for the entire NWS climate day. Both the morning minimum and cooling before the day closes count. Estimates target the final CLI <strong>MINIMUM</strong> in whole °F.</p>
+<div class="toolbar" role="group" aria-label="Forecast day"><button id="today" aria-pressed="true">Today</button><button id="tomorrow" aria-pressed="false">Tomorrow</button><span class="tag">Provisional low model</span></div>
+<p id="error" class="warn" role="alert" hidden></p><main class="grid" id="cards"></main>
+<section class="notes"><h2>Low forecast performance</h2><p class="muted" id="scoreNote">Tracking starts with this release. Only final CLI minimums can grade these forecasts.</p><div class="scroll" id="scores"></div></section>
+<section class="notes"><h2>Reading these estimates</h2>
+<p class="muted">The climate day runs from midnight to midnight local standard time. During daylight saving time, that is 1 AM to 1 AM on the clock. Each card shows its exact closing time; “tomorrow” refers to the next climate date.</p>
+<p class="muted">The forecast blends independent hourly model series over that whole window, compares recent station observations, and keeps a conservative uncertainty allowance. A real station reading caps how high the final low can be; a preliminary CLI can also supply that cap. Neither proves that a colder low cannot occur later.</p>
+<p class="muted">Low biases are trained only against past final CLI minimums. Adjustments require eight distinct dates, are shrunk toward zero using 20 prior days, and are capped at 1.5°F. Repeated runs and additional weather models do not count as more independent days. Low forecast scores stay separate from the high forecasts.</p>
+<p class="muted">Sources: <a href="https://open-meteo.com/">Open-Meteo hourly and previous-run guidance</a>, NWS and AviationWeather station reports, and NWS daily climate reports. New low forecasts are archived automatically each pass. Individual-degree probabilities may need to be summed to match your market’s bands.</p>
+</section></div><script src="lows.js" defer></script></body></html>

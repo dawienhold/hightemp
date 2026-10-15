@@ -3,6 +3,7 @@
 const C=require('../consistency/core.js');
 const U=C.U;
 const STATIONS=Object.freeze({
+  KPHL:{tz:'America/New_York'},
   KNYC:{tz:'America/New_York'},
   KMIA:{tz:'America/New_York'},
   KMDW:{tz:'America/Chicago'},
@@ -153,3 +154,4 @@ function calibration(historyRows,cli,cfg){
 function entryStats(entries){const settled=Object.values(entries||{}).filter(e=>e.settled&&Number.isFinite(e.hypotheticalPnlU)&&Number.isFinite(e.costU));const cost=settled.reduce((s,e)=>s+e.costU,0),pnl=settled.reduce((s,e)=>s+e.hypotheticalPnlU,0),wins=settled.filter(e=>!e.bandHit).length;return {settled: settled.length,wins,losses:settled.length-wins,costU:cost,pnlU:pnl,roi:cost?pnl/cost:null};}
 module.exports={U,STATIONS,validateConfig,localParts,normalizeDist,distFromForecast,distFromHistory,inBand,bandProbability,marketBand,modelCohort,economics,classifyComparison,
   findHistoryCheckpoint,capturePreCutoff,freezeCheckpoints,currentDist,compareMarkets,updateEntries,settleEntries,calibration,entryStats};
+

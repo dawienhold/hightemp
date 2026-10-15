@@ -7,6 +7,7 @@ const docs = path.join(__dirname, '../docs');
 const pages = [
   ['index.html', 'High-Temp Desk', './'],
   ['bands.html', '2°F Bands'],
+  ['lows.html', 'Low-Temp Desk'],
   ['observations.html', 'Data inputs'],
   ['consistency.html', 'Contract Consistency', null, false],
   ['edge.html', '10 AM Market Edge'],
@@ -40,3 +41,4 @@ for (const [file] of pages) {
 }
 if (stale) process.exitCode = 1;
 else console.log(`${pages.length} pages share the complete navigation menu.`);
+

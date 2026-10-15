@@ -1,7 +1,7 @@
 "use strict";
 const fs = require("node:fs");
 
-const STATIONS = ["KNYC", "KMIA", "KMDW", "KLAX", "KSFO"];
+const STATIONS = ["KNYC", "KPHL", "KMIA", "KMDW", "KLAX", "KSFO"];
 function refreshNeeded(snapshot, trigger, now = Date.now()) {
   // Explicit requests and code changes always run, including morning/test inputs.
   if (trigger !== "schedule" && trigger !== "workflow_run") return true;
@@ -10,7 +10,8 @@ function refreshNeeded(snapshot, trigger, now = Date.now()) {
   if (!Array.isArray(snapshot.stations)) return true;
   return STATIONS.some(id => {
     const station = snapshot?.stations?.find(s => s.station === id);
-    return !station || station.error || station.stale;
+    return !station || station.error || station.stale ||
+      (["KNYC", "KMDW"].includes(id) && (!station.low || station.low.error));
   });
 }
 
@@ -23,3 +24,4 @@ if (require.main === module) {
     : `Healthy snapshot from ${snapshot.ranAt}; skip duplicate refresh.`);
 }
 module.exports = { refreshNeeded };
+

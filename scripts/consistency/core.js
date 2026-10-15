@@ -6,6 +6,7 @@ const { createHash } = require('node:crypto');
 const U = 1_000_000;
 const STATIONS = Object.freeze({
   KNYC: { name: 'Central Park', offset: -5 },
+  KPHL: { name: 'Philadelphia International', offset: -5 },
   KMIA: { name: 'Miami International', offset: -5 },
   KMDW: { name: 'Chicago Midway', offset: -6 },
   KLAX: { name: 'Los Angeles International', offset: -8 },
@@ -198,3 +199,4 @@ function relations(markets,cfg) {
 }
 module.exports={U,STATIONS,iso,hash,finite,slugOK,units,usd,day,validDate,text,validateConfig,feeIssue,feeUpperU,
   parsePredicate,interval,bandLabel,parseMarket,cells,yesAt,payoffProof,relations};
+

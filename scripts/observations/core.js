@@ -15,7 +15,7 @@ function validate(cfg) {
   for(const k of ['nwsSeconds','cliSeconds','rawSeconds','dsmSeconds']) if(!(cfg[k]>=60))throw Error('Invalid cadence: '+k);
   for(const k of ['minTrainingDays','minTrainingSamples','minValidationDays','minValidationSamples'])if(!(cfg[k]>=1))throw Error('Invalid training setting: '+k);
   if(!(cfg.improvementRequired>=0.02&&cfg.improvementRequired<0.5))throw Error('Invalid improvement threshold');
-  if(!cfg.targets || Object.keys(cfg.targets).some(s=>!['KNYC','KMIA','KMDW','KLAX','KSFO'].includes(s)))throw Error('Unsupported target station');
+  if(!cfg.targets || Object.keys(cfg.targets).some(s=>!['KNYC','KPHL','KMIA','KMDW','KLAX','KSFO'].includes(s)))throw Error('Unsupported target station');
   if(allStations(cfg).length>30 || allStations(cfg).some(s=>!/^K[A-Z0-9]{3}$/.test(s)))throw Error('Unsupported station set');
   return cfg;
 }
@@ -167,3 +167,4 @@ function parseDSM(text, station, received, url) {
     advisoryOnly:true,eligibleForLocks:false};
 }
 module.exports={hash,ms,iso,number,cToF,date,allStations,validate,resolveDay,normalizeMetar,parseMetar,inspectNWS,fromNWS,isStructured,usableTemperature,selectRows,cadenceInfo,parseDSM};
+

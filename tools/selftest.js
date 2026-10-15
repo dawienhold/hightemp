@@ -17,7 +17,7 @@ const run = (env, expectOk = true) => {
 run({ MOCK_NOW: "2026-09-21T18:00:00Z" });
 run({ MOCK_NOW: "2026-09-22T11:05:00Z" });
 run({ MOCK_NOW: "2026-09-22T11:25:00Z", MOCK_FAIL: "KMDW" });
-run({ MOCK_NOW: "2026-09-22T11:45:00Z", MOCK_FAIL: "KNYC,KMIA,KMDW,KLAX,KSFO,open-meteo" }, false);
+run({ MOCK_NOW: "2026-09-22T11:45:00Z", MOCK_FAIL: "KPHL,KNYC,KMIA,KMDW,KLAX,KSFO,open-meteo" }, false);
 const status = JSON.parse(fs.readFileSync(path.join(tmp, "docs/data/status.json")));
 const latest = JSON.parse(fs.readFileSync(path.join(tmp, "docs/data/latest.json")));
 const runs = fs.readFileSync(path.join(tmp, "docs/data/runs.jsonl"), "utf8").trim().split("\n").map(JSON.parse);
@@ -25,3 +25,4 @@ const ok = runs.length >= 4 && runs.at(-1).ok === false && status.consecutiveFai
   && latest.stations.find(s => s.station === "KMDW").stale === true && latest.morning.at.startsWith("2026-09-22");
 console.log(ok ? "selftest OK" : "selftest FAILED", tmp);
 process.exit(ok ? 0 : 1);
+

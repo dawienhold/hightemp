@@ -274,6 +274,7 @@ button[disabled]{opacity:.5; cursor:default}
   <nav class="site-nav" aria-label="Pages">
   <a href="./" aria-current="page">High-Temp Desk</a>
   <a href="bands.html">2°F Bands</a>
+  <a href="lows.html">Low-Temp Desk</a>
   <a href="observations.html">Data inputs</a>
   <a href="edge.html">10 AM Market Edge</a>
   <a href="openings.html">Market Openings</a>
@@ -283,7 +284,7 @@ button[disabled]{opacity:.5; cursor:default}
 
   <header class="masthead">
     <div>
-      <p class="kicker">KNYC · KMIA · KMDW · KLAX · KSFO</p>
+      <p class="kicker">KNYC · KPHL · KMIA · KMDW · KLAX · KSFO</p>
       <h1>High-Temp Desk</h1>
     </div>
     <div class="status">
@@ -420,7 +421,7 @@ function evidenceBox(s, d0) {
   return box;
 }
 const STATION_TZ_UI = {
-  KNYC:"America/New_York", KMIA:"America/New_York", KMDW:"America/Chicago",
+  KNYC:"America/New_York", KPHL:"America/New_York", KMIA:"America/New_York", KMDW:"America/Chicago",
   KLAX:"America/Los_Angeles", KSFO:"America/Los_Angeles",
 };
 function stationClock(station, iso) {
@@ -978,6 +979,20 @@ function scorecard(agg, perf = null) {
       "These are all logged forecast calls, including repeated calls on the same day, not independent daily samples or the checkpoint scorecard above. Fewer than 20 distinct dates is a limited sample. Version rows isolate forecast changes from one another. Older rows are assigned using recorded version-change timestamps; new rows carry their version explicitly. Full-distribution Brier scoring begins only where the complete integer distribution was logged."));
   }
 
+  if (perf && Array.isArray(perf.checkpoints) && perf.checkpoints.length) {
+    const cols = [
+      { h:"station · local hour", get:r => r.v.station + " · " + String(r.v.hour).padStart(2,"0") + ":00", cls:"mname" },
+      { h:"distinct dates", get:r => String(r.v.days), cls:"mnum" },
+      { h:"MAE", get:r => r.v.mae + "°", cls:"mnum" },
+      { h:"bias", get:r => (r.v.bias > 0 ? "+" : "") + r.v.bias, cls:"mnum" },
+      { h:"±1°", get:r => pctCell(r.v.within1), cls:"mnum" },
+      { h:"80% band", get:r => pctCell(r.v.cover80), cls:"mnum" },
+    ];
+    mk("Daily checkpoints · each date counts once", perf.checkpoints.slice().sort((a,b)=>a.station.localeCompare(b.station)||a.hour-b.hour).map(v=>({v})), cols);
+    wrap.appendChild(el("p", "muted small", perf.checkpointMethod + " " + perf.calibrationDecision));
+  }
+  wrap.appendChild(el("p", "muted small", "Probability scoring now uses the full saved distribution and includes the loss when the final degree is absent. Older cumulative checkpoint Brier values retain their original scoring; version diagnostics above are recomputed from archived full distributions where available."));
+
   wrap.appendChild(el("h4", "sec", "Prospective station × local-hour bias"));
   const tracked = perf && Array.isArray(perf.stationHour) ? perf.stationHour
     .filter(r => r.version === perf.currentVersion) : [];
@@ -1154,7 +1169,7 @@ function ago(iso) {
   return Math.floor(h / 24) + " days ago";
 }
 
-const LIVE_NWS_STATIONS = ["KNYC","KMIA","KMDW","KLAX","KSFO"];
+const LIVE_NWS_STATIONS = ["KNYC","KPHL","KMIA","KMDW","KLAX","KSFO"];
 
 function nwsTemperatureF(properties) {
   const q = properties && properties.temperature;
@@ -1323,3 +1338,4 @@ async function load() {
 <script src="input-status.js" defer></script>
 </body>
 </html>
+

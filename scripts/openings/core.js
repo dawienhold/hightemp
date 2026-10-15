@@ -1,6 +1,6 @@
 'use strict';
 const C = require('../consistency/core.js');
-const ZONES = Object.freeze({KNYC:'America/New_York',KMIA:'America/New_York',KMDW:'America/Chicago',KLAX:'America/Los_Angeles',KSFO:'America/Los_Angeles'});
+const ZONES = Object.freeze({KNYC:'America/New_York',KMIA:'America/New_York',KMDW:'America/Chicago',KLAX:'America/Los_Angeles',KSFO:'America/Los_Angeles',KPHL:'America/New_York'});
 const MIN = 60000;
 function localParts(now, station) {
   const p = Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone:ZONES[station],year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date(now)).map(x=>[x.type,x.value]));
@@ -84,3 +84,4 @@ function summarizeEvent(e,now) {
     file:`events/${e.slug}.json`,markets:Object.values(e.markets).map(m=>summarizeMarket(m,e,now)).sort((a,b)=>(a.band.low??-Infinity)-(b.band.low??-Infinity))};
 }
 module.exports={ZONES,MIN,localParts,addDay,phase,localInstant,samplingDue,parseQuote,checkpoint,summarizeMarket,summarizeEvent};
+

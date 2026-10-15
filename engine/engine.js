@@ -50,6 +50,8 @@ const STATIONS = [
     tz:"America/New_York", lat:40.7833, lon:-73.9667, elev:47, wfo:"OKX", gx:34, gy:45, onshore:160,
     proxies:["KLGA","KEWR","KJRB","KTEB"], hourlyOnly:true,
     caveat:"Central Park reports can miss between-report peaks. Data input health shows separately tested neighbor estimates; only target-station reports inform the observed floor." },
+  { id:"KPHL", short:"PHL", name:"Philadelphia", site:"Philadelphia Intl", cli:"PHL",
+    tz:"America/New_York", lat:39.8721, lon:-75.2411, elev:11, wfo:"PHI", onshore:135, proxies:[] },
   { id:"KMIA", short:"MIA", name:"Miami", site:"Miami Intl", cli:"MIA",
     tz:"America/New_York", lat:25.7906, lon:-80.3164, elev:3, wfo:"MFL", gx:105, gy:51, onshore:110, proxies:[] },
   { id:"KMDW", short:"MDW", name:"Chicago", site:"Midway", cli:"MDW",
@@ -469,7 +471,13 @@ async function fetchEnsemble(st) {
 }
 
 async function fetchNBM(st) {
-  const d = await getJSON(`${NWS}/gridpoints/${st.wfo}/${st.gx},${st.gy}`, 15 * 60e3);
+  let office=st.wfo, x=st.gx, y=st.gy;
+  if (!Number.isInteger(x) || !Number.isInteger(y)) {
+    const point=await getJSON(`${NWS}/points/${st.lat},${st.lon}`, 24 * 60 * 60e3);
+    office=point.properties?.gridId; x=point.properties?.gridX; y=point.properties?.gridY;
+    if (!/^[A-Z]{3}$/.test(office) || !Number.isInteger(x) || !Number.isInteger(y)) throw new Error("Missing NWS grid location");
+  }
+  const d = await getJSON(`${NWS}/gridpoints/${office}/${x},${y}`, 15 * 60e3);
   const mt = (d.properties || {}).maxTemperature || {};
   const uom = mt.uom || "wmoUnit:degC";
   const out = {};
@@ -731,11 +739,12 @@ function scoreCalls(calls, settledMax) {
     const err = c.point - settledMax;
     const inside80 = settledMax >= c.i80[0] && settledMax <= c.i80[1];
     const inside50 = c.i50 ? (settledMax >= c.i50[0] && settledMax <= c.i50[1]) : null;
-    const hit = (c.top || []).find(b => b.f === settledMax);
+    const full = c.buckets || c.top || [];
+    const hit = full.find(b => b.f === settledMax);
     const pTruth = hit ? hit.p : 0;
     // Brier over the whole integer distribution
-    let brier = 0;
-    for (const b of (c.top || [])) brier += Math.pow(b.p - (b.f === settledMax ? 1 : 0), 2);
+    let brier = hit ? 0 : 1;
+    for (const b of full) brier += Math.pow(b.p - (b.f === settledMax ? 1 : 0), 2);
     const errBase = c.pointBase == null ? null : c.pointBase - settledMax;
     return { station: c.station, at: c.at, leadH: c.leadH, localH: c.localH ?? null,
              band: (c.i80 && c.i80.length === 2) ? c.i80[1] - c.i80[0] : null,
@@ -1035,7 +1044,7 @@ function logRows(snap) {
     const localH = meta ? localHour(new Date(at), meta.tz) : null;
     return { station: s.station, date: s.today.date, at, leadH, localH,
              point: s.today.point, pointBase: s.today.pointBase ?? null,
-             sigma: s.today.sigma, i50: s.today.i50, i80: s.today.i80,
+             sigma: s.today.sigma, i50: s.today.i50, i80: s.today.i80, buckets: s.today.buckets,
              top: s.today.top, obsMax: s.today.obsMax, regimeAdj: s.today.regimeAdj ?? null,
              tomorrow: s.tomorrow ? { date: s.tomorrow.date, point: s.tomorrow.point,
                                       pointBase: s.tomorrow.pointBase ?? null, sigma: s.tomorrow.sigma,
@@ -1651,8 +1660,15 @@ async function runStation(st, cliCache, memory) {
   const within1 = errs.length ? errs.filter(e => Math.abs(e) <= 1).length / errs.length : null;
   const within2 = errs.length ? errs.filter(e => Math.abs(e) <= 2).length / errs.length : null;
 
+  let low = null;
+  if (["KNYC", "KMDW"].includes(st.id)) {
+    try { low = await require("./low.js").runStation(st, { getJSON, models:MODELS, labels:MODEL_LABEL,
+      obs:dayObs.obs, cli:cliRows, now:+nowD, cdf:normCdf }); }
+    catch (e) { low = { error:String(e.message || e), ranAt:nowD.toISOString() }; }
+  }
+
   return {
-    station: st.id, name: st.name, site: st.site, tz: st.tz, caveat: st.caveat || null,
+    low, station: st.id, name: st.name, site: st.site, tz: st.tz, caveat: st.caveat || null,
     localDate: today, localClock: localClock(nowD, st.tz), localHour: localHour(nowD, st.tz),
     sunrise: sun && sun.daily ? sun.daily.sunrise[1] : null,
     sunset:  sun && sun.daily ? sun.daily.sunset[1]  : null,
@@ -1983,10 +1999,10 @@ function snapshot(result, opts = {}) {
       station: s.station, name: s.name, site: s.site, localDate: s.localDate,
       localClock: s.localClock, caveat: s.caveat, obsCadenceMin: s.obsCadenceMin,
       inputDiagnostics: s.inputDiagnostics || {}, inputCadence: s.inputCadence || null,
-      today: day(s.today), tomorrow: day(s.tomorrow),
+      today: day(s.today), tomorrow: day(s.tomorrow), low: s.low || null,
       curve: decimate(s.obs || [], maxCurve, o => o.f).map(o => [localHM(o.t, s.tz), +o.f.toFixed(1)]),
       inferredCurve: decimate((s.inferredObs || []).filter((_, i) => i % 3 === 0), maxCurve, o => o.f).map(o => [localHM(o.t, s.tz), +o.f.toFixed(1)]),
-      cli: (s.cli || []).slice(0, 6).map(c => ({ d: c.date, max: c.max, at: c.maxTime })),
+      cli: (s.cli || []).slice(0, 6).map(c => ({ d: c.date, max: c.max, min: c.min, at: c.maxTime })),
       backtest: (s.backtest || []).slice(0, 10), mae: s.mae == null ? null : +s.mae.toFixed(2),
       within1: s.within1, within2: s.within2,
       skillDays: s.cal.nSkillDays, skillSd: +s.cal.pooledSkillSigma.toFixed(2),
@@ -2010,3 +2026,4 @@ return { STATIONS, MODELS, MODEL_LABEL, runAll, runStation, snapshot, parseCLI,
 if (typeof module !== "undefined") module.exports = HT;
 
 if (typeof window !== "undefined") window.HT = HT;
+

@@ -1,9 +1,40 @@
 # hightemp
 
-Daily-high forecasts for **KNYC, KMIA, KMDW, KLAX, KSFO**, scored against the
+Daily-high forecasts for **KNYC, KPHL, KMIA, KMDW, KLAX, KSFO**, scored against the
 NWS Daily Climate Report (CLI) — the number the markets settle on.
 
 Dashboard: **https://dawienhold.github.io/hightemp/**
+
+Daily lows for **KNYC (Central Park)** and **KMDW (Midway)**:
+**https://dawienhold.github.io/hightemp/lows.html**. Today and tomorrow cover
+the full NWS local-standard-time climate day, including evening cooling and
+the following midnight hour during DST. Low guidance, biases and scores are
+separate from the highs; no high hidden-peak calibration is reused for lows.
+The low model is provisional, retains a conservative uncertainty allowance,
+and shrinks minimum-only calibration toward zero (8 distinct dates required,
+20 prior days, maximum 1.5°F adjustment). Low calls are archived in
+`docs/data/low/history`; only final CLI minimums grade them.
+
+### October 15 performance review
+
+The existing high model has 17 settled climate dates: all-call MAE 1.11°F,
+warm bias +0.48°F. Calls from the same day are correlated. New diagnostics
+therefore select one call per station/date within each 07, 10, 14 and 18 local
+hour. Current 07-hour MAEs are 0.93°F NYC, 0.79°F Miami, 1.33°F Midway,
+1.80°F LAX and 2.69°F SFO, based on only 14–16 dates per station. These are
+descriptive results, not evidence of profitable trading or a validated bias
+correction. No fitted station-hour offsets or tighter high probability bands
+are introduced from this short sample. Review requires at least 20 distinct
+settled dates and further out-of-sample evidence.
+
+Probability scores now retain the full integer distribution and penalize a
+missing realized outcome. Old cumulative checkpoint scores retain their
+original calculations; `performance.json` independently reconstructs scores
+from archived full distributions where present. The high forecast version
+remains 4.2.2 because its numeric forecast logic is unchanged; lows use their
+own `low-1.0.0` version. Philadelphia also joins observation collection and
+the high-temperature market-opening tracker without borrowing another
+station's calibration history.
 
 ## How it runs
 
@@ -149,3 +180,4 @@ logs are not deleted.
 
 The shared navigation list in `tools/sync-nav.js` keeps Contract Consistency and
 Shadow Trader hidden (`visible = false`), without changing their pages or jobs.
+

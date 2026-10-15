@@ -15,6 +15,8 @@ on:
     paths:
       - '.github/workflows/pass.yml'
       - 'scripts/run.js'
+      - 'scripts/low-history.js'
+      - 'scripts/performance.js'
       - 'scripts/forecast-freshness.js'
       - 'scripts/publish-forecast.js'
       - 'tools/forecast-recovery.test.js'
@@ -62,7 +64,7 @@ jobs:
 
       - name: Verify forecast recovery
         if: steps.freshness.outputs.needed == 'true'
-        run: node --test tools/forecast-recovery.test.js
+        run: node --test tools/forecast-recovery.test.js tools/lows.test.js tools/performance.test.js
 
       # Python only runs on GitHub's server. Nothing needs to be installed
       # on your own computer.
@@ -104,3 +106,4 @@ jobs:
           TEST_PUSH: ${{ inputs.test_push }}
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
         run: node scripts/publish-forecast.js
+
