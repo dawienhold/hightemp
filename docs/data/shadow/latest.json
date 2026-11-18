@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "version": "1.1.0",
   "mode": "PAPER_ONLY",
-  "generatedAt": "2026-11-18T09:17:44.443Z",
+  "generatedAt": "2026-11-18T18:10:35.108Z",
   "transport": "Unauthenticated Polymarket US REST snapshots; no WebSocket",
   "liveOrdersPossible": false,
   "config": {
@@ -58,18 +58,18 @@
     {
       "station": "KNYC",
       "date": "2026-11-18",
-      "floorF": null,
-      "kind": null,
+      "floorF": 62,
+      "kind": "ASOS_SIX_HOUR",
       "conflict": false,
       "reason": null,
-      "hourlyMaxAdvisoryF": 48.92,
-      "fresh": false
+      "hourlyMaxAdvisoryF": 60.980000000000004,
+      "fresh": true
     },
     {
       "station": "KMIA",
       "date": "2026-11-18",
-      "floorF": null,
-      "kind": null,
+      "floorF": 78,
+      "kind": "ASOS_SIX_HOUR",
       "conflict": false,
       "reason": null,
       "hourlyMaxAdvisoryF": 77,
@@ -78,31 +78,31 @@
     {
       "station": "KMDW",
       "date": "2026-11-18",
-      "floorF": null,
-      "kind": null,
+      "floorF": 59,
+      "kind": "ASOS_SIX_HOUR",
       "conflict": false,
       "reason": null,
-      "hourlyMaxAdvisoryF": 44.06,
+      "hourlyMaxAdvisoryF": 57.92,
       "fresh": false
     },
     {
       "station": "KLAX",
       "date": "2026-11-18",
-      "floorF": null,
-      "kind": null,
+      "floorF": 65,
+      "kind": "ASOS_SIX_HOUR",
       "conflict": false,
       "reason": null,
-      "hourlyMaxAdvisoryF": 55.040000000000006,
+      "hourlyMaxAdvisoryF": 64.94,
       "fresh": false
     },
     {
       "station": "KSFO",
       "date": "2026-11-18",
-      "floorF": null,
-      "kind": null,
+      "floorF": 58,
+      "kind": "ASOS_SIX_HOUR",
       "conflict": false,
       "reason": null,
-      "hourlyMaxAdvisoryF": 53.06,
+      "hourlyMaxAdvisoryF": 57.92,
       "fresh": false
     }
   ],
@@ -123,51 +123,56 @@
       "status": "FEE_REVIEW_REQUIRED",
       "detail": null,
       "diagnostic": {
-        "evidenceEliminated": false,
-        "noAskLevels": 1,
-        "displayedNoContracts": 2090,
+        "evidenceEliminated": true,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
         "noPriceWithinCap": false,
         "noPriceWithinCapAfterBuffer": false,
-        "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 258.683,
-        "quoteReceiptAgeSeconds": 0.001,
-        "bookReasons": [
-          "Book timestamp too old for simulation"
-        ],
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 14.376,
+        "quoteReceiptAgeSeconds": 0.326,
+        "bookReasons": [],
         "ruleIssues": [],
-        "weatherFresh": false,
+        "weatherFresh": true,
         "availablePaperBudgetU": 100000000,
         "sourceAgeBlockedCapacityU": null
       },
-      "evidence": null,
+      "evidence": {
+        "id": "d29a19442cc0b4c8bcbeba3c3197960a1d5d8acc630b54f8d1d677e4a8e55a04",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 62,
+        "issuedAt": null,
+        "observedAt": "2026-11-18T17:51:00.000Z",
+        "firstSeenAt": "2026-11-18T18:07:17.679Z",
+        "sourceUrl": "https://aviationweather.gov/api/data/metar?ids=KNYC,KLGA,KEWR,KTEB,KJRB&format=json&hours=3"
+      },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:13:11.013Z",
-        "receivedAt": "2026-11-18T09:17:29.696Z",
-        "ageSeconds": 258.683,
-        "noAsk": 0.99,
+        "asOf": "2026-11-18T18:10:03.000Z",
+        "receivedAt": "2026-11-18T18:10:17.376Z",
+        "ageSeconds": 14.376,
+        "noAsk": null,
         "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "sourceAgeSeconds": 258.683,
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 14.376,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:29.674Z",
-          "receivedAt": "2026-11-18T09:17:29.696Z",
-          "durationMs": 22,
-          "httpDate": "Wed, 18 Nov 2026 09:17:29 GMT",
-          "httpAge": "24",
+          "requestStartedAt": "2026-11-18T18:10:17.343Z",
+          "receivedAt": "2026-11-18T18:10:17.376Z",
+          "durationMs": 33,
+          "httpDate": "Wed, 18 Nov 2026 18:10:17 GMT",
+          "httpAge": "9",
           "cacheControl": "public, max-age=30"
         },
-        "topNoAsks": [
-          {
-            "priceU": 990000,
-            "qty": 2090
-          }
-        ]
+        "topNoAsks": []
       },
-      "signal": null,
+      "signal": {
+        "firstSeenAt": "2026-11-18T18:07:19.827Z",
+        "evidenceId": "d29a19442cc0b4c8bcbeba3c3197960a1d5d8acc630b54f8d1d677e4a8e55a04",
+        "rulesHash": "4e7a4adbefefaa0b0b695fb263a45f0672fcd0b51e7274863be359405939811a",
+        "firstBookAt": "2026-11-18T18:07:19.474Z",
+        "firstNoAsk": null
+      },
       "quoteCapacity": null
     },
     {
@@ -186,14 +191,14 @@
       "status": "FEE_REVIEW_REQUIRED",
       "detail": null,
       "diagnostic": {
-        "evidenceEliminated": false,
+        "evidenceEliminated": true,
         "noAskLevels": 0,
         "displayedNoContracts": 0,
         "noPriceWithinCap": false,
         "noPriceWithinCapAfterBuffer": false,
         "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 276.843,
-        "quoteReceiptAgeSeconds": 0.001,
+        "quoteSourceAgeSeconds": 253.076,
+        "quoteReceiptAgeSeconds": 0.345,
         "bookReasons": [
           "Book timestamp too old for simulation"
         ],
@@ -202,30 +207,44 @@
         "availablePaperBudgetU": 100000000,
         "sourceAgeBlockedCapacityU": null
       },
-      "evidence": null,
+      "evidence": {
+        "id": "e7f31a940ac584fed8877aa79576faa325990efd8f464ce8e7b2eaba097339ba",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 78,
+        "issuedAt": null,
+        "observedAt": "2026-11-18T11:53:00.000Z",
+        "firstSeenAt": "2026-11-18T18:07:17.679Z",
+        "sourceUrl": "https://aviationweather.gov/api/data/metar?ids=KMIA&format=json&hours=30"
+      },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:12:53.089Z",
-        "receivedAt": "2026-11-18T09:17:29.932Z",
-        "ageSeconds": 276.843,
+        "asOf": "2026-11-18T18:06:04.788Z",
+        "receivedAt": "2026-11-18T18:10:17.864Z",
+        "ageSeconds": 253.076,
         "noAsk": null,
         "state": "MARKET_STATE_OPEN",
         "valid": false,
         "reasons": [
           "Book timestamp too old for simulation"
         ],
-        "sourceAgeSeconds": 276.843,
+        "sourceAgeSeconds": 253.076,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:29.924Z",
-          "receivedAt": "2026-11-18T09:17:29.932Z",
-          "durationMs": 8,
-          "httpDate": "Wed, 18 Nov 2026 09:17:29 GMT",
-          "httpAge": "16",
+          "requestStartedAt": "2026-11-18T18:10:17.843Z",
+          "receivedAt": "2026-11-18T18:10:17.864Z",
+          "durationMs": 21,
+          "httpDate": "Wed, 18 Nov 2026 18:10:17 GMT",
+          "httpAge": "24",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": []
       },
-      "signal": null,
+      "signal": {
+        "firstSeenAt": "2026-11-18T18:07:20.337Z",
+        "evidenceId": "e7f31a940ac584fed8877aa79576faa325990efd8f464ce8e7b2eaba097339ba",
+        "rulesHash": "ee0a88540d6fbd6402521f80057edf8acae36bff9cb155d869bd5c17f576e393",
+        "firstBookAt": "2026-11-18T18:07:19.976Z",
+        "firstNoAsk": null
+      },
       "quoteCapacity": null
     },
     {
@@ -244,42 +263,60 @@
       "status": "FEE_REVIEW_REQUIRED",
       "detail": null,
       "diagnostic": {
-        "evidenceEliminated": false,
+        "evidenceEliminated": true,
         "noAskLevels": 0,
         "displayedNoContracts": 0,
         "noPriceWithinCap": false,
         "noPriceWithinCapAfterBuffer": false,
-        "sourceAgeOnlyBlocked": false,
-        "quoteSourceAgeSeconds": 31.441,
-        "quoteReceiptAgeSeconds": 0,
-        "bookReasons": [],
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 243.405,
+        "quoteReceiptAgeSeconds": 0.337,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
         "sourceAgeBlockedCapacityU": null
       },
-      "evidence": null,
+      "evidence": {
+        "id": "61cc4f4e302305c9242e4a616834477e0f5420749e8f354ee532c44e54719004",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 59,
+        "issuedAt": null,
+        "observedAt": "2026-11-18T17:53:00.000Z",
+        "firstSeenAt": "2026-11-18T18:07:18.124Z",
+        "sourceUrl": "https://tgftp.nws.noaa.gov/data/observations/metar/stations/KMDW.TXT"
+      },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:16:58.743Z",
-        "receivedAt": "2026-11-18T09:17:30.184Z",
-        "ageSeconds": 31.441,
+        "asOf": "2026-11-18T18:06:14.955Z",
+        "receivedAt": "2026-11-18T18:10:18.360Z",
+        "ageSeconds": 243.405,
         "noAsk": null,
         "state": "MARKET_STATE_OPEN",
-        "valid": true,
-        "reasons": [],
-        "sourceAgeSeconds": 31.441,
+        "valid": false,
+        "reasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "sourceAgeSeconds": 243.405,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:30.174Z",
-          "receivedAt": "2026-11-18T09:17:30.184Z",
-          "durationMs": 10,
-          "httpDate": "Wed, 18 Nov 2026 09:17:30 GMT",
-          "httpAge": "28",
+          "requestStartedAt": "2026-11-18T18:10:18.343Z",
+          "receivedAt": "2026-11-18T18:10:18.360Z",
+          "durationMs": 17,
+          "httpDate": "Wed, 18 Nov 2026 18:10:18 GMT",
+          "httpAge": "26",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": []
       },
-      "signal": null,
+      "signal": {
+        "firstSeenAt": "2026-11-18T18:07:20.821Z",
+        "evidenceId": "225512997dbbdf9170d2a631f4f96d374aec596bf43ab50816e39206d17c8b7c",
+        "rulesHash": "c8c7fe4f21adbdf52f128936d7c0212aa0ab4703ac99c3c0ed524372f29d4356",
+        "firstBookAt": "2026-11-18T18:07:20.472Z",
+        "firstNoAsk": null
+      },
       "quoteCapacity": null
     },
     {
@@ -298,51 +335,56 @@
       "status": "FEE_REVIEW_REQUIRED",
       "detail": null,
       "diagnostic": {
-        "evidenceEliminated": false,
-        "noAskLevels": 1,
-        "displayedNoContracts": 7500,
+        "evidenceEliminated": true,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
         "noPriceWithinCap": false,
         "noPriceWithinCapAfterBuffer": false,
-        "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 398.28,
-        "quoteReceiptAgeSeconds": 0,
-        "bookReasons": [
-          "Book timestamp too old for simulation"
-        ],
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 44.446,
+        "quoteReceiptAgeSeconds": 0.342,
+        "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
         "sourceAgeBlockedCapacityU": null
       },
-      "evidence": null,
+      "evidence": {
+        "id": "7e3180e907992e4a69c20d83f05e638d8553804a0fc61e7df0f95592197aa3a6",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 65,
+        "issuedAt": null,
+        "observedAt": "2026-11-18T17:53:00.000Z",
+        "firstSeenAt": "2026-11-18T18:07:18.695Z",
+        "sourceUrl": "https://tgftp.nws.noaa.gov/data/observations/metar/stations/KLAX.TXT"
+      },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:10:52.154Z",
-        "receivedAt": "2026-11-18T09:17:30.434Z",
-        "ageSeconds": 398.28,
-        "noAsk": 0.99,
+        "asOf": "2026-11-18T18:09:34.416Z",
+        "receivedAt": "2026-11-18T18:10:18.862Z",
+        "ageSeconds": 44.446,
+        "noAsk": null,
         "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "sourceAgeSeconds": 398.28,
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 44.446,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:30.425Z",
-          "receivedAt": "2026-11-18T09:17:30.434Z",
-          "durationMs": 9,
-          "httpDate": "Wed, 18 Nov 2026 09:17:30 GMT",
-          "httpAge": "4",
+          "requestStartedAt": "2026-11-18T18:10:18.843Z",
+          "receivedAt": "2026-11-18T18:10:18.862Z",
+          "durationMs": 19,
+          "httpDate": "Wed, 18 Nov 2026 18:10:18 GMT",
+          "httpAge": "25",
           "cacheControl": "public, max-age=30"
         },
-        "topNoAsks": [
-          {
-            "priceU": 990000,
-            "qty": 7500
-          }
-        ]
+        "topNoAsks": []
       },
-      "signal": null,
+      "signal": {
+        "firstSeenAt": "2026-11-18T18:07:21.318Z",
+        "evidenceId": "d39599b0bfb4f26ecb35638224f63f9b60b2a8575a779b9f3d434e1c1869c3ca",
+        "rulesHash": "14506f60439993f63614f5c76afc2975edb32410321106572de253aa120d7d85",
+        "firstBookAt": "2026-11-18T18:07:20.973Z",
+        "firstNoAsk": null
+      },
       "quoteCapacity": null
     },
     {
@@ -361,14 +403,14 @@
       "status": "FEE_REVIEW_REQUIRED",
       "detail": null,
       "diagnostic": {
-        "evidenceEliminated": false,
+        "evidenceEliminated": true,
         "noAskLevels": 0,
         "displayedNoContracts": 0,
         "noPriceWithinCap": false,
         "noPriceWithinCapAfterBuffer": false,
         "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 176.44,
-        "quoteReceiptAgeSeconds": 0.001,
+        "quoteSourceAgeSeconds": 390.406,
+        "quoteReceiptAgeSeconds": 0.351,
         "bookReasons": [
           "Book timestamp too old for simulation"
         ],
@@ -377,30 +419,44 @@
         "availablePaperBudgetU": 100000000,
         "sourceAgeBlockedCapacityU": null
       },
-      "evidence": null,
+      "evidence": {
+        "id": "1c499781dc7164d9a254a9413aa65aebb3179d72335860f518a0a62a98df2a1a",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 58,
+        "issuedAt": null,
+        "observedAt": "2026-11-18T17:56:00.000Z",
+        "firstSeenAt": "2026-11-18T18:07:18.884Z",
+        "sourceUrl": "https://tgftp.nws.noaa.gov/data/observations/metar/stations/KSFO.TXT"
+      },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:14:34.245Z",
-        "receivedAt": "2026-11-18T09:17:30.685Z",
-        "ageSeconds": 176.44,
+        "asOf": "2026-11-18T18:03:48.957Z",
+        "receivedAt": "2026-11-18T18:10:19.363Z",
+        "ageSeconds": 390.406,
         "noAsk": null,
         "state": "MARKET_STATE_OPEN",
         "valid": false,
         "reasons": [
           "Book timestamp too old for simulation"
         ],
-        "sourceAgeSeconds": 176.44,
+        "sourceAgeSeconds": 390.406,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:30.676Z",
-          "receivedAt": "2026-11-18T09:17:30.685Z",
-          "durationMs": 9,
-          "httpDate": "Wed, 18 Nov 2026 09:17:30 GMT",
-          "httpAge": "27",
+          "requestStartedAt": "2026-11-18T18:10:19.344Z",
+          "receivedAt": "2026-11-18T18:10:19.363Z",
+          "durationMs": 19,
+          "httpDate": "Wed, 18 Nov 2026 18:10:19 GMT",
+          "httpAge": "10",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": []
       },
-      "signal": null,
+      "signal": {
+        "firstSeenAt": "2026-11-18T18:07:21.826Z",
+        "evidenceId": "ad83281301e79ae04bc77d6810a40fd2f4f0dd1dcd28fac56787c11fe2be86b9",
+        "rulesHash": "3f3aa7fea9b48414cc61c9fae3d36b3a0ed847b5c6b176b7c790d9b28e21f769",
+        "firstBookAt": "2026-11-18T18:07:21.473Z",
+        "firstNoAsk": null
+      },
       "quoteCapacity": null
     },
     {
@@ -419,63 +475,60 @@
       "status": "FEE_REVIEW_REQUIRED",
       "detail": null,
       "diagnostic": {
-        "evidenceEliminated": false,
-        "noAskLevels": 15,
-        "displayedNoContracts": 2276,
-        "noPriceWithinCap": true,
-        "noPriceWithinCapAfterBuffer": true,
-        "sourceAgeOnlyBlocked": false,
-        "quoteSourceAgeSeconds": 45.727,
-        "quoteReceiptAgeSeconds": 0.001,
-        "bookReasons": [],
+        "evidenceEliminated": true,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 423.81,
+        "quoteReceiptAgeSeconds": 0.367,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
         "ruleIssues": [],
-        "weatherFresh": false,
+        "weatherFresh": true,
         "availablePaperBudgetU": 100000000,
         "sourceAgeBlockedCapacityU": null
       },
-      "evidence": null,
+      "evidence": {
+        "id": "d29a19442cc0b4c8bcbeba3c3197960a1d5d8acc630b54f8d1d677e4a8e55a04",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 62,
+        "issuedAt": null,
+        "observedAt": "2026-11-18T17:51:00.000Z",
+        "firstSeenAt": "2026-11-18T18:07:17.679Z",
+        "sourceUrl": "https://aviationweather.gov/api/data/metar?ids=KNYC,KLGA,KEWR,KTEB,KJRB&format=json&hours=3"
+      },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:16:45.206Z",
-        "receivedAt": "2026-11-18T09:17:30.933Z",
-        "ageSeconds": 45.727,
-        "noAsk": 0.81,
+        "asOf": "2026-11-18T18:03:16.052Z",
+        "receivedAt": "2026-11-18T18:10:19.862Z",
+        "ageSeconds": 423.81,
+        "noAsk": null,
         "state": "MARKET_STATE_OPEN",
-        "valid": true,
-        "reasons": [],
-        "sourceAgeSeconds": 45.727,
+        "valid": false,
+        "reasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "sourceAgeSeconds": 423.81,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:30.926Z",
-          "receivedAt": "2026-11-18T09:17:30.933Z",
-          "durationMs": 7,
-          "httpDate": "Wed, 18 Nov 2026 09:17:30 GMT",
-          "httpAge": "15",
+          "requestStartedAt": "2026-11-18T18:10:19.844Z",
+          "receivedAt": "2026-11-18T18:10:19.862Z",
+          "durationMs": 18,
+          "httpDate": "Wed, 18 Nov 2026 18:10:19 GMT",
+          "httpAge": "19",
           "cacheControl": "public, max-age=30"
         },
-        "topNoAsks": [
-          {
-            "priceU": 810000,
-            "qty": 35
-          },
-          {
-            "priceU": 820000,
-            "qty": 114
-          },
-          {
-            "priceU": 830000,
-            "qty": 325
-          },
-          {
-            "priceU": 840000,
-            "qty": 8
-          },
-          {
-            "priceU": 850000,
-            "qty": 38
-          }
-        ]
+        "topNoAsks": []
       },
-      "signal": null,
+      "signal": {
+        "firstSeenAt": "2026-11-18T18:07:22.337Z",
+        "evidenceId": "d29a19442cc0b4c8bcbeba3c3197960a1d5d8acc630b54f8d1d677e4a8e55a04",
+        "rulesHash": "5322e14b06fa4ab21562b4773678102042e64b7b7972ff782b08b7d65861f21a",
+        "firstBookAt": "2026-11-18T18:07:21.972Z",
+        "firstNoAsk": null
+      },
       "quoteCapacity": null
     },
     {
@@ -495,58 +548,70 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 17,
-        "displayedNoContracts": 1140,
+        "noAskLevels": 12,
+        "displayedNoContracts": 2434,
         "noPriceWithinCap": true,
         "noPriceWithinCapAfterBuffer": true,
-        "sourceAgeOnlyBlocked": false,
-        "quoteSourceAgeSeconds": 22.574,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 263.582,
         "quoteReceiptAgeSeconds": 0.001,
-        "bookReasons": [],
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
         "sourceAgeBlockedCapacityU": null
       },
-      "evidence": null,
+      "evidence": {
+        "id": "e7f31a940ac584fed8877aa79576faa325990efd8f464ce8e7b2eaba097339ba",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 78,
+        "issuedAt": null,
+        "observedAt": "2026-11-18T11:53:00.000Z",
+        "firstSeenAt": "2026-11-18T18:07:17.679Z",
+        "sourceUrl": "https://aviationweather.gov/api/data/metar?ids=KMIA&format=json&hours=30"
+      },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:17:08.610Z",
-        "receivedAt": "2026-11-18T09:17:31.184Z",
-        "ageSeconds": 22.574,
-        "noAsk": 0.3,
+        "asOf": "2026-11-18T18:05:56.784Z",
+        "receivedAt": "2026-11-18T18:10:20.366Z",
+        "ageSeconds": 263.582,
+        "noAsk": 0.02,
         "state": "MARKET_STATE_OPEN",
-        "valid": true,
-        "reasons": [],
-        "sourceAgeSeconds": 22.574,
+        "valid": false,
+        "reasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "sourceAgeSeconds": 263.582,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:31.176Z",
-          "receivedAt": "2026-11-18T09:17:31.184Z",
-          "durationMs": 8,
-          "httpDate": "Wed, 18 Nov 2026 09:17:31 GMT",
-          "httpAge": "4",
+          "requestStartedAt": "2026-11-18T18:10:20.346Z",
+          "receivedAt": "2026-11-18T18:10:20.366Z",
+          "durationMs": 20,
+          "httpDate": "Wed, 18 Nov 2026 18:10:20 GMT",
+          "httpAge": "13",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
-            "priceU": 300000,
-            "qty": 8
+            "priceU": 20000,
+            "qty": 2255
           },
           {
-            "priceU": 310000,
-            "qty": 62
+            "priceU": 30000,
+            "qty": 51
           },
           {
-            "priceU": 320000,
-            "qty": 41
+            "priceU": 50000,
+            "qty": 92
           },
           {
-            "priceU": 330000,
-            "qty": 124
+            "priceU": 90000,
+            "qty": 11
           },
           {
-            "priceU": 340000,
-            "qty": 26
+            "priceU": 100000,
+            "qty": 3
           }
         ]
       },
@@ -570,54 +635,50 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 4,
-        "displayedNoContracts": 1942,
-        "noPriceWithinCap": true,
-        "noPriceWithinCapAfterBuffer": true,
+        "noAskLevels": 1,
+        "displayedNoContracts": 15,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
         "sourceAgeOnlyBlocked": false,
-        "quoteSourceAgeSeconds": 53.919,
-        "quoteReceiptAgeSeconds": 0.001,
+        "quoteSourceAgeSeconds": 69.51,
+        "quoteReceiptAgeSeconds": 0,
         "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
         "sourceAgeBlockedCapacityU": null
       },
-      "evidence": null,
+      "evidence": {
+        "id": "61cc4f4e302305c9242e4a616834477e0f5420749e8f354ee532c44e54719004",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 59,
+        "issuedAt": null,
+        "observedAt": "2026-11-18T17:53:00.000Z",
+        "firstSeenAt": "2026-11-18T18:07:18.124Z",
+        "sourceUrl": "https://tgftp.nws.noaa.gov/data/observations/metar/stations/KMDW.TXT"
+      },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:16:37.515Z",
-        "receivedAt": "2026-11-18T09:17:31.434Z",
-        "ageSeconds": 53.919,
-        "noAsk": 0.96,
+        "asOf": "2026-11-18T18:09:11.104Z",
+        "receivedAt": "2026-11-18T18:10:20.614Z",
+        "ageSeconds": 69.51,
+        "noAsk": 0.99,
         "state": "MARKET_STATE_OPEN",
         "valid": true,
         "reasons": [],
-        "sourceAgeSeconds": 53.919,
+        "sourceAgeSeconds": 69.51,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:31.426Z",
-          "receivedAt": "2026-11-18T09:17:31.434Z",
-          "durationMs": 8,
-          "httpDate": "Wed, 18 Nov 2026 09:17:31 GMT",
-          "httpAge": "22",
+          "requestStartedAt": "2026-11-18T18:10:20.596Z",
+          "receivedAt": "2026-11-18T18:10:20.614Z",
+          "durationMs": 18,
+          "httpDate": "Wed, 18 Nov 2026 18:10:20 GMT",
+          "httpAge": "24",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
-            "priceU": 960000,
-            "qty": 14
-          },
-          {
-            "priceU": 970000,
-            "qty": 1398
-          },
-          {
-            "priceU": 980000,
-            "qty": 19
-          },
-          {
             "priceU": 990000,
-            "qty": 511
+            "qty": 15
           }
         ]
       },
@@ -641,48 +702,47 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 1,
-        "displayedNoContracts": 7500,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
         "noPriceWithinCap": false,
         "noPriceWithinCapAfterBuffer": false,
-        "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 207.822,
-        "quoteReceiptAgeSeconds": 0.001,
-        "bookReasons": [
-          "Book timestamp too old for simulation"
-        ],
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 44.838,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
         "sourceAgeBlockedCapacityU": null
       },
-      "evidence": null,
+      "evidence": {
+        "id": "7e3180e907992e4a69c20d83f05e638d8553804a0fc61e7df0f95592197aa3a6",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 65,
+        "issuedAt": null,
+        "observedAt": "2026-11-18T17:53:00.000Z",
+        "firstSeenAt": "2026-11-18T18:07:18.695Z",
+        "sourceUrl": "https://tgftp.nws.noaa.gov/data/observations/metar/stations/KLAX.TXT"
+      },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:14:03.863Z",
-        "receivedAt": "2026-11-18T09:17:31.685Z",
-        "ageSeconds": 207.822,
-        "noAsk": 0.99,
+        "asOf": "2026-11-18T18:09:36.023Z",
+        "receivedAt": "2026-11-18T18:10:20.861Z",
+        "ageSeconds": 44.838,
+        "noAsk": null,
         "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "sourceAgeSeconds": 207.822,
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 44.838,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:31.677Z",
-          "receivedAt": "2026-11-18T09:17:31.685Z",
-          "durationMs": 8,
-          "httpDate": "Wed, 18 Nov 2026 09:17:31 GMT",
-          "httpAge": "10",
+          "requestStartedAt": "2026-11-18T18:10:20.847Z",
+          "receivedAt": "2026-11-18T18:10:20.861Z",
+          "durationMs": 14,
+          "httpDate": "Wed, 18 Nov 2026 18:10:20 GMT",
+          "httpAge": "12",
           "cacheControl": "public, max-age=30"
         },
-        "topNoAsks": [
-          {
-            "priceU": 990000,
-            "qty": 7500
-          }
-        ]
+        "topNoAsks": []
       },
       "signal": null,
       "quoteCapacity": null
@@ -703,55 +763,60 @@
       "status": "FEE_REVIEW_REQUIRED",
       "detail": null,
       "diagnostic": {
-        "evidenceEliminated": false,
-        "noAskLevels": 3,
-        "displayedNoContracts": 116,
-        "noPriceWithinCap": true,
-        "noPriceWithinCapAfterBuffer": true,
-        "sourceAgeOnlyBlocked": false,
-        "quoteSourceAgeSeconds": 36.869,
-        "quoteReceiptAgeSeconds": 0.001,
-        "bookReasons": [],
+        "evidenceEliminated": true,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 268.025,
+        "quoteReceiptAgeSeconds": 0.342,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
         "sourceAgeBlockedCapacityU": null
       },
-      "evidence": null,
+      "evidence": {
+        "id": "1c499781dc7164d9a254a9413aa65aebb3179d72335860f518a0a62a98df2a1a",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 58,
+        "issuedAt": null,
+        "observedAt": "2026-11-18T17:56:00.000Z",
+        "firstSeenAt": "2026-11-18T18:07:18.884Z",
+        "sourceUrl": "https://tgftp.nws.noaa.gov/data/observations/metar/stations/KSFO.TXT"
+      },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:16:55.066Z",
-        "receivedAt": "2026-11-18T09:17:31.935Z",
-        "ageSeconds": 36.869,
-        "noAsk": 0.93,
+        "asOf": "2026-11-18T18:05:53.092Z",
+        "receivedAt": "2026-11-18T18:10:21.117Z",
+        "ageSeconds": 268.025,
+        "noAsk": null,
         "state": "MARKET_STATE_OPEN",
-        "valid": true,
-        "reasons": [],
-        "sourceAgeSeconds": 36.869,
+        "valid": false,
+        "reasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "sourceAgeSeconds": 268.025,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:31.927Z",
-          "receivedAt": "2026-11-18T09:17:31.935Z",
-          "durationMs": 8,
-          "httpDate": "Wed, 18 Nov 2026 09:17:31 GMT",
-          "httpAge": "7",
+          "requestStartedAt": "2026-11-18T18:10:21.098Z",
+          "receivedAt": "2026-11-18T18:10:21.117Z",
+          "durationMs": 19,
+          "httpDate": "Wed, 18 Nov 2026 18:10:21 GMT",
+          "httpAge": "19",
           "cacheControl": "public, max-age=30"
         },
-        "topNoAsks": [
-          {
-            "priceU": 930000,
-            "qty": 15
-          },
-          {
-            "priceU": 980000,
-            "qty": 100
-          },
-          {
-            "priceU": 990000,
-            "qty": 1
-          }
-        ]
+        "topNoAsks": []
       },
-      "signal": null,
+      "signal": {
+        "firstSeenAt": "2026-11-18T18:07:23.569Z",
+        "evidenceId": "ad83281301e79ae04bc77d6810a40fd2f4f0dd1dcd28fac56787c11fe2be86b9",
+        "rulesHash": "de81def69a2dbb8a6eea384221ee3fad99e2bb53c2c63775982b786c6e81bf5b",
+        "firstBookAt": "2026-11-18T18:07:23.224Z",
+        "firstNoAsk": null
+      },
       "quoteCapacity": null
     },
     {
@@ -771,58 +836,66 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 23,
-        "displayedNoContracts": 2564,
+        "noAskLevels": 17,
+        "displayedNoContracts": 296,
         "noPriceWithinCap": true,
         "noPriceWithinCapAfterBuffer": true,
         "sourceAgeOnlyBlocked": false,
-        "quoteSourceAgeSeconds": 49.712,
+        "quoteSourceAgeSeconds": 20.053,
         "quoteReceiptAgeSeconds": 0.001,
         "bookReasons": [],
         "ruleIssues": [],
-        "weatherFresh": false,
+        "weatherFresh": true,
         "availablePaperBudgetU": 100000000,
         "sourceAgeBlockedCapacityU": null
       },
-      "evidence": null,
+      "evidence": {
+        "id": "d29a19442cc0b4c8bcbeba3c3197960a1d5d8acc630b54f8d1d677e4a8e55a04",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 62,
+        "issuedAt": null,
+        "observedAt": "2026-11-18T17:51:00.000Z",
+        "firstSeenAt": "2026-11-18T18:07:17.679Z",
+        "sourceUrl": "https://aviationweather.gov/api/data/metar?ids=KNYC,KLGA,KEWR,KTEB,KJRB&format=json&hours=3"
+      },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:16:42.474Z",
-        "receivedAt": "2026-11-18T09:17:32.186Z",
-        "ageSeconds": 49.712,
-        "noAsk": 0.42,
+        "asOf": "2026-11-18T18:10:01.559Z",
+        "receivedAt": "2026-11-18T18:10:21.612Z",
+        "ageSeconds": 20.053,
+        "noAsk": 0.35,
         "state": "MARKET_STATE_OPEN",
         "valid": true,
         "reasons": [],
-        "sourceAgeSeconds": 49.712,
+        "sourceAgeSeconds": 20.053,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:32.178Z",
-          "receivedAt": "2026-11-18T09:17:32.186Z",
-          "durationMs": 8,
-          "httpDate": "Wed, 18 Nov 2026 09:17:32 GMT",
-          "httpAge": "12",
+          "requestStartedAt": "2026-11-18T18:10:21.596Z",
+          "receivedAt": "2026-11-18T18:10:21.612Z",
+          "durationMs": 16,
+          "httpDate": "Wed, 18 Nov 2026 18:10:21 GMT",
+          "httpAge": "19",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
-            "priceU": 420000,
-            "qty": 1
+            "priceU": 350000,
+            "qty": 20
           },
           {
-            "priceU": 430000,
-            "qty": 5
+            "priceU": 360000,
+            "qty": 11
           },
           {
-            "priceU": 440000,
+            "priceU": 380000,
+            "qty": 17
+          },
+          {
+            "priceU": 390000,
             "qty": 30
           },
           {
-            "priceU": 450000,
-            "qty": 116
-          },
-          {
-            "priceU": 460000,
-            "qty": 10
+            "priceU": 430000,
+            "qty": 3
           }
         ]
       },
@@ -846,60 +919,51 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 14,
-        "displayedNoContracts": 1017,
-        "noPriceWithinCap": true,
-        "noPriceWithinCapAfterBuffer": true,
-        "sourceAgeOnlyBlocked": false,
-        "quoteSourceAgeSeconds": 34.109,
-        "quoteReceiptAgeSeconds": 0,
-        "bookReasons": [],
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 142.559,
+        "quoteReceiptAgeSeconds": 0.001,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
         "sourceAgeBlockedCapacityU": null
       },
-      "evidence": null,
+      "evidence": {
+        "id": "e7f31a940ac584fed8877aa79576faa325990efd8f464ce8e7b2eaba097339ba",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 78,
+        "issuedAt": null,
+        "observedAt": "2026-11-18T11:53:00.000Z",
+        "firstSeenAt": "2026-11-18T18:07:17.679Z",
+        "sourceUrl": "https://aviationweather.gov/api/data/metar?ids=KMIA&format=json&hours=30"
+      },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:16:58.329Z",
-        "receivedAt": "2026-11-18T09:17:32.438Z",
-        "ageSeconds": 34.109,
-        "noAsk": 0.79,
+        "asOf": "2026-11-18T18:07:59.306Z",
+        "receivedAt": "2026-11-18T18:10:21.865Z",
+        "ageSeconds": 142.559,
+        "noAsk": null,
         "state": "MARKET_STATE_OPEN",
-        "valid": true,
-        "reasons": [],
-        "sourceAgeSeconds": 34.109,
+        "valid": false,
+        "reasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "sourceAgeSeconds": 142.559,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:32.429Z",
-          "receivedAt": "2026-11-18T09:17:32.438Z",
-          "durationMs": 9,
-          "httpDate": "Wed, 18 Nov 2026 09:17:32 GMT",
-          "httpAge": "26",
+          "requestStartedAt": "2026-11-18T18:10:21.847Z",
+          "receivedAt": "2026-11-18T18:10:21.865Z",
+          "durationMs": 18,
+          "httpDate": "Wed, 18 Nov 2026 18:10:21 GMT",
+          "httpAge": "28",
           "cacheControl": "public, max-age=30"
         },
-        "topNoAsks": [
-          {
-            "priceU": 790000,
-            "qty": 1
-          },
-          {
-            "priceU": 800000,
-            "qty": 28
-          },
-          {
-            "priceU": 810000,
-            "qty": 55
-          },
-          {
-            "priceU": 820000,
-            "qty": 43
-          },
-          {
-            "priceU": 830000,
-            "qty": 16
-          }
-        ]
+        "topNoAsks": []
       },
       "signal": null,
       "quoteCapacity": null
@@ -921,12 +985,12 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 24,
-        "displayedNoContracts": 2774,
+        "noAskLevels": 17,
+        "displayedNoContracts": 507,
         "noPriceWithinCap": true,
         "noPriceWithinCapAfterBuffer": true,
         "sourceAgeOnlyBlocked": false,
-        "quoteSourceAgeSeconds": 50.647,
+        "quoteSourceAgeSeconds": 10.702,
         "quoteReceiptAgeSeconds": 0,
         "bookReasons": [],
         "ruleIssues": [],
@@ -934,45 +998,53 @@
         "availablePaperBudgetU": 100000000,
         "sourceAgeBlockedCapacityU": null
       },
-      "evidence": null,
+      "evidence": {
+        "id": "61cc4f4e302305c9242e4a616834477e0f5420749e8f354ee532c44e54719004",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 59,
+        "issuedAt": null,
+        "observedAt": "2026-11-18T17:53:00.000Z",
+        "firstSeenAt": "2026-11-18T18:07:18.124Z",
+        "sourceUrl": "https://tgftp.nws.noaa.gov/data/observations/metar/stations/KMDW.TXT"
+      },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:16:42.041Z",
-        "receivedAt": "2026-11-18T09:17:32.688Z",
-        "ageSeconds": 50.647,
-        "noAsk": 0.57,
+        "asOf": "2026-11-18T18:10:11.410Z",
+        "receivedAt": "2026-11-18T18:10:22.112Z",
+        "ageSeconds": 10.702,
+        "noAsk": 0.34,
         "state": "MARKET_STATE_OPEN",
         "valid": true,
         "reasons": [],
-        "sourceAgeSeconds": 50.647,
+        "sourceAgeSeconds": 10.702,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:32.680Z",
-          "receivedAt": "2026-11-18T09:17:32.688Z",
-          "durationMs": 8,
-          "httpDate": "Wed, 18 Nov 2026 09:17:32 GMT",
-          "httpAge": "26",
+          "requestStartedAt": "2026-11-18T18:10:22.097Z",
+          "receivedAt": "2026-11-18T18:10:22.112Z",
+          "durationMs": 15,
+          "httpDate": "Wed, 18 Nov 2026 18:10:22 GMT",
+          "httpAge": "10",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
-            "priceU": 570000,
-            "qty": 2
+            "priceU": 340000,
+            "qty": 1
           },
           {
-            "priceU": 580000,
-            "qty": 927
+            "priceU": 350000,
+            "qty": 25
           },
           {
-            "priceU": 590000,
-            "qty": 253
+            "priceU": 370000,
+            "qty": 51
           },
           {
-            "priceU": 600000,
-            "qty": 8
+            "priceU": 390000,
+            "qty": 29
           },
           {
-            "priceU": 610000,
-            "qty": 26
+            "priceU": 410000,
+            "qty": 14
           }
         ]
       },
@@ -996,12 +1068,12 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 13,
-        "displayedNoContracts": 982,
+        "noAskLevels": 5,
+        "displayedNoContracts": 1006,
         "noPriceWithinCap": true,
         "noPriceWithinCapAfterBuffer": true,
         "sourceAgeOnlyBlocked": false,
-        "quoteSourceAgeSeconds": 10.484,
+        "quoteSourceAgeSeconds": 37.075,
         "quoteReceiptAgeSeconds": 0.001,
         "bookReasons": [],
         "ruleIssues": [],
@@ -1009,45 +1081,53 @@
         "availablePaperBudgetU": 100000000,
         "sourceAgeBlockedCapacityU": null
       },
-      "evidence": null,
+      "evidence": {
+        "id": "7e3180e907992e4a69c20d83f05e638d8553804a0fc61e7df0f95592197aa3a6",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 65,
+        "issuedAt": null,
+        "observedAt": "2026-11-18T17:53:00.000Z",
+        "firstSeenAt": "2026-11-18T18:07:18.695Z",
+        "sourceUrl": "https://tgftp.nws.noaa.gov/data/observations/metar/stations/KLAX.TXT"
+      },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:17:22.472Z",
-        "receivedAt": "2026-11-18T09:17:32.956Z",
-        "ageSeconds": 10.484,
-        "noAsk": 0.82,
+        "asOf": "2026-11-18T18:09:45.288Z",
+        "receivedAt": "2026-11-18T18:10:22.363Z",
+        "ageSeconds": 37.075,
+        "noAsk": 0.92,
         "state": "MARKET_STATE_OPEN",
         "valid": true,
         "reasons": [],
-        "sourceAgeSeconds": 10.484,
+        "sourceAgeSeconds": 37.075,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:32.931Z",
-          "receivedAt": "2026-11-18T09:17:32.956Z",
-          "durationMs": 25,
-          "httpDate": "Wed, 18 Nov 2026 09:17:32 GMT",
-          "httpAge": null,
+          "requestStartedAt": "2026-11-18T18:10:22.347Z",
+          "receivedAt": "2026-11-18T18:10:22.363Z",
+          "durationMs": 16,
+          "httpDate": "Wed, 18 Nov 2026 18:10:22 GMT",
+          "httpAge": "29",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
-            "priceU": 820000,
-            "qty": 30
+            "priceU": 920000,
+            "qty": 105
           },
           {
-            "priceU": 830000,
-            "qty": 41
+            "priceU": 940000,
+            "qty": 74
           },
           {
-            "priceU": 840000,
+            "priceU": 950000,
+            "qty": 731
+          },
+          {
+            "priceU": 980000,
             "qty": 35
           },
           {
-            "priceU": 850000,
-            "qty": 18
-          },
-          {
-            "priceU": 860000,
-            "qty": 584
+            "priceU": 990000,
+            "qty": 61
           }
         ]
       },
@@ -1071,12 +1151,12 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 18,
-        "displayedNoContracts": 329,
+        "noAskLevels": 15,
+        "displayedNoContracts": 288,
         "noPriceWithinCap": true,
         "noPriceWithinCapAfterBuffer": true,
         "sourceAgeOnlyBlocked": false,
-        "quoteSourceAgeSeconds": 74.793,
+        "quoteSourceAgeSeconds": 55.422,
         "quoteReceiptAgeSeconds": 0,
         "bookReasons": [],
         "ruleIssues": [],
@@ -1084,45 +1164,53 @@
         "availablePaperBudgetU": 100000000,
         "sourceAgeBlockedCapacityU": null
       },
-      "evidence": null,
+      "evidence": {
+        "id": "1c499781dc7164d9a254a9413aa65aebb3179d72335860f518a0a62a98df2a1a",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 58,
+        "issuedAt": null,
+        "observedAt": "2026-11-18T17:56:00.000Z",
+        "firstSeenAt": "2026-11-18T18:07:18.884Z",
+        "sourceUrl": "https://tgftp.nws.noaa.gov/data/observations/metar/stations/KSFO.TXT"
+      },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:16:18.414Z",
-        "receivedAt": "2026-11-18T09:17:33.207Z",
-        "ageSeconds": 74.793,
-        "noAsk": 0.65,
+        "asOf": "2026-11-18T18:09:27.193Z",
+        "receivedAt": "2026-11-18T18:10:22.615Z",
+        "ageSeconds": 55.422,
+        "noAsk": 0.77,
         "state": "MARKET_STATE_OPEN",
         "valid": true,
         "reasons": [],
-        "sourceAgeSeconds": 74.793,
+        "sourceAgeSeconds": 55.422,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:33.181Z",
-          "receivedAt": "2026-11-18T09:17:33.207Z",
-          "durationMs": 26,
-          "httpDate": "Wed, 18 Nov 2026 09:17:33 GMT",
-          "httpAge": null,
+          "requestStartedAt": "2026-11-18T18:10:22.597Z",
+          "receivedAt": "2026-11-18T18:10:22.615Z",
+          "durationMs": 18,
+          "httpDate": "Wed, 18 Nov 2026 18:10:22 GMT",
+          "httpAge": "14",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
-            "priceU": 650000,
+            "priceU": 770000,
             "qty": 5
           },
           {
-            "priceU": 690000,
-            "qty": 20
+            "priceU": 800000,
+            "qty": 3
           },
           {
-            "priceU": 710000,
-            "qty": 5
+            "priceU": 820000,
+            "qty": 14
           },
           {
-            "priceU": 720000,
-            "qty": 50
+            "priceU": 850000,
+            "qty": 4
           },
           {
-            "priceU": 750000,
-            "qty": 5
+            "priceU": 860000,
+            "qty": 8
           }
         ]
       },
@@ -1147,57 +1235,65 @@
       "diagnostic": {
         "evidenceEliminated": false,
         "noAskLevels": 14,
-        "displayedNoContracts": 1582,
+        "displayedNoContracts": 1139,
         "noPriceWithinCap": true,
         "noPriceWithinCapAfterBuffer": true,
         "sourceAgeOnlyBlocked": false,
-        "quoteSourceAgeSeconds": 50.963,
-        "quoteReceiptAgeSeconds": 0,
+        "quoteSourceAgeSeconds": 20.408,
+        "quoteReceiptAgeSeconds": 0.001,
         "bookReasons": [],
         "ruleIssues": [],
-        "weatherFresh": false,
+        "weatherFresh": true,
         "availablePaperBudgetU": 100000000,
         "sourceAgeBlockedCapacityU": null
       },
-      "evidence": null,
+      "evidence": {
+        "id": "d29a19442cc0b4c8bcbeba3c3197960a1d5d8acc630b54f8d1d677e4a8e55a04",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 62,
+        "issuedAt": null,
+        "observedAt": "2026-11-18T17:51:00.000Z",
+        "firstSeenAt": "2026-11-18T18:07:17.679Z",
+        "sourceUrl": "https://aviationweather.gov/api/data/metar?ids=KNYC,KLGA,KEWR,KTEB,KJRB&format=json&hours=3"
+      },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:16:42.478Z",
-        "receivedAt": "2026-11-18T09:17:33.441Z",
-        "ageSeconds": 50.963,
-        "noAsk": 0.83,
+        "asOf": "2026-11-18T18:10:02.456Z",
+        "receivedAt": "2026-11-18T18:10:22.864Z",
+        "ageSeconds": 20.408,
+        "noAsk": 0.74,
         "state": "MARKET_STATE_OPEN",
         "valid": true,
         "reasons": [],
-        "sourceAgeSeconds": 50.963,
+        "sourceAgeSeconds": 20.408,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:33.432Z",
-          "receivedAt": "2026-11-18T09:17:33.441Z",
-          "durationMs": 9,
-          "httpDate": "Wed, 18 Nov 2026 09:17:33 GMT",
-          "httpAge": "26",
+          "requestStartedAt": "2026-11-18T18:10:22.847Z",
+          "receivedAt": "2026-11-18T18:10:22.864Z",
+          "durationMs": 17,
+          "httpDate": "Wed, 18 Nov 2026 18:10:22 GMT",
+          "httpAge": "20",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
-            "priceU": 830000,
-            "qty": 21
+            "priceU": 740000,
+            "qty": 129
           },
           {
-            "priceU": 850000,
-            "qty": 167
+            "priceU": 750000,
+            "qty": 17
           },
           {
-            "priceU": 860000,
-            "qty": 87
+            "priceU": 780000,
+            "qty": 250
           },
           {
-            "priceU": 870000,
-            "qty": 208
+            "priceU": 790000,
+            "qty": 35
           },
           {
-            "priceU": 880000,
-            "qty": 542
+            "priceU": 800000,
+            "qty": 3
           }
         ]
       },
@@ -1221,48 +1317,47 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 1,
-        "displayedNoContracts": 942,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
         "noPriceWithinCap": false,
         "noPriceWithinCapAfterBuffer": false,
-        "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 209.611,
-        "quoteReceiptAgeSeconds": 0.001,
-        "bookReasons": [
-          "Book timestamp too old for simulation"
-        ],
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 83.425,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
         "sourceAgeBlockedCapacityU": null
       },
-      "evidence": null,
+      "evidence": {
+        "id": "e7f31a940ac584fed8877aa79576faa325990efd8f464ce8e7b2eaba097339ba",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 78,
+        "issuedAt": null,
+        "observedAt": "2026-11-18T11:53:00.000Z",
+        "firstSeenAt": "2026-11-18T18:07:17.679Z",
+        "sourceUrl": "https://aviationweather.gov/api/data/metar?ids=KMIA&format=json&hours=30"
+      },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:14:04.080Z",
-        "receivedAt": "2026-11-18T09:17:33.691Z",
-        "ageSeconds": 209.611,
-        "noAsk": 0.99,
+        "asOf": "2026-11-18T18:08:59.686Z",
+        "receivedAt": "2026-11-18T18:10:23.111Z",
+        "ageSeconds": 83.425,
+        "noAsk": null,
         "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "sourceAgeSeconds": 209.611,
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 83.425,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:33.683Z",
-          "receivedAt": "2026-11-18T09:17:33.691Z",
-          "durationMs": 8,
-          "httpDate": "Wed, 18 Nov 2026 09:17:33 GMT",
-          "httpAge": "22",
+          "requestStartedAt": "2026-11-18T18:10:23.097Z",
+          "receivedAt": "2026-11-18T18:10:23.111Z",
+          "durationMs": 14,
+          "httpDate": "Wed, 18 Nov 2026 18:10:23 GMT",
+          "httpAge": "29",
           "cacheControl": "public, max-age=30"
         },
-        "topNoAsks": [
-          {
-            "priceU": 990000,
-            "qty": 942
-          }
-        ]
+        "topNoAsks": []
       },
       "signal": null,
       "quoteCapacity": null
@@ -1284,58 +1379,66 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 24,
-        "displayedNoContracts": 1485,
+        "noAskLevels": 15,
+        "displayedNoContracts": 698,
         "noPriceWithinCap": true,
         "noPriceWithinCapAfterBuffer": true,
         "sourceAgeOnlyBlocked": false,
-        "quoteSourceAgeSeconds": 29.265,
-        "quoteReceiptAgeSeconds": 0.001,
+        "quoteSourceAgeSeconds": 8.891,
+        "quoteReceiptAgeSeconds": 0,
         "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
         "sourceAgeBlockedCapacityU": null
       },
-      "evidence": null,
+      "evidence": {
+        "id": "61cc4f4e302305c9242e4a616834477e0f5420749e8f354ee532c44e54719004",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 59,
+        "issuedAt": null,
+        "observedAt": "2026-11-18T17:53:00.000Z",
+        "firstSeenAt": "2026-11-18T18:07:18.124Z",
+        "sourceUrl": "https://tgftp.nws.noaa.gov/data/observations/metar/stations/KMDW.TXT"
+      },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:17:04.675Z",
-        "receivedAt": "2026-11-18T09:17:33.940Z",
-        "ageSeconds": 29.265,
-        "noAsk": 0.49,
+        "asOf": "2026-11-18T18:10:14.514Z",
+        "receivedAt": "2026-11-18T18:10:23.405Z",
+        "ageSeconds": 8.891,
+        "noAsk": 0.72,
         "state": "MARKET_STATE_OPEN",
         "valid": true,
         "reasons": [],
-        "sourceAgeSeconds": 29.265,
+        "sourceAgeSeconds": 8.891,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:33.931Z",
-          "receivedAt": "2026-11-18T09:17:33.940Z",
-          "durationMs": 9,
-          "httpDate": "Wed, 18 Nov 2026 09:17:33 GMT",
-          "httpAge": "23",
+          "requestStartedAt": "2026-11-18T18:10:23.348Z",
+          "receivedAt": "2026-11-18T18:10:23.405Z",
+          "durationMs": 57,
+          "httpDate": "Wed, 18 Nov 2026 18:10:23 GMT",
+          "httpAge": "5",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
-            "priceU": 490000,
-            "qty": 4
+            "priceU": 720000,
+            "qty": 3
           },
           {
-            "priceU": 500000,
-            "qty": 17
+            "priceU": 730000,
+            "qty": 11
           },
           {
-            "priceU": 520000,
+            "priceU": 740000,
             "qty": 7
           },
           {
-            "priceU": 530000,
-            "qty": 2
+            "priceU": 760000,
+            "qty": 5
           },
           {
-            "priceU": 540000,
-            "qty": 51
+            "priceU": 780000,
+            "qty": 32
           }
         ]
       },
@@ -1360,57 +1463,65 @@
       "diagnostic": {
         "evidenceEliminated": false,
         "noAskLevels": 22,
-        "displayedNoContracts": 2058,
+        "displayedNoContracts": 694,
         "noPriceWithinCap": true,
         "noPriceWithinCapAfterBuffer": true,
         "sourceAgeOnlyBlocked": false,
-        "quoteSourceAgeSeconds": 46.521,
-        "quoteReceiptAgeSeconds": 0,
+        "quoteSourceAgeSeconds": 21.134,
+        "quoteReceiptAgeSeconds": 0.001,
         "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
         "sourceAgeBlockedCapacityU": null
       },
-      "evidence": null,
+      "evidence": {
+        "id": "7e3180e907992e4a69c20d83f05e638d8553804a0fc61e7df0f95592197aa3a6",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 65,
+        "issuedAt": null,
+        "observedAt": "2026-11-18T17:53:00.000Z",
+        "firstSeenAt": "2026-11-18T18:07:18.695Z",
+        "sourceUrl": "https://tgftp.nws.noaa.gov/data/observations/metar/stations/KLAX.TXT"
+      },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:16:47.670Z",
-        "receivedAt": "2026-11-18T09:17:34.191Z",
-        "ageSeconds": 46.521,
-        "noAsk": 0.4,
+        "asOf": "2026-11-18T18:10:02.483Z",
+        "receivedAt": "2026-11-18T18:10:23.617Z",
+        "ageSeconds": 21.134,
+        "noAsk": 0.3,
         "state": "MARKET_STATE_OPEN",
         "valid": true,
         "reasons": [],
-        "sourceAgeSeconds": 46.521,
+        "sourceAgeSeconds": 21.134,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:34.182Z",
-          "receivedAt": "2026-11-18T09:17:34.191Z",
-          "durationMs": 9,
-          "httpDate": "Wed, 18 Nov 2026 09:17:34 GMT",
-          "httpAge": "16",
+          "requestStartedAt": "2026-11-18T18:10:23.598Z",
+          "receivedAt": "2026-11-18T18:10:23.617Z",
+          "durationMs": 19,
+          "httpDate": "Wed, 18 Nov 2026 18:10:23 GMT",
+          "httpAge": "18",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
-            "priceU": 400000,
-            "qty": 4
+            "priceU": 300000,
+            "qty": 15
           },
           {
-            "priceU": 410000,
-            "qty": 5
+            "priceU": 320000,
+            "qty": 1
           },
           {
-            "priceU": 420000,
-            "qty": 16
+            "priceU": 330000,
+            "qty": 17
           },
           {
-            "priceU": 440000,
-            "qty": 4
+            "priceU": 340000,
+            "qty": 40
           },
           {
-            "priceU": 450000,
-            "qty": 498
+            "priceU": 350000,
+            "qty": 150
           }
         ]
       },
@@ -1434,12 +1545,12 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 18,
-        "displayedNoContracts": 231,
+        "noAskLevels": 15,
+        "displayedNoContracts": 126,
         "noPriceWithinCap": true,
         "noPriceWithinCapAfterBuffer": true,
         "sourceAgeOnlyBlocked": false,
-        "quoteSourceAgeSeconds": 64.317,
+        "quoteSourceAgeSeconds": 65.27,
         "quoteReceiptAgeSeconds": 0.001,
         "bookReasons": [],
         "ruleIssues": [],
@@ -1447,45 +1558,53 @@
         "availablePaperBudgetU": 100000000,
         "sourceAgeBlockedCapacityU": null
       },
-      "evidence": null,
+      "evidence": {
+        "id": "1c499781dc7164d9a254a9413aa65aebb3179d72335860f518a0a62a98df2a1a",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 58,
+        "issuedAt": null,
+        "observedAt": "2026-11-18T17:56:00.000Z",
+        "firstSeenAt": "2026-11-18T18:07:18.884Z",
+        "sourceUrl": "https://tgftp.nws.noaa.gov/data/observations/metar/stations/KSFO.TXT"
+      },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:16:30.123Z",
-        "receivedAt": "2026-11-18T09:17:34.440Z",
-        "ageSeconds": 64.317,
-        "noAsk": 0.63,
+        "asOf": "2026-11-18T18:09:18.593Z",
+        "receivedAt": "2026-11-18T18:10:23.863Z",
+        "ageSeconds": 65.27,
+        "noAsk": 0.54,
         "state": "MARKET_STATE_OPEN",
         "valid": true,
         "reasons": [],
-        "sourceAgeSeconds": 64.317,
+        "sourceAgeSeconds": 65.27,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:34.432Z",
-          "receivedAt": "2026-11-18T09:17:34.440Z",
-          "durationMs": 8,
-          "httpDate": "Wed, 18 Nov 2026 09:17:34 GMT",
-          "httpAge": "29",
+          "requestStartedAt": "2026-11-18T18:10:23.848Z",
+          "receivedAt": "2026-11-18T18:10:23.863Z",
+          "durationMs": 15,
+          "httpDate": "Wed, 18 Nov 2026 18:10:23 GMT",
+          "httpAge": "24",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
-            "priceU": 630000,
-            "qty": 5
+            "priceU": 540000,
+            "qty": 4
           },
           {
-            "priceU": 640000,
-            "qty": 50
+            "priceU": 550000,
+            "qty": 8
           },
           {
-            "priceU": 650000,
-            "qty": 25
+            "priceU": 560000,
+            "qty": 8
           },
           {
-            "priceU": 670000,
-            "qty": 2
+            "priceU": 570000,
+            "qty": 8
           },
           {
-            "priceU": 690000,
-            "qty": 5
+            "priceU": 580000,
+            "qty": 8
           }
         ]
       },
@@ -1509,44 +1628,47 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 1,
-        "displayedNoContracts": 15,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
         "noPriceWithinCap": false,
         "noPriceWithinCapAfterBuffer": false,
         "sourceAgeOnlyBlocked": false,
-        "quoteSourceAgeSeconds": 65.399,
-        "quoteReceiptAgeSeconds": 0.001,
+        "quoteSourceAgeSeconds": 19.424,
+        "quoteReceiptAgeSeconds": 0,
         "bookReasons": [],
         "ruleIssues": [],
-        "weatherFresh": false,
+        "weatherFresh": true,
         "availablePaperBudgetU": 100000000,
         "sourceAgeBlockedCapacityU": null
       },
-      "evidence": null,
+      "evidence": {
+        "id": "d29a19442cc0b4c8bcbeba3c3197960a1d5d8acc630b54f8d1d677e4a8e55a04",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 62,
+        "issuedAt": null,
+        "observedAt": "2026-11-18T17:51:00.000Z",
+        "firstSeenAt": "2026-11-18T18:07:17.679Z",
+        "sourceUrl": "https://aviationweather.gov/api/data/metar?ids=KNYC,KLGA,KEWR,KTEB,KJRB&format=json&hours=3"
+      },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:16:29.292Z",
-        "receivedAt": "2026-11-18T09:17:34.691Z",
-        "ageSeconds": 65.399,
-        "noAsk": 0.99,
+        "asOf": "2026-11-18T18:10:04.803Z",
+        "receivedAt": "2026-11-18T18:10:24.227Z",
+        "ageSeconds": 19.424,
+        "noAsk": null,
         "state": "MARKET_STATE_OPEN",
         "valid": true,
         "reasons": [],
-        "sourceAgeSeconds": 65.399,
+        "sourceAgeSeconds": 19.424,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:34.682Z",
-          "receivedAt": "2026-11-18T09:17:34.691Z",
-          "durationMs": 9,
-          "httpDate": "Wed, 18 Nov 2026 09:17:34 GMT",
-          "httpAge": "21",
+          "requestStartedAt": "2026-11-18T18:10:24.097Z",
+          "receivedAt": "2026-11-18T18:10:24.227Z",
+          "durationMs": 130,
+          "httpDate": "Wed, 18 Nov 2026 18:10:24 GMT",
+          "httpAge": null,
           "cacheControl": "public, max-age=30"
         },
-        "topNoAsks": [
-          {
-            "priceU": 990000,
-            "qty": 15
-          }
-        ]
+        "topNoAsks": []
       },
       "signal": null,
       "quoteCapacity": null
@@ -1568,12 +1690,12 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 1,
-        "displayedNoContracts": 17,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
         "noPriceWithinCap": false,
         "noPriceWithinCapAfterBuffer": false,
         "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 281.845,
+        "quoteSourceAgeSeconds": 372.673,
         "quoteReceiptAgeSeconds": 0.001,
         "bookReasons": [
           "Book timestamp too old for simulation"
@@ -1583,33 +1705,36 @@
         "availablePaperBudgetU": 100000000,
         "sourceAgeBlockedCapacityU": null
       },
-      "evidence": null,
+      "evidence": {
+        "id": "e7f31a940ac584fed8877aa79576faa325990efd8f464ce8e7b2eaba097339ba",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 78,
+        "issuedAt": null,
+        "observedAt": "2026-11-18T11:53:00.000Z",
+        "firstSeenAt": "2026-11-18T18:07:17.679Z",
+        "sourceUrl": "https://aviationweather.gov/api/data/metar?ids=KMIA&format=json&hours=30"
+      },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:12:53.096Z",
-        "receivedAt": "2026-11-18T09:17:34.941Z",
-        "ageSeconds": 281.845,
-        "noAsk": 0.99,
+        "asOf": "2026-11-18T18:04:11.722Z",
+        "receivedAt": "2026-11-18T18:10:24.395Z",
+        "ageSeconds": 372.673,
+        "noAsk": null,
         "state": "MARKET_STATE_OPEN",
         "valid": false,
         "reasons": [
           "Book timestamp too old for simulation"
         ],
-        "sourceAgeSeconds": 281.845,
+        "sourceAgeSeconds": 372.673,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:34.932Z",
-          "receivedAt": "2026-11-18T09:17:34.941Z",
-          "durationMs": 9,
-          "httpDate": "Wed, 18 Nov 2026 09:17:34 GMT",
-          "httpAge": "16",
+          "requestStartedAt": "2026-11-18T18:10:24.348Z",
+          "receivedAt": "2026-11-18T18:10:24.395Z",
+          "durationMs": 47,
+          "httpDate": "Wed, 18 Nov 2026 18:10:24 GMT",
+          "httpAge": "0",
           "cacheControl": "public, max-age=30"
         },
-        "topNoAsks": [
-          {
-            "priceU": 990000,
-            "qty": 17
-          }
-        ]
+        "topNoAsks": []
       },
       "signal": null,
       "quoteCapacity": null
@@ -1631,56 +1756,47 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 4,
-        "displayedNoContracts": 202,
-        "noPriceWithinCap": true,
-        "noPriceWithinCapAfterBuffer": true,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
         "sourceAgeOnlyBlocked": false,
-        "quoteSourceAgeSeconds": 84.392,
-        "quoteReceiptAgeSeconds": 0.001,
+        "quoteSourceAgeSeconds": 73.527,
+        "quoteReceiptAgeSeconds": 0,
         "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
         "sourceAgeBlockedCapacityU": null
       },
-      "evidence": null,
+      "evidence": {
+        "id": "61cc4f4e302305c9242e4a616834477e0f5420749e8f354ee532c44e54719004",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 59,
+        "issuedAt": null,
+        "observedAt": "2026-11-18T17:53:00.000Z",
+        "firstSeenAt": "2026-11-18T18:07:18.124Z",
+        "sourceUrl": "https://tgftp.nws.noaa.gov/data/observations/metar/stations/KMDW.TXT"
+      },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:16:10.798Z",
-        "receivedAt": "2026-11-18T09:17:35.190Z",
-        "ageSeconds": 84.392,
-        "noAsk": 0.96,
+        "asOf": "2026-11-18T18:09:11.085Z",
+        "receivedAt": "2026-11-18T18:10:24.612Z",
+        "ageSeconds": 73.527,
+        "noAsk": null,
         "state": "MARKET_STATE_OPEN",
         "valid": true,
         "reasons": [],
-        "sourceAgeSeconds": 84.392,
+        "sourceAgeSeconds": 73.527,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:35.182Z",
-          "receivedAt": "2026-11-18T09:17:35.190Z",
-          "durationMs": 8,
-          "httpDate": "Wed, 18 Nov 2026 09:17:35 GMT",
-          "httpAge": "13",
+          "requestStartedAt": "2026-11-18T18:10:24.597Z",
+          "receivedAt": "2026-11-18T18:10:24.612Z",
+          "durationMs": 15,
+          "httpDate": "Wed, 18 Nov 2026 18:10:24 GMT",
+          "httpAge": "18",
           "cacheControl": "public, max-age=30"
         },
-        "topNoAsks": [
-          {
-            "priceU": 960000,
-            "qty": 16
-          },
-          {
-            "priceU": 970000,
-            "qty": 14
-          },
-          {
-            "priceU": 980000,
-            "qty": 78
-          },
-          {
-            "priceU": 990000,
-            "qty": 94
-          }
-        ]
+        "topNoAsks": []
       },
       "signal": null,
       "quoteCapacity": null
@@ -1702,62 +1818,66 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 13,
-        "displayedNoContracts": 210,
+        "noAskLevels": 12,
+        "displayedNoContracts": 130,
         "noPriceWithinCap": true,
         "noPriceWithinCapAfterBuffer": true,
-        "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 268.16,
-        "quoteReceiptAgeSeconds": 0.001,
-        "bookReasons": [
-          "Book timestamp too old for simulation"
-        ],
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 49.91,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
         "sourceAgeBlockedCapacityU": null
       },
-      "evidence": null,
+      "evidence": {
+        "id": "7e3180e907992e4a69c20d83f05e638d8553804a0fc61e7df0f95592197aa3a6",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 65,
+        "issuedAt": null,
+        "observedAt": "2026-11-18T17:53:00.000Z",
+        "firstSeenAt": "2026-11-18T18:07:18.695Z",
+        "sourceUrl": "https://tgftp.nws.noaa.gov/data/observations/metar/stations/KLAX.TXT"
+      },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:13:07.281Z",
-        "receivedAt": "2026-11-18T09:17:35.441Z",
-        "ageSeconds": 268.16,
-        "noAsk": 0.83,
+        "asOf": "2026-11-18T18:09:34.952Z",
+        "receivedAt": "2026-11-18T18:10:24.862Z",
+        "ageSeconds": 49.91,
+        "noAsk": 0.81,
         "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "sourceAgeSeconds": 268.16,
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 49.91,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:35.433Z",
-          "receivedAt": "2026-11-18T09:17:35.441Z",
-          "durationMs": 8,
-          "httpDate": "Wed, 18 Nov 2026 09:17:35 GMT",
-          "httpAge": "2",
+          "requestStartedAt": "2026-11-18T18:10:24.846Z",
+          "receivedAt": "2026-11-18T18:10:24.862Z",
+          "durationMs": 16,
+          "httpDate": "Wed, 18 Nov 2026 18:10:24 GMT",
+          "httpAge": "19",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
-            "priceU": 830000,
-            "qty": 21
+            "priceU": 810000,
+            "qty": 4
           },
           {
-            "priceU": 840000,
-            "qty": 9
+            "priceU": 820000,
+            "qty": 8
+          },
+          {
+            "priceU": 830000,
+            "qty": 8
           },
           {
             "priceU": 850000,
-            "qty": 29
+            "qty": 17
           },
           {
             "priceU": 860000,
-            "qty": 25
-          },
-          {
-            "priceU": 870000,
-            "qty": 62
+            "qty": 52
           }
         ]
       },
@@ -1781,58 +1901,66 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 5,
-        "displayedNoContracts": 86,
+        "noAskLevels": 7,
+        "displayedNoContracts": 45,
         "noPriceWithinCap": true,
         "noPriceWithinCapAfterBuffer": true,
         "sourceAgeOnlyBlocked": false,
-        "quoteSourceAgeSeconds": 40.559,
-        "quoteReceiptAgeSeconds": 0.001,
+        "quoteSourceAgeSeconds": 107.855,
+        "quoteReceiptAgeSeconds": 0,
         "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
         "sourceAgeBlockedCapacityU": null
       },
-      "evidence": null,
+      "evidence": {
+        "id": "1c499781dc7164d9a254a9413aa65aebb3179d72335860f518a0a62a98df2a1a",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 58,
+        "issuedAt": null,
+        "observedAt": "2026-11-18T17:56:00.000Z",
+        "firstSeenAt": "2026-11-18T18:07:18.884Z",
+        "sourceUrl": "https://tgftp.nws.noaa.gov/data/observations/metar/stations/KSFO.TXT"
+      },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:16:55.131Z",
-        "receivedAt": "2026-11-18T09:17:35.690Z",
-        "ageSeconds": 40.559,
-        "noAsk": 0.92,
+        "asOf": "2026-11-18T18:08:37.258Z",
+        "receivedAt": "2026-11-18T18:10:25.113Z",
+        "ageSeconds": 107.855,
+        "noAsk": 0.87,
         "state": "MARKET_STATE_OPEN",
         "valid": true,
         "reasons": [],
-        "sourceAgeSeconds": 40.559,
+        "sourceAgeSeconds": 107.855,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:35.683Z",
-          "receivedAt": "2026-11-18T09:17:35.690Z",
-          "durationMs": 7,
-          "httpDate": "Wed, 18 Nov 2026 09:17:35 GMT",
-          "httpAge": "2",
+          "requestStartedAt": "2026-11-18T18:10:25.097Z",
+          "receivedAt": "2026-11-18T18:10:25.113Z",
+          "durationMs": 16,
+          "httpDate": "Wed, 18 Nov 2026 18:10:25 GMT",
+          "httpAge": "11",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
-            "priceU": 920000,
-            "qty": 5
+            "priceU": 870000,
+            "qty": 1
           },
           {
             "priceU": 930000,
-            "qty": 25
-          },
-          {
-            "priceU": 950000,
-            "qty": 50
-          },
-          {
-            "priceU": 970000,
             "qty": 5
           },
           {
-            "priceU": 990000,
-            "qty": 1
+            "priceU": 940000,
+            "qty": 4
+          },
+          {
+            "priceU": 950000,
+            "qty": 8
+          },
+          {
+            "priceU": 960000,
+            "qty": 8
           }
         ]
       },
@@ -1855,46 +1983,56 @@
       "status": "FEE_REVIEW_REQUIRED",
       "detail": null,
       "diagnostic": {
-        "evidenceEliminated": false,
+        "evidenceEliminated": true,
         "noAskLevels": 0,
         "displayedNoContracts": 0,
         "noPriceWithinCap": false,
         "noPriceWithinCapAfterBuffer": false,
-        "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 211.824,
-        "quoteReceiptAgeSeconds": 0.001,
-        "bookReasons": [
-          "Book timestamp too old for simulation"
-        ],
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 82.568,
+        "quoteReceiptAgeSeconds": 0.341,
+        "bookReasons": [],
         "ruleIssues": [],
-        "weatherFresh": false,
+        "weatherFresh": true,
         "availablePaperBudgetU": 100000000,
         "sourceAgeBlockedCapacityU": null
       },
-      "evidence": null,
+      "evidence": {
+        "id": "d29a19442cc0b4c8bcbeba3c3197960a1d5d8acc630b54f8d1d677e4a8e55a04",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 62,
+        "issuedAt": null,
+        "observedAt": "2026-11-18T17:51:00.000Z",
+        "firstSeenAt": "2026-11-18T18:07:17.679Z",
+        "sourceUrl": "https://aviationweather.gov/api/data/metar?ids=KNYC,KLGA,KEWR,KTEB,KJRB&format=json&hours=3"
+      },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:14:04.116Z",
-        "receivedAt": "2026-11-18T09:17:35.940Z",
-        "ageSeconds": 211.824,
+        "asOf": "2026-11-18T18:09:02.796Z",
+        "receivedAt": "2026-11-18T18:10:25.364Z",
+        "ageSeconds": 82.568,
         "noAsk": null,
         "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "sourceAgeSeconds": 211.824,
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 82.568,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:35.933Z",
-          "receivedAt": "2026-11-18T09:17:35.940Z",
-          "durationMs": 7,
-          "httpDate": "Wed, 18 Nov 2026 09:17:35 GMT",
-          "httpAge": "16",
+          "requestStartedAt": "2026-11-18T18:10:25.348Z",
+          "receivedAt": "2026-11-18T18:10:25.364Z",
+          "durationMs": 16,
+          "httpDate": "Wed, 18 Nov 2026 18:10:25 GMT",
+          "httpAge": "23",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": []
       },
-      "signal": null,
+      "signal": {
+        "firstSeenAt": "2026-11-18T18:07:27.826Z",
+        "evidenceId": "d29a19442cc0b4c8bcbeba3c3197960a1d5d8acc630b54f8d1d677e4a8e55a04",
+        "rulesHash": "74393760612589a0265491ee7fc708f85fd02e4902ca3f2b3bafec1f7f270437",
+        "firstBookAt": "2026-11-18T18:07:27.476Z",
+        "firstNoAsk": null
+      },
       "quoteCapacity": null
     },
     {
@@ -1913,46 +2051,56 @@
       "status": "FEE_REVIEW_REQUIRED",
       "detail": null,
       "diagnostic": {
-        "evidenceEliminated": false,
+        "evidenceEliminated": true,
         "noAskLevels": 0,
         "displayedNoContracts": 0,
         "noPriceWithinCap": false,
         "noPriceWithinCapAfterBuffer": false,
-        "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 283.105,
-        "quoteReceiptAgeSeconds": 0,
-        "bookReasons": [
-          "Book timestamp too old for simulation"
-        ],
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 84.174,
+        "quoteReceiptAgeSeconds": 0.348,
+        "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
         "sourceAgeBlockedCapacityU": null
       },
-      "evidence": null,
+      "evidence": {
+        "id": "e7f31a940ac584fed8877aa79576faa325990efd8f464ce8e7b2eaba097339ba",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 78,
+        "issuedAt": null,
+        "observedAt": "2026-11-18T11:53:00.000Z",
+        "firstSeenAt": "2026-11-18T18:07:17.679Z",
+        "sourceUrl": "https://aviationweather.gov/api/data/metar?ids=KMIA&format=json&hours=30"
+      },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:12:53.087Z",
-        "receivedAt": "2026-11-18T09:17:36.192Z",
-        "ageSeconds": 283.105,
+        "asOf": "2026-11-18T18:09:01.691Z",
+        "receivedAt": "2026-11-18T18:10:25.865Z",
+        "ageSeconds": 84.174,
         "noAsk": null,
         "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "sourceAgeSeconds": 283.105,
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 84.174,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:36.183Z",
-          "receivedAt": "2026-11-18T09:17:36.192Z",
-          "durationMs": 9,
-          "httpDate": "Wed, 18 Nov 2026 09:17:36 GMT",
-          "httpAge": "8",
+          "requestStartedAt": "2026-11-18T18:10:25.848Z",
+          "receivedAt": "2026-11-18T18:10:25.865Z",
+          "durationMs": 17,
+          "httpDate": "Wed, 18 Nov 2026 18:10:25 GMT",
+          "httpAge": "2",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": []
       },
-      "signal": null,
+      "signal": {
+        "firstSeenAt": "2026-11-18T18:07:28.328Z",
+        "evidenceId": "e7f31a940ac584fed8877aa79576faa325990efd8f464ce8e7b2eaba097339ba",
+        "rulesHash": "4e04eeac9c83141454ee2f181925cf9cf8bc732491292fbabd7b651e49da040a",
+        "firstBookAt": "2026-11-18T18:07:27.976Z",
+        "firstNoAsk": null
+      },
       "quoteCapacity": null
     },
     {
@@ -1971,42 +2119,60 @@
       "status": "FEE_REVIEW_REQUIRED",
       "detail": null,
       "diagnostic": {
-        "evidenceEliminated": false,
+        "evidenceEliminated": true,
         "noAskLevels": 0,
         "displayedNoContracts": 0,
         "noPriceWithinCap": false,
         "noPriceWithinCapAfterBuffer": false,
-        "sourceAgeOnlyBlocked": false,
-        "quoteSourceAgeSeconds": 38.573,
-        "quoteReceiptAgeSeconds": 0.001,
-        "bookReasons": [],
+        "sourceAgeOnlyBlocked": true,
+        "quoteSourceAgeSeconds": 371.381,
+        "quoteReceiptAgeSeconds": 0.317,
+        "bookReasons": [
+          "Book timestamp too old for simulation"
+        ],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
         "sourceAgeBlockedCapacityU": null
       },
-      "evidence": null,
+      "evidence": {
+        "id": "61cc4f4e302305c9242e4a616834477e0f5420749e8f354ee532c44e54719004",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 59,
+        "issuedAt": null,
+        "observedAt": "2026-11-18T17:53:00.000Z",
+        "firstSeenAt": "2026-11-18T18:07:18.124Z",
+        "sourceUrl": "https://tgftp.nws.noaa.gov/data/observations/metar/stations/KMDW.TXT"
+      },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:16:57.869Z",
-        "receivedAt": "2026-11-18T09:17:36.442Z",
-        "ageSeconds": 38.573,
+        "asOf": "2026-11-18T18:04:15.019Z",
+        "receivedAt": "2026-11-18T18:10:26.400Z",
+        "ageSeconds": 371.381,
         "noAsk": null,
         "state": "MARKET_STATE_OPEN",
-        "valid": true,
-        "reasons": [],
-        "sourceAgeSeconds": 38.573,
+        "valid": false,
+        "reasons": [
+          "Book timestamp too old for simulation"
+        ],
+        "sourceAgeSeconds": 371.381,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:36.434Z",
-          "receivedAt": "2026-11-18T09:17:36.442Z",
-          "durationMs": 8,
-          "httpDate": "Wed, 18 Nov 2026 09:17:36 GMT",
-          "httpAge": "24",
+          "requestStartedAt": "2026-11-18T18:10:26.350Z",
+          "receivedAt": "2026-11-18T18:10:26.400Z",
+          "durationMs": 50,
+          "httpDate": "Wed, 18 Nov 2026 18:10:26 GMT",
+          "httpAge": "7",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": []
       },
-      "signal": null,
+      "signal": {
+        "firstSeenAt": "2026-11-18T18:07:28.840Z",
+        "evidenceId": "225512997dbbdf9170d2a631f4f96d374aec596bf43ab50816e39206d17c8b7c",
+        "rulesHash": "1bc01ddc22d0f0fd5448a2e82a9d8f7174e96d173019265510f74f716f6414d9",
+        "firstBookAt": "2026-11-18T18:07:28.476Z",
+        "firstNoAsk": null
+      },
       "quoteCapacity": null
     },
     {
@@ -2025,51 +2191,56 @@
       "status": "FEE_REVIEW_REQUIRED",
       "detail": null,
       "diagnostic": {
-        "evidenceEliminated": false,
-        "noAskLevels": 1,
-        "displayedNoContracts": 7500,
+        "evidenceEliminated": true,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
         "noPriceWithinCap": false,
         "noPriceWithinCapAfterBuffer": false,
-        "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 145.454,
-        "quoteReceiptAgeSeconds": 0,
-        "bookReasons": [
-          "Book timestamp too old for simulation"
-        ],
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 52.477,
+        "quoteReceiptAgeSeconds": 0.317,
+        "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
         "sourceAgeBlockedCapacityU": null
       },
-      "evidence": null,
+      "evidence": {
+        "id": "7e3180e907992e4a69c20d83f05e638d8553804a0fc61e7df0f95592197aa3a6",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 65,
+        "issuedAt": null,
+        "observedAt": "2026-11-18T17:53:00.000Z",
+        "firstSeenAt": "2026-11-18T18:07:18.695Z",
+        "sourceUrl": "https://tgftp.nws.noaa.gov/data/observations/metar/stations/KLAX.TXT"
+      },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:15:11.239Z",
-        "receivedAt": "2026-11-18T09:17:36.693Z",
-        "ageSeconds": 145.454,
-        "noAsk": 0.99,
+        "asOf": "2026-11-18T18:09:34.414Z",
+        "receivedAt": "2026-11-18T18:10:26.891Z",
+        "ageSeconds": 52.477,
+        "noAsk": null,
         "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "sourceAgeSeconds": 145.454,
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 52.477,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:36.684Z",
-          "receivedAt": "2026-11-18T09:17:36.693Z",
-          "durationMs": 9,
-          "httpDate": "Wed, 18 Nov 2026 09:17:36 GMT",
-          "httpAge": "17",
+          "requestStartedAt": "2026-11-18T18:10:26.851Z",
+          "receivedAt": "2026-11-18T18:10:26.891Z",
+          "durationMs": 40,
+          "httpDate": "Wed, 18 Nov 2026 18:10:26 GMT",
+          "httpAge": "3",
           "cacheControl": "public, max-age=30"
         },
-        "topNoAsks": [
-          {
-            "priceU": 990000,
-            "qty": 7500
-          }
-        ]
+        "topNoAsks": []
       },
-      "signal": null,
+      "signal": {
+        "firstSeenAt": "2026-11-18T18:07:29.333Z",
+        "evidenceId": "d39599b0bfb4f26ecb35638224f63f9b60b2a8575a779b9f3d434e1c1869c3ca",
+        "rulesHash": "fbce8934b6036f84e27ebc87f68f87896103103eca36f6f24eb66b5524e18e0b",
+        "firstBookAt": "2026-11-18T18:07:28.980Z",
+        "firstNoAsk": null
+      },
       "quoteCapacity": null
     },
     {
@@ -2088,46 +2259,56 @@
       "status": "FEE_REVIEW_REQUIRED",
       "detail": null,
       "diagnostic": {
-        "evidenceEliminated": false,
+        "evidenceEliminated": true,
         "noAskLevels": 0,
         "displayedNoContracts": 0,
         "noPriceWithinCap": false,
         "noPriceWithinCapAfterBuffer": false,
-        "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 131.207,
-        "quoteReceiptAgeSeconds": 0,
-        "bookReasons": [
-          "Book timestamp too old for simulation"
-        ],
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 80.268,
+        "quoteReceiptAgeSeconds": 0.344,
+        "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
         "sourceAgeBlockedCapacityU": null
       },
-      "evidence": null,
+      "evidence": {
+        "id": "1c499781dc7164d9a254a9413aa65aebb3179d72335860f518a0a62a98df2a1a",
+        "kind": "ASOS_SIX_HOUR",
+        "floorF": 58,
+        "issuedAt": null,
+        "observedAt": "2026-11-18T17:56:00.000Z",
+        "firstSeenAt": "2026-11-18T18:07:18.884Z",
+        "sourceUrl": "https://tgftp.nws.noaa.gov/data/observations/metar/stations/KSFO.TXT"
+      },
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:15:25.734Z",
-        "receivedAt": "2026-11-18T09:17:36.941Z",
-        "ageSeconds": 131.207,
+        "asOf": "2026-11-18T18:09:07.096Z",
+        "receivedAt": "2026-11-18T18:10:27.364Z",
+        "ageSeconds": 80.268,
         "noAsk": null,
         "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "sourceAgeSeconds": 131.207,
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 80.268,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:36.933Z",
-          "receivedAt": "2026-11-18T09:17:36.941Z",
-          "durationMs": 8,
-          "httpDate": "Wed, 18 Nov 2026 09:17:36 GMT",
-          "httpAge": "12",
+          "requestStartedAt": "2026-11-18T18:10:27.350Z",
+          "receivedAt": "2026-11-18T18:10:27.364Z",
+          "durationMs": 14,
+          "httpDate": "Wed, 18 Nov 2026 18:10:27 GMT",
+          "httpAge": "8",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": []
       },
-      "signal": null,
+      "signal": {
+        "firstSeenAt": "2026-11-18T18:07:29.836Z",
+        "evidenceId": "ad83281301e79ae04bc77d6810a40fd2f4f0dd1dcd28fac56787c11fe2be86b9",
+        "rulesHash": "456a77f387527cac3fd9e98a964ad0dbfa62941fe54a638dbba106df1f3b9c86",
+        "firstBookAt": "2026-11-18T18:07:29.479Z",
+        "firstNoAsk": null
+      },
       "quoteCapacity": null
     },
     {
@@ -2147,16 +2328,14 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 1,
-        "displayedNoContracts": 8,
+        "noAskLevels": 2,
+        "displayedNoContracts": 124,
         "noPriceWithinCap": false,
         "noPriceWithinCapAfterBuffer": false,
-        "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 1295.546,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 9.573,
         "quoteReceiptAgeSeconds": 0.001,
-        "bookReasons": [
-          "Book timestamp too old for simulation"
-        ],
+        "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
@@ -2165,28 +2344,30 @@
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T08:56:01.646Z",
-        "receivedAt": "2026-11-18T09:17:37.192Z",
-        "ageSeconds": 1295.546,
+        "asOf": "2026-11-18T18:10:18.326Z",
+        "receivedAt": "2026-11-18T18:10:27.899Z",
+        "ageSeconds": 9.573,
         "noAsk": 0.98,
         "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "sourceAgeSeconds": 1295.546,
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 9.573,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:37.184Z",
-          "receivedAt": "2026-11-18T09:17:37.192Z",
-          "durationMs": 8,
-          "httpDate": "Wed, 18 Nov 2026 09:17:37 GMT",
-          "httpAge": "13",
+          "requestStartedAt": "2026-11-18T18:10:27.850Z",
+          "receivedAt": "2026-11-18T18:10:27.899Z",
+          "durationMs": 49,
+          "httpDate": "Wed, 18 Nov 2026 18:10:27 GMT",
+          "httpAge": "4",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
             "priceU": 980000,
-            "qty": 8
+            "qty": 7
+          },
+          {
+            "priceU": 990000,
+            "qty": 117
           }
         ]
       },
@@ -2210,16 +2391,14 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 1,
-        "displayedNoContracts": 15,
-        "noPriceWithinCap": false,
-        "noPriceWithinCapAfterBuffer": false,
-        "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 1485.556,
+        "noAskLevels": 6,
+        "displayedNoContracts": 1907,
+        "noPriceWithinCap": true,
+        "noPriceWithinCapAfterBuffer": true,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 6.027,
         "quoteReceiptAgeSeconds": 0.001,
-        "bookReasons": [
-          "Book timestamp too old for simulation"
-        ],
+        "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
@@ -2228,28 +2407,42 @@
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T08:52:51.886Z",
-        "receivedAt": "2026-11-18T09:17:37.442Z",
-        "ageSeconds": 1485.556,
-        "noAsk": 0.98,
+        "asOf": "2026-11-18T18:10:22.088Z",
+        "receivedAt": "2026-11-18T18:10:28.115Z",
+        "ageSeconds": 6.027,
+        "noAsk": 0.93,
         "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "sourceAgeSeconds": 1485.556,
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 6.027,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:37.434Z",
-          "receivedAt": "2026-11-18T09:17:37.442Z",
-          "durationMs": 8,
-          "httpDate": "Wed, 18 Nov 2026 09:17:37 GMT",
-          "httpAge": "17",
+          "requestStartedAt": "2026-11-18T18:10:28.101Z",
+          "receivedAt": "2026-11-18T18:10:28.115Z",
+          "durationMs": 14,
+          "httpDate": "Wed, 18 Nov 2026 18:10:28 GMT",
+          "httpAge": "4",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
+            "priceU": 930000,
+            "qty": 44
+          },
+          {
+            "priceU": 950000,
+            "qty": 36
+          },
+          {
+            "priceU": 960000,
+            "qty": 67
+          },
+          {
+            "priceU": 970000,
+            "qty": 101
+          },
+          {
             "priceU": 980000,
-            "qty": 15
+            "qty": 255
           }
         ]
       },
@@ -2274,11 +2467,11 @@
       "diagnostic": {
         "evidenceEliminated": false,
         "noAskLevels": 1,
-        "displayedNoContracts": 10,
-        "noPriceWithinCap": true,
-        "noPriceWithinCapAfterBuffer": true,
+        "displayedNoContracts": 100,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
         "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 1927.757,
+        "quoteSourceAgeSeconds": 351.146,
         "quoteReceiptAgeSeconds": 0.001,
         "bookReasons": [
           "Book timestamp too old for simulation"
@@ -2291,28 +2484,28 @@
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T08:45:29.934Z",
-        "receivedAt": "2026-11-18T09:17:37.691Z",
-        "ageSeconds": 1927.757,
-        "noAsk": 0.93,
+        "asOf": "2026-11-18T18:04:37.222Z",
+        "receivedAt": "2026-11-18T18:10:28.368Z",
+        "ageSeconds": 351.146,
+        "noAsk": 0.98,
         "state": "MARKET_STATE_OPEN",
         "valid": false,
         "reasons": [
           "Book timestamp too old for simulation"
         ],
-        "sourceAgeSeconds": 1927.757,
+        "sourceAgeSeconds": 351.146,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:37.683Z",
-          "receivedAt": "2026-11-18T09:17:37.691Z",
-          "durationMs": 8,
-          "httpDate": "Wed, 18 Nov 2026 09:17:37 GMT",
-          "httpAge": "17",
+          "requestStartedAt": "2026-11-18T18:10:28.349Z",
+          "receivedAt": "2026-11-18T18:10:28.368Z",
+          "durationMs": 19,
+          "httpDate": "Wed, 18 Nov 2026 18:10:28 GMT",
+          "httpAge": "28",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
-            "priceU": 930000,
-            "qty": 10
+            "priceU": 980000,
+            "qty": 100
           }
         ]
       },
@@ -2337,15 +2530,13 @@
       "diagnostic": {
         "evidenceEliminated": false,
         "noAskLevels": 1,
-        "displayedNoContracts": 6,
+        "displayedNoContracts": 1,
         "noPriceWithinCap": false,
         "noPriceWithinCapAfterBuffer": false,
-        "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 1769.754,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 10.389,
         "quoteReceiptAgeSeconds": 0,
-        "bookReasons": [
-          "Book timestamp too old for simulation"
-        ],
+        "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
@@ -2354,28 +2545,26 @@
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T08:48:08.189Z",
-        "receivedAt": "2026-11-18T09:17:37.943Z",
-        "ageSeconds": 1769.754,
+        "asOf": "2026-11-18T18:10:18.224Z",
+        "receivedAt": "2026-11-18T18:10:28.613Z",
+        "ageSeconds": 10.389,
         "noAsk": 0.99,
         "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "sourceAgeSeconds": 1769.754,
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 10.389,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:37.934Z",
-          "receivedAt": "2026-11-18T09:17:37.943Z",
-          "durationMs": 9,
-          "httpDate": "Wed, 18 Nov 2026 09:17:37 GMT",
-          "httpAge": "23",
+          "requestStartedAt": "2026-11-18T18:10:28.599Z",
+          "receivedAt": "2026-11-18T18:10:28.613Z",
+          "durationMs": 14,
+          "httpDate": "Wed, 18 Nov 2026 18:10:28 GMT",
+          "httpAge": "9",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
             "priceU": 990000,
-            "qty": 6
+            "qty": 1
           }
         ]
       },
@@ -2400,15 +2589,13 @@
       "diagnostic": {
         "evidenceEliminated": false,
         "noAskLevels": 1,
-        "displayedNoContracts": 6,
+        "displayedNoContracts": 1,
         "noPriceWithinCap": false,
         "noPriceWithinCapAfterBuffer": false,
-        "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 1773.805,
-        "quoteReceiptAgeSeconds": 0,
-        "bookReasons": [
-          "Book timestamp too old for simulation"
-        ],
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 9.808,
+        "quoteReceiptAgeSeconds": 0.001,
+        "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
@@ -2417,28 +2604,26 @@
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T08:48:04.388Z",
-        "receivedAt": "2026-11-18T09:17:38.193Z",
-        "ageSeconds": 1773.805,
+        "asOf": "2026-11-18T18:10:19.057Z",
+        "receivedAt": "2026-11-18T18:10:28.865Z",
+        "ageSeconds": 9.808,
         "noAsk": 0.99,
         "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "sourceAgeSeconds": 1773.805,
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 9.808,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:38.185Z",
-          "receivedAt": "2026-11-18T09:17:38.193Z",
-          "durationMs": 8,
-          "httpDate": "Wed, 18 Nov 2026 09:17:38 GMT",
-          "httpAge": "6",
+          "requestStartedAt": "2026-11-18T18:10:28.849Z",
+          "receivedAt": "2026-11-18T18:10:28.865Z",
+          "durationMs": 16,
+          "httpDate": "Wed, 18 Nov 2026 18:10:28 GMT",
+          "httpAge": "4",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
             "priceU": 990000,
-            "qty": 6
+            "qty": 1
           }
         ]
       },
@@ -2462,16 +2647,14 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 1,
-        "displayedNoContracts": 3,
+        "noAskLevels": 15,
+        "displayedNoContracts": 2165,
         "noPriceWithinCap": true,
         "noPriceWithinCapAfterBuffer": true,
-        "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 392.782,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 21.913,
         "quoteReceiptAgeSeconds": 0,
-        "bookReasons": [
-          "Book timestamp too old for simulation"
-        ],
+        "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
@@ -2480,28 +2663,42 @@
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:11:05.663Z",
-        "receivedAt": "2026-11-18T09:17:38.445Z",
-        "ageSeconds": 392.782,
-        "noAsk": 0.8,
+        "asOf": "2026-11-18T18:10:07.201Z",
+        "receivedAt": "2026-11-18T18:10:29.114Z",
+        "ageSeconds": 21.913,
+        "noAsk": 0.84,
         "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "sourceAgeSeconds": 392.782,
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 21.913,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:38.436Z",
-          "receivedAt": "2026-11-18T09:17:38.445Z",
-          "durationMs": 9,
-          "httpDate": "Wed, 18 Nov 2026 09:17:38 GMT",
-          "httpAge": "13",
+          "requestStartedAt": "2026-11-18T18:10:29.098Z",
+          "receivedAt": "2026-11-18T18:10:29.114Z",
+          "durationMs": 16,
+          "httpDate": "Wed, 18 Nov 2026 18:10:29 GMT",
+          "httpAge": "20",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
-            "priceU": 800000,
-            "qty": 3
+            "priceU": 840000,
+            "qty": 14
+          },
+          {
+            "priceU": 860000,
+            "qty": 100
+          },
+          {
+            "priceU": 870000,
+            "qty": 44
+          },
+          {
+            "priceU": 880000,
+            "qty": 25
+          },
+          {
+            "priceU": 890000,
+            "qty": 242
           }
         ]
       },
@@ -2525,16 +2722,14 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 2,
-        "displayedNoContracts": 16,
+        "noAskLevels": 22,
+        "displayedNoContracts": 1774,
         "noPriceWithinCap": true,
         "noPriceWithinCapAfterBuffer": true,
-        "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 630.006,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 23.595,
         "quoteReceiptAgeSeconds": 0.001,
-        "bookReasons": [
-          "Book timestamp too old for simulation"
-        ],
+        "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
@@ -2543,32 +2738,42 @@
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:07:08.706Z",
-        "receivedAt": "2026-11-18T09:17:38.712Z",
-        "ageSeconds": 630.006,
-        "noAsk": 0.79,
+        "asOf": "2026-11-18T18:10:05.766Z",
+        "receivedAt": "2026-11-18T18:10:29.361Z",
+        "ageSeconds": 23.595,
+        "noAsk": 0.67,
         "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "sourceAgeSeconds": 630.006,
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 23.595,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:38.686Z",
-          "receivedAt": "2026-11-18T09:17:38.712Z",
-          "durationMs": 26,
-          "httpDate": "Wed, 18 Nov 2026 09:17:38 GMT",
-          "httpAge": null,
+          "requestStartedAt": "2026-11-18T18:10:29.348Z",
+          "receivedAt": "2026-11-18T18:10:29.361Z",
+          "durationMs": 13,
+          "httpDate": "Wed, 18 Nov 2026 18:10:29 GMT",
+          "httpAge": "15",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
-            "priceU": 790000,
+            "priceU": 670000,
             "qty": 8
           },
           {
-            "priceU": 990000,
-            "qty": 8
+            "priceU": 680000,
+            "qty": 37
+          },
+          {
+            "priceU": 690000,
+            "qty": 20
+          },
+          {
+            "priceU": 700000,
+            "qty": 47
+          },
+          {
+            "priceU": 710000,
+            "qty": 16
           }
         ]
       },
@@ -2592,16 +2797,14 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 1,
-        "displayedNoContracts": 9,
+        "noAskLevels": 14,
+        "displayedNoContracts": 148,
         "noPriceWithinCap": true,
         "noPriceWithinCapAfterBuffer": true,
-        "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 1664.071,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 14.381,
         "quoteReceiptAgeSeconds": 0.001,
-        "bookReasons": [
-          "Book timestamp too old for simulation"
-        ],
+        "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
@@ -2610,28 +2813,42 @@
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T08:49:54.873Z",
-        "receivedAt": "2026-11-18T09:17:38.944Z",
-        "ageSeconds": 1664.071,
-        "noAsk": 0.89,
+        "asOf": "2026-11-18T18:10:15.232Z",
+        "receivedAt": "2026-11-18T18:10:29.613Z",
+        "ageSeconds": 14.381,
+        "noAsk": 0.72,
         "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "sourceAgeSeconds": 1664.071,
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 14.381,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:38.936Z",
-          "receivedAt": "2026-11-18T09:17:38.944Z",
-          "durationMs": 8,
-          "httpDate": "Wed, 18 Nov 2026 09:17:38 GMT",
-          "httpAge": "4",
+          "requestStartedAt": "2026-11-18T18:10:29.597Z",
+          "receivedAt": "2026-11-18T18:10:29.613Z",
+          "durationMs": 16,
+          "httpDate": "Wed, 18 Nov 2026 18:10:29 GMT",
+          "httpAge": "2",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
-            "priceU": 890000,
-            "qty": 9
+            "priceU": 720000,
+            "qty": 14
+          },
+          {
+            "priceU": 800000,
+            "qty": 20
+          },
+          {
+            "priceU": 820000,
+            "qty": 5
+          },
+          {
+            "priceU": 830000,
+            "qty": 1
+          },
+          {
+            "priceU": 850000,
+            "qty": 5
           }
         ]
       },
@@ -2655,16 +2872,14 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 1,
-        "displayedNoContracts": 6,
+        "noAskLevels": 2,
+        "displayedNoContracts": 9,
         "noPriceWithinCap": false,
         "noPriceWithinCapAfterBuffer": false,
-        "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 1745.085,
-        "quoteReceiptAgeSeconds": 0,
-        "bookReasons": [
-          "Book timestamp too old for simulation"
-        ],
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 57.665,
+        "quoteReceiptAgeSeconds": 0.001,
+        "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
@@ -2673,25 +2888,27 @@
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T08:48:34.110Z",
-        "receivedAt": "2026-11-18T09:17:39.195Z",
-        "ageSeconds": 1745.085,
-        "noAsk": 0.99,
+        "asOf": "2026-11-18T18:09:32.197Z",
+        "receivedAt": "2026-11-18T18:10:29.862Z",
+        "ageSeconds": 57.665,
+        "noAsk": 0.98,
         "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "sourceAgeSeconds": 1745.085,
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 57.665,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:39.186Z",
-          "receivedAt": "2026-11-18T09:17:39.195Z",
-          "durationMs": 9,
-          "httpDate": "Wed, 18 Nov 2026 09:17:39 GMT",
-          "httpAge": "10",
+          "requestStartedAt": "2026-11-18T18:10:29.846Z",
+          "receivedAt": "2026-11-18T18:10:29.862Z",
+          "durationMs": 16,
+          "httpDate": "Wed, 18 Nov 2026 18:10:29 GMT",
+          "httpAge": "11",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
+          {
+            "priceU": 980000,
+            "qty": 3
+          },
           {
             "priceU": 990000,
             "qty": 6
@@ -2718,16 +2935,14 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 3,
-        "displayedNoContracts": 18,
+        "noAskLevels": 4,
+        "displayedNoContracts": 45,
         "noPriceWithinCap": true,
         "noPriceWithinCapAfterBuffer": true,
-        "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 1674.806,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 16.457,
         "quoteReceiptAgeSeconds": 0,
-        "bookReasons": [
-          "Book timestamp too old for simulation"
-        ],
+        "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
@@ -2736,36 +2951,38 @@
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T08:49:44.639Z",
-        "receivedAt": "2026-11-18T09:17:39.445Z",
-        "ageSeconds": 1674.806,
-        "noAsk": 0.95,
+        "asOf": "2026-11-18T18:10:13.657Z",
+        "receivedAt": "2026-11-18T18:10:30.114Z",
+        "ageSeconds": 16.457,
+        "noAsk": 0.92,
         "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "sourceAgeSeconds": 1674.806,
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 16.457,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:39.437Z",
-          "receivedAt": "2026-11-18T09:17:39.445Z",
-          "durationMs": 8,
-          "httpDate": "Wed, 18 Nov 2026 09:17:39 GMT",
-          "httpAge": "9",
+          "requestStartedAt": "2026-11-18T18:10:30.095Z",
+          "receivedAt": "2026-11-18T18:10:30.114Z",
+          "durationMs": 19,
+          "httpDate": "Wed, 18 Nov 2026 18:10:30 GMT",
+          "httpAge": "7",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
-            "priceU": 950000,
-            "qty": 13
+            "priceU": 920000,
+            "qty": 16
           },
           {
-            "priceU": 970000,
-            "qty": 2
+            "priceU": 940000,
+            "qty": 24
+          },
+          {
+            "priceU": 960000,
+            "qty": 4
           },
           {
             "priceU": 990000,
-            "qty": 3
+            "qty": 1
           }
         ]
       },
@@ -2789,16 +3006,14 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 3,
-        "displayedNoContracts": 17,
+        "noAskLevels": 24,
+        "displayedNoContracts": 2578,
         "noPriceWithinCap": true,
         "noPriceWithinCapAfterBuffer": true,
-        "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 394.033,
-        "quoteReceiptAgeSeconds": 0,
-        "bookReasons": [
-          "Book timestamp too old for simulation"
-        ],
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 23.105,
+        "quoteReceiptAgeSeconds": 0.001,
+        "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
@@ -2807,36 +3022,42 @@
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:11:05.664Z",
-        "receivedAt": "2026-11-18T09:17:39.697Z",
-        "ageSeconds": 394.033,
-        "noAsk": 0.74,
+        "asOf": "2026-11-18T18:10:07.256Z",
+        "receivedAt": "2026-11-18T18:10:30.361Z",
+        "ageSeconds": 23.105,
+        "noAsk": 0.52,
         "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "sourceAgeSeconds": 394.033,
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 23.105,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:39.687Z",
-          "receivedAt": "2026-11-18T09:17:39.697Z",
-          "durationMs": 10,
-          "httpDate": "Wed, 18 Nov 2026 09:17:39 GMT",
-          "httpAge": "16",
+          "requestStartedAt": "2026-11-18T18:10:30.346Z",
+          "receivedAt": "2026-11-18T18:10:30.361Z",
+          "durationMs": 15,
+          "httpDate": "Wed, 18 Nov 2026 18:10:30 GMT",
+          "httpAge": "22",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
-            "priceU": 740000,
-            "qty": 13
+            "priceU": 520000,
+            "qty": 1
           },
           {
-            "priceU": 760000,
-            "qty": 2
+            "priceU": 530000,
+            "qty": 60
           },
           {
-            "priceU": 780000,
-            "qty": 2
+            "priceU": 540000,
+            "qty": 3
+          },
+          {
+            "priceU": 550000,
+            "qty": 25
+          },
+          {
+            "priceU": 560000,
+            "qty": 23
           }
         ]
       },
@@ -2860,16 +3081,14 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 1,
-        "displayedNoContracts": 5,
+        "noAskLevels": 23,
+        "displayedNoContracts": 2008,
         "noPriceWithinCap": true,
         "noPriceWithinCapAfterBuffer": true,
-        "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 1933.758,
-        "quoteReceiptAgeSeconds": 0.001,
-        "bookReasons": [
-          "Book timestamp too old for simulation"
-        ],
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 24.739,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
@@ -2878,28 +3097,42 @@
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T08:45:26.185Z",
-        "receivedAt": "2026-11-18T09:17:39.943Z",
-        "ageSeconds": 1933.758,
-        "noAsk": 0.93,
+        "asOf": "2026-11-18T18:10:05.872Z",
+        "receivedAt": "2026-11-18T18:10:30.611Z",
+        "ageSeconds": 24.739,
+        "noAsk": 0.58,
         "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "sourceAgeSeconds": 1933.758,
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 24.739,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:39.937Z",
-          "receivedAt": "2026-11-18T09:17:39.943Z",
-          "durationMs": 6,
-          "httpDate": "Wed, 18 Nov 2026 09:17:39 GMT",
-          "httpAge": "16",
+          "requestStartedAt": "2026-11-18T18:10:30.595Z",
+          "receivedAt": "2026-11-18T18:10:30.611Z",
+          "durationMs": 16,
+          "httpDate": "Wed, 18 Nov 2026 18:10:30 GMT",
+          "httpAge": "9",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
-            "priceU": 930000,
-            "qty": 5
+            "priceU": 580000,
+            "qty": 88
+          },
+          {
+            "priceU": 590000,
+            "qty": 38
+          },
+          {
+            "priceU": 600000,
+            "qty": 17
+          },
+          {
+            "priceU": 610000,
+            "qty": 60
+          },
+          {
+            "priceU": 620000,
+            "qty": 21
           }
         ]
       },
@@ -2923,16 +3156,14 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 3,
-        "displayedNoContracts": 17,
+        "noAskLevels": 18,
+        "displayedNoContracts": 149,
         "noPriceWithinCap": true,
         "noPriceWithinCapAfterBuffer": true,
-        "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 1641.634,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 111.42,
         "quoteReceiptAgeSeconds": 0.001,
-        "bookReasons": [
-          "Book timestamp too old for simulation"
-        ],
+        "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
@@ -2941,36 +3172,42 @@
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T08:50:18.561Z",
-        "receivedAt": "2026-11-18T09:17:40.195Z",
-        "ageSeconds": 1641.634,
-        "noAsk": 0.74,
+        "asOf": "2026-11-18T18:08:39.445Z",
+        "receivedAt": "2026-11-18T18:10:30.865Z",
+        "ageSeconds": 111.42,
+        "noAsk": 0.53,
         "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "sourceAgeSeconds": 1641.634,
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 111.42,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:40.187Z",
-          "receivedAt": "2026-11-18T09:17:40.195Z",
-          "durationMs": 8,
-          "httpDate": "Wed, 18 Nov 2026 09:17:40 GMT",
-          "httpAge": "20",
+          "requestStartedAt": "2026-11-18T18:10:30.844Z",
+          "receivedAt": "2026-11-18T18:10:30.865Z",
+          "durationMs": 21,
+          "httpDate": "Wed, 18 Nov 2026 18:10:30 GMT",
+          "httpAge": "28",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
-            "priceU": 740000,
-            "qty": 13
+            "priceU": 530000,
+            "qty": 20
           },
           {
-            "priceU": 760000,
-            "qty": 2
+            "priceU": 640000,
+            "qty": 1
           },
           {
-            "priceU": 780000,
-            "qty": 2
+            "priceU": 660000,
+            "qty": 1
+          },
+          {
+            "priceU": 680000,
+            "qty": 11
+          },
+          {
+            "priceU": 730000,
+            "qty": 20
           }
         ]
       },
@@ -2994,16 +3231,14 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 3,
-        "displayedNoContracts": 16,
+        "noAskLevels": 11,
+        "displayedNoContracts": 1658,
         "noPriceWithinCap": true,
         "noPriceWithinCapAfterBuffer": true,
-        "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 1736.295,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 31.799,
         "quoteReceiptAgeSeconds": 0,
-        "bookReasons": [
-          "Book timestamp too old for simulation"
-        ],
+        "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
@@ -3012,36 +3247,42 @@
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T08:48:44.150Z",
-        "receivedAt": "2026-11-18T09:17:40.445Z",
-        "ageSeconds": 1736.295,
-        "noAsk": 0.96,
+        "asOf": "2026-11-18T18:09:59.310Z",
+        "receivedAt": "2026-11-18T18:10:31.109Z",
+        "ageSeconds": 31.799,
+        "noAsk": 0.8,
         "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "sourceAgeSeconds": 1736.295,
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 31.799,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:40.437Z",
-          "receivedAt": "2026-11-18T09:17:40.445Z",
-          "durationMs": 8,
-          "httpDate": "Wed, 18 Nov 2026 09:17:40 GMT",
-          "httpAge": "12",
+          "requestStartedAt": "2026-11-18T18:10:31.094Z",
+          "receivedAt": "2026-11-18T18:10:31.109Z",
+          "durationMs": 15,
+          "httpDate": "Wed, 18 Nov 2026 18:10:31 GMT",
+          "httpAge": "4",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
-            "priceU": 960000,
+            "priceU": 800000,
             "qty": 13
           },
           {
-            "priceU": 980000,
-            "qty": 2
+            "priceU": 830000,
+            "qty": 3
           },
           {
-            "priceU": 990000,
-            "qty": 1
+            "priceU": 850000,
+            "qty": 35
+          },
+          {
+            "priceU": 860000,
+            "qty": 17
+          },
+          {
+            "priceU": 870000,
+            "qty": 22
           }
         ]
       },
@@ -3065,12 +3306,12 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 4,
-        "displayedNoContracts": 18,
+        "noAskLevels": 10,
+        "displayedNoContracts": 83,
         "noPriceWithinCap": true,
         "noPriceWithinCapAfterBuffer": true,
         "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 998.418,
+        "quoteSourceAgeSeconds": 242.681,
         "quoteReceiptAgeSeconds": 0.001,
         "bookReasons": [
           "Book timestamp too old for simulation"
@@ -3083,40 +3324,44 @@
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:01:02.296Z",
-        "receivedAt": "2026-11-18T09:17:40.714Z",
-        "ageSeconds": 998.418,
-        "noAsk": 0.69,
+        "asOf": "2026-11-18T18:06:28.677Z",
+        "receivedAt": "2026-11-18T18:10:31.358Z",
+        "ageSeconds": 242.681,
+        "noAsk": 0.6,
         "state": "MARKET_STATE_OPEN",
         "valid": false,
         "reasons": [
           "Book timestamp too old for simulation"
         ],
-        "sourceAgeSeconds": 998.418,
+        "sourceAgeSeconds": 242.681,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:40.687Z",
-          "receivedAt": "2026-11-18T09:17:40.714Z",
-          "durationMs": 27,
-          "httpDate": "Wed, 18 Nov 2026 09:17:40 GMT",
-          "httpAge": null,
+          "requestStartedAt": "2026-11-18T18:10:31.344Z",
+          "receivedAt": "2026-11-18T18:10:31.358Z",
+          "durationMs": 14,
+          "httpDate": "Wed, 18 Nov 2026 18:10:31 GMT",
+          "httpAge": "10",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
-            "priceU": 690000,
-            "qty": 13
+            "priceU": 600000,
+            "qty": 36
+          },
+          {
+            "priceU": 620000,
+            "qty": 4
+          },
+          {
+            "priceU": 640000,
+            "qty": 4
           },
           {
             "priceU": 710000,
-            "qty": 2
-          },
-          {
-            "priceU": 730000,
-            "qty": 2
-          },
-          {
-            "priceU": 990000,
             "qty": 1
+          },
+          {
+            "priceU": 720000,
+            "qty": 5
           }
         ]
       },
@@ -3140,16 +3385,14 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 1,
-        "displayedNoContracts": 15,
+        "noAskLevels": 20,
+        "displayedNoContracts": 1948,
         "noPriceWithinCap": true,
         "noPriceWithinCapAfterBuffer": true,
-        "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 500.96,
-        "quoteReceiptAgeSeconds": 0,
-        "bookReasons": [
-          "Book timestamp too old for simulation"
-        ],
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 24.441,
+        "quoteReceiptAgeSeconds": 0.001,
+        "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
@@ -3158,28 +3401,42 @@
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:09:19.985Z",
-        "receivedAt": "2026-11-18T09:17:40.945Z",
-        "ageSeconds": 500.96,
-        "noAsk": 0.9,
+        "asOf": "2026-11-18T18:10:07.200Z",
+        "receivedAt": "2026-11-18T18:10:31.641Z",
+        "ageSeconds": 24.441,
+        "noAsk": 0.69,
         "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "sourceAgeSeconds": 500.96,
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 24.441,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:40.936Z",
-          "receivedAt": "2026-11-18T09:17:40.945Z",
-          "durationMs": 9,
-          "httpDate": "Wed, 18 Nov 2026 09:17:40 GMT",
-          "httpAge": "16",
+          "requestStartedAt": "2026-11-18T18:10:31.594Z",
+          "receivedAt": "2026-11-18T18:10:31.641Z",
+          "durationMs": 47,
+          "httpDate": "Wed, 18 Nov 2026 18:10:31 GMT",
+          "httpAge": "7",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
-            "priceU": 900000,
-            "qty": 15
+            "priceU": 690000,
+            "qty": 35
+          },
+          {
+            "priceU": 700000,
+            "qty": 3
+          },
+          {
+            "priceU": 720000,
+            "qty": 9
+          },
+          {
+            "priceU": 730000,
+            "qty": 19
+          },
+          {
+            "priceU": 740000,
+            "qty": 69
           }
         ]
       },
@@ -3203,16 +3460,14 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 1,
-        "displayedNoContracts": 15,
+        "noAskLevels": 10,
+        "displayedNoContracts": 2083,
         "noPriceWithinCap": true,
         "noPriceWithinCapAfterBuffer": true,
-        "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 1344.333,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 55.325,
         "quoteReceiptAgeSeconds": 0.001,
-        "bookReasons": [
-          "Book timestamp too old for simulation"
-        ],
+        "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
@@ -3221,28 +3476,42 @@
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T08:55:16.862Z",
-        "receivedAt": "2026-11-18T09:17:41.195Z",
-        "ageSeconds": 1344.333,
-        "noAsk": 0.95,
+        "asOf": "2026-11-18T18:09:36.535Z",
+        "receivedAt": "2026-11-18T18:10:31.860Z",
+        "ageSeconds": 55.325,
+        "noAsk": 0.89,
         "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "sourceAgeSeconds": 1344.333,
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 55.325,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:41.187Z",
-          "receivedAt": "2026-11-18T09:17:41.195Z",
-          "durationMs": 8,
-          "httpDate": "Wed, 18 Nov 2026 09:17:41 GMT",
-          "httpAge": "25",
+          "requestStartedAt": "2026-11-18T18:10:31.844Z",
+          "receivedAt": "2026-11-18T18:10:31.860Z",
+          "durationMs": 16,
+          "httpDate": "Wed, 18 Nov 2026 18:10:31 GMT",
+          "httpAge": "29",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
-            "priceU": 950000,
-            "qty": 15
+            "priceU": 890000,
+            "qty": 67
+          },
+          {
+            "priceU": 900000,
+            "qty": 69
+          },
+          {
+            "priceU": 910000,
+            "qty": 136
+          },
+          {
+            "priceU": 920000,
+            "qty": 8
+          },
+          {
+            "priceU": 930000,
+            "qty": 20
           }
         ]
       },
@@ -3266,13 +3535,13 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 2,
-        "displayedNoContracts": 10,
+        "noAskLevels": 4,
+        "displayedNoContracts": 53,
         "noPriceWithinCap": true,
         "noPriceWithinCapAfterBuffer": true,
         "sourceAgeOnlyBlocked": false,
-        "quoteSourceAgeSeconds": 36.749,
-        "quoteReceiptAgeSeconds": 0,
+        "quoteSourceAgeSeconds": 109.914,
+        "quoteReceiptAgeSeconds": 0.001,
         "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
@@ -3282,30 +3551,38 @@
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:17:04.696Z",
-        "receivedAt": "2026-11-18T09:17:41.445Z",
-        "ageSeconds": 36.749,
-        "noAsk": 0.96,
+        "asOf": "2026-11-18T18:08:42.200Z",
+        "receivedAt": "2026-11-18T18:10:32.114Z",
+        "ageSeconds": 109.914,
+        "noAsk": 0.94,
         "state": "MARKET_STATE_OPEN",
         "valid": true,
         "reasons": [],
-        "sourceAgeSeconds": 36.749,
+        "sourceAgeSeconds": 109.914,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:41.436Z",
-          "receivedAt": "2026-11-18T09:17:41.445Z",
-          "durationMs": 9,
-          "httpDate": "Wed, 18 Nov 2026 09:17:41 GMT",
-          "httpAge": "5",
+          "requestStartedAt": "2026-11-18T18:10:32.094Z",
+          "receivedAt": "2026-11-18T18:10:32.114Z",
+          "durationMs": 20,
+          "httpDate": "Wed, 18 Nov 2026 18:10:32 GMT",
+          "httpAge": "19",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
+          {
+            "priceU": 940000,
+            "qty": 29
+          },
+          {
+            "priceU": 950000,
+            "qty": 8
+          },
           {
             "priceU": 960000,
             "qty": 8
           },
           {
-            "priceU": 980000,
-            "qty": 2
+            "priceU": 970000,
+            "qty": 8
           }
         ]
       },
@@ -3329,16 +3606,14 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 4,
-        "displayedNoContracts": 18,
+        "noAskLevels": 13,
+        "displayedNoContracts": 3006,
         "noPriceWithinCap": true,
         "noPriceWithinCapAfterBuffer": true,
-        "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 1722.49,
-        "quoteReceiptAgeSeconds": 0.001,
-        "bookReasons": [
-          "Book timestamp too old for simulation"
-        ],
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 57.292,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
@@ -3347,40 +3622,42 @@
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T08:48:59.205Z",
-        "receivedAt": "2026-11-18T09:17:41.695Z",
-        "ageSeconds": 1722.49,
-        "noAsk": 0.86,
+        "asOf": "2026-11-18T18:09:35.066Z",
+        "receivedAt": "2026-11-18T18:10:32.358Z",
+        "ageSeconds": 57.292,
+        "noAsk": 0.5,
         "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "sourceAgeSeconds": 1722.49,
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 57.292,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:41.686Z",
-          "receivedAt": "2026-11-18T09:17:41.695Z",
-          "durationMs": 9,
-          "httpDate": "Wed, 18 Nov 2026 09:17:41 GMT",
-          "httpAge": "20",
+          "requestStartedAt": "2026-11-18T18:10:32.343Z",
+          "receivedAt": "2026-11-18T18:10:32.358Z",
+          "durationMs": 15,
+          "httpDate": "Wed, 18 Nov 2026 18:10:32 GMT",
+          "httpAge": "23",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
-            "priceU": 860000,
-            "qty": 13
+            "priceU": 500000,
+            "qty": 1418
           },
           {
-            "priceU": 880000,
-            "qty": 2
+            "priceU": 510000,
+            "qty": 17
           },
           {
-            "priceU": 900000,
-            "qty": 2
+            "priceU": 520000,
+            "qty": 6
           },
           {
-            "priceU": 990000,
-            "qty": 1
+            "priceU": 540000,
+            "qty": 5
+          },
+          {
+            "priceU": 600000,
+            "qty": 5
           }
         ]
       },
@@ -3404,13 +3681,13 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 1,
-        "displayedNoContracts": 6,
-        "noPriceWithinCap": false,
-        "noPriceWithinCapAfterBuffer": false,
+        "noAskLevels": 5,
+        "displayedNoContracts": 61,
+        "noPriceWithinCap": true,
+        "noPriceWithinCapAfterBuffer": true,
         "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 1828.017,
-        "quoteReceiptAgeSeconds": 0,
+        "quoteSourceAgeSeconds": 500.319,
+        "quoteReceiptAgeSeconds": 0.001,
         "bookReasons": [
           "Book timestamp too old for simulation"
         ],
@@ -3422,28 +3699,44 @@
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T08:47:13.927Z",
-        "receivedAt": "2026-11-18T09:17:41.944Z",
-        "ageSeconds": 1828.017,
-        "noAsk": 0.99,
+        "asOf": "2026-11-18T18:02:12.369Z",
+        "receivedAt": "2026-11-18T18:10:32.688Z",
+        "ageSeconds": 500.319,
+        "noAsk": 0.72,
         "state": "MARKET_STATE_OPEN",
         "valid": false,
         "reasons": [
           "Book timestamp too old for simulation"
         ],
-        "sourceAgeSeconds": 1828.017,
+        "sourceAgeSeconds": 500.319,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:41.936Z",
-          "receivedAt": "2026-11-18T09:17:41.944Z",
-          "durationMs": 8,
-          "httpDate": "Wed, 18 Nov 2026 09:17:41 GMT",
-          "httpAge": "15",
+          "requestStartedAt": "2026-11-18T18:10:32.594Z",
+          "receivedAt": "2026-11-18T18:10:32.688Z",
+          "durationMs": 94,
+          "httpDate": "Wed, 18 Nov 2026 18:10:32 GMT",
+          "httpAge": null,
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
+            "priceU": 720000,
+            "qty": 25
+          },
+          {
+            "priceU": 820000,
+            "qty": 5
+          },
+          {
+            "priceU": 870000,
+            "qty": 10
+          },
+          {
+            "priceU": 920000,
+            "qty": 20
+          },
+          {
             "priceU": 990000,
-            "qty": 6
+            "qty": 1
           }
         ]
       },
@@ -3467,16 +3760,14 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 2,
-        "displayedNoContracts": 25,
+        "noAskLevels": 3,
+        "displayedNoContracts": 273,
         "noPriceWithinCap": true,
-        "noPriceWithinCapAfterBuffer": true,
-        "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 409.468,
-        "quoteReceiptAgeSeconds": 0,
-        "bookReasons": [
-          "Book timestamp too old for simulation"
-        ],
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 12.884,
+        "quoteReceiptAgeSeconds": 0.001,
+        "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
@@ -3485,32 +3776,34 @@
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:10:52.727Z",
-        "receivedAt": "2026-11-18T09:17:42.195Z",
-        "ageSeconds": 409.468,
-        "noAsk": 0.9,
+        "asOf": "2026-11-18T18:10:20.006Z",
+        "receivedAt": "2026-11-18T18:10:32.890Z",
+        "ageSeconds": 12.884,
+        "noAsk": 0.97,
         "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "sourceAgeSeconds": 409.468,
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 12.884,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:42.186Z",
-          "receivedAt": "2026-11-18T09:17:42.195Z",
-          "durationMs": 9,
-          "httpDate": "Wed, 18 Nov 2026 09:17:42 GMT",
-          "httpAge": "11",
+          "requestStartedAt": "2026-11-18T18:10:32.843Z",
+          "receivedAt": "2026-11-18T18:10:32.890Z",
+          "durationMs": 47,
+          "httpDate": "Wed, 18 Nov 2026 18:10:32 GMT",
+          "httpAge": "9",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
-            "priceU": 900000,
-            "qty": 15
+            "priceU": 970000,
+            "qty": 122
           },
           {
             "priceU": 980000,
-            "qty": 10
+            "qty": 100
+          },
+          {
+            "priceU": 990000,
+            "qty": 51
           }
         ]
       },
@@ -3535,11 +3828,11 @@
       "diagnostic": {
         "evidenceEliminated": false,
         "noAskLevels": 1,
-        "displayedNoContracts": 15,
-        "noPriceWithinCap": true,
+        "displayedNoContracts": 1498,
+        "noPriceWithinCap": false,
         "noPriceWithinCapAfterBuffer": false,
         "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 1238.894,
+        "quoteSourceAgeSeconds": 122.053,
         "quoteReceiptAgeSeconds": 0.001,
         "bookReasons": [
           "Book timestamp too old for simulation"
@@ -3552,28 +3845,28 @@
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T08:57:03.549Z",
-        "receivedAt": "2026-11-18T09:17:42.443Z",
-        "ageSeconds": 1238.894,
-        "noAsk": 0.97,
+        "asOf": "2026-11-18T18:08:31.088Z",
+        "receivedAt": "2026-11-18T18:10:33.141Z",
+        "ageSeconds": 122.053,
+        "noAsk": 0.99,
         "state": "MARKET_STATE_OPEN",
         "valid": false,
         "reasons": [
           "Book timestamp too old for simulation"
         ],
-        "sourceAgeSeconds": 1238.894,
+        "sourceAgeSeconds": 122.053,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:42.436Z",
-          "receivedAt": "2026-11-18T09:17:42.443Z",
-          "durationMs": 7,
-          "httpDate": "Wed, 18 Nov 2026 09:17:42 GMT",
-          "httpAge": "25",
+          "requestStartedAt": "2026-11-18T18:10:33.093Z",
+          "receivedAt": "2026-11-18T18:10:33.141Z",
+          "durationMs": 48,
+          "httpDate": "Wed, 18 Nov 2026 18:10:33 GMT",
+          "httpAge": "2",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
-            "priceU": 970000,
-            "qty": 15
+            "priceU": 990000,
+            "qty": 1498
           }
         ]
       },
@@ -3597,13 +3890,13 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 1,
-        "displayedNoContracts": 9,
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
         "noPriceWithinCap": false,
         "noPriceWithinCapAfterBuffer": false,
         "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 1611.181,
-        "quoteReceiptAgeSeconds": 0.001,
+        "quoteSourceAgeSeconds": 267.15,
+        "quoteReceiptAgeSeconds": 0,
         "bookReasons": [
           "Book timestamp too old for simulation"
         ],
@@ -3615,30 +3908,25 @@
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T08:50:51.512Z",
-        "receivedAt": "2026-11-18T09:17:42.693Z",
-        "ageSeconds": 1611.181,
-        "noAsk": 0.98,
+        "asOf": "2026-11-18T18:06:06.207Z",
+        "receivedAt": "2026-11-18T18:10:33.357Z",
+        "ageSeconds": 267.15,
+        "noAsk": null,
         "state": "MARKET_STATE_OPEN",
         "valid": false,
         "reasons": [
           "Book timestamp too old for simulation"
         ],
-        "sourceAgeSeconds": 1611.181,
+        "sourceAgeSeconds": 267.15,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:42.686Z",
-          "receivedAt": "2026-11-18T09:17:42.693Z",
-          "durationMs": 7,
-          "httpDate": "Wed, 18 Nov 2026 09:17:42 GMT",
-          "httpAge": "5",
+          "requestStartedAt": "2026-11-18T18:10:33.343Z",
+          "receivedAt": "2026-11-18T18:10:33.357Z",
+          "durationMs": 14,
+          "httpDate": "Wed, 18 Nov 2026 18:10:33 GMT",
+          "httpAge": "29",
           "cacheControl": "public, max-age=30"
         },
-        "topNoAsks": [
-          {
-            "priceU": 980000,
-            "qty": 9
-          }
-        ]
+        "topNoAsks": []
       },
       "signal": null,
       "quoteCapacity": null
@@ -3660,16 +3948,14 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 4,
-        "displayedNoContracts": 18,
+        "noAskLevels": 8,
+        "displayedNoContracts": 81,
         "noPriceWithinCap": true,
         "noPriceWithinCapAfterBuffer": true,
-        "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 1698.377,
-        "quoteReceiptAgeSeconds": 0,
-        "bookReasons": [
-          "Book timestamp too old for simulation"
-        ],
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 51.621,
+        "quoteReceiptAgeSeconds": 0.001,
+        "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
@@ -3678,40 +3964,42 @@
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T08:49:24.583Z",
-        "receivedAt": "2026-11-18T09:17:42.960Z",
-        "ageSeconds": 1698.377,
-        "noAsk": 0.8,
+        "asOf": "2026-11-18T18:09:41.985Z",
+        "receivedAt": "2026-11-18T18:10:33.606Z",
+        "ageSeconds": 51.621,
+        "noAsk": 0.84,
         "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "sourceAgeSeconds": 1698.377,
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 51.621,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:42.935Z",
-          "receivedAt": "2026-11-18T09:17:42.960Z",
-          "durationMs": 25,
-          "httpDate": "Wed, 18 Nov 2026 09:17:42 GMT",
-          "httpAge": null,
+          "requestStartedAt": "2026-11-18T18:10:33.593Z",
+          "receivedAt": "2026-11-18T18:10:33.606Z",
+          "durationMs": 13,
+          "httpDate": "Wed, 18 Nov 2026 18:10:33 GMT",
+          "httpAge": "23",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
-            "priceU": 800000,
-            "qty": 13
-          },
-          {
-            "priceU": 820000,
-            "qty": 2
-          },
-          {
             "priceU": 840000,
-            "qty": 2
+            "qty": 33
           },
           {
-            "priceU": 990000,
-            "qty": 1
+            "priceU": 850000,
+            "qty": 5
+          },
+          {
+            "priceU": 860000,
+            "qty": 21
+          },
+          {
+            "priceU": 880000,
+            "qty": 4
+          },
+          {
+            "priceU": 940000,
+            "qty": 5
           }
         ]
       },
@@ -3736,15 +4024,13 @@
       "diagnostic": {
         "evidenceEliminated": false,
         "noAskLevels": 1,
-        "displayedNoContracts": 6,
+        "displayedNoContracts": 26,
         "noPriceWithinCap": false,
         "noPriceWithinCapAfterBuffer": false,
-        "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 1667.628,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 31.061,
         "quoteReceiptAgeSeconds": 0.001,
-        "bookReasons": [
-          "Book timestamp too old for simulation"
-        ],
+        "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
@@ -3753,28 +4039,26 @@
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T08:49:55.565Z",
-        "receivedAt": "2026-11-18T09:17:43.193Z",
-        "ageSeconds": 1667.628,
+        "asOf": "2026-11-18T18:10:02.796Z",
+        "receivedAt": "2026-11-18T18:10:33.857Z",
+        "ageSeconds": 31.061,
         "noAsk": 0.99,
         "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "sourceAgeSeconds": 1667.628,
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 31.061,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:43.185Z",
-          "receivedAt": "2026-11-18T09:17:43.193Z",
-          "durationMs": 8,
-          "httpDate": "Wed, 18 Nov 2026 09:17:43 GMT",
+          "requestStartedAt": "2026-11-18T18:10:33.843Z",
+          "receivedAt": "2026-11-18T18:10:33.857Z",
+          "durationMs": 14,
+          "httpDate": "Wed, 18 Nov 2026 18:10:33 GMT",
           "httpAge": "10",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
             "priceU": 990000,
-            "qty": 6
+            "qty": 26
           }
         ]
       },
@@ -3799,15 +4083,13 @@
       "diagnostic": {
         "evidenceEliminated": false,
         "noAskLevels": 1,
-        "displayedNoContracts": 11,
-        "noPriceWithinCap": true,
-        "noPriceWithinCapAfterBuffer": true,
-        "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 1419.653,
-        "quoteReceiptAgeSeconds": 0,
-        "bookReasons": [
-          "Book timestamp too old for simulation"
-        ],
+        "displayedNoContracts": 32,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 26.907,
+        "quoteReceiptAgeSeconds": 0.001,
+        "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
@@ -3816,28 +4098,26 @@
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T08:54:03.791Z",
-        "receivedAt": "2026-11-18T09:17:43.444Z",
-        "ageSeconds": 1419.653,
-        "noAsk": 0.96,
+        "asOf": "2026-11-18T18:10:07.200Z",
+        "receivedAt": "2026-11-18T18:10:34.107Z",
+        "ageSeconds": 26.907,
+        "noAsk": 0.99,
         "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "sourceAgeSeconds": 1419.653,
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 26.907,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:43.434Z",
-          "receivedAt": "2026-11-18T09:17:43.444Z",
-          "durationMs": 10,
-          "httpDate": "Wed, 18 Nov 2026 09:17:43 GMT",
-          "httpAge": "19",
+          "requestStartedAt": "2026-11-18T18:10:34.092Z",
+          "receivedAt": "2026-11-18T18:10:34.107Z",
+          "durationMs": 15,
+          "httpDate": "Wed, 18 Nov 2026 18:10:34 GMT",
+          "httpAge": "26",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
-            "priceU": 960000,
-            "qty": 11
+            "priceU": 990000,
+            "qty": 32
           }
         ]
       },
@@ -3862,12 +4142,12 @@
       "diagnostic": {
         "evidenceEliminated": false,
         "noAskLevels": 1,
-        "displayedNoContracts": 15,
+        "displayedNoContracts": 42,
         "noPriceWithinCap": false,
         "noPriceWithinCapAfterBuffer": false,
         "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 292.689,
-        "quoteReceiptAgeSeconds": 0.001,
+        "quoteSourceAgeSeconds": 184.184,
+        "quoteReceiptAgeSeconds": 0,
         "bookReasons": [
           "Book timestamp too old for simulation"
         ],
@@ -3879,28 +4159,28 @@
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T09:12:51.002Z",
-        "receivedAt": "2026-11-18T09:17:43.691Z",
-        "ageSeconds": 292.689,
-        "noAsk": 0.98,
+        "asOf": "2026-11-18T18:07:30.178Z",
+        "receivedAt": "2026-11-18T18:10:34.362Z",
+        "ageSeconds": 184.184,
+        "noAsk": 0.99,
         "state": "MARKET_STATE_OPEN",
         "valid": false,
         "reasons": [
           "Book timestamp too old for simulation"
         ],
-        "sourceAgeSeconds": 292.689,
+        "sourceAgeSeconds": 184.184,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:43.684Z",
-          "receivedAt": "2026-11-18T09:17:43.691Z",
-          "durationMs": 7,
-          "httpDate": "Wed, 18 Nov 2026 09:17:43 GMT",
-          "httpAge": "9",
+          "requestStartedAt": "2026-11-18T18:10:34.342Z",
+          "receivedAt": "2026-11-18T18:10:34.362Z",
+          "durationMs": 20,
+          "httpDate": "Wed, 18 Nov 2026 18:10:34 GMT",
+          "httpAge": "20",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
           {
-            "priceU": 980000,
-            "qty": 15
+            "priceU": 990000,
+            "qty": 42
           }
         ]
       },
@@ -3924,16 +4204,14 @@
       "detail": null,
       "diagnostic": {
         "evidenceEliminated": false,
-        "noAskLevels": 2,
-        "displayedNoContracts": 15,
-        "noPriceWithinCap": true,
-        "noPriceWithinCapAfterBuffer": true,
-        "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 1599.312,
-        "quoteReceiptAgeSeconds": 0,
-        "bookReasons": [
-          "Book timestamp too old for simulation"
-        ],
+        "noAskLevels": 0,
+        "displayedNoContracts": 0,
+        "noPriceWithinCap": false,
+        "noPriceWithinCapAfterBuffer": false,
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 23.115,
+        "quoteReceiptAgeSeconds": 0.001,
+        "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
@@ -3942,34 +4220,23 @@
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T08:51:04.631Z",
-        "receivedAt": "2026-11-18T09:17:43.943Z",
-        "ageSeconds": 1599.312,
-        "noAsk": 0.95,
+        "asOf": "2026-11-18T18:10:11.493Z",
+        "receivedAt": "2026-11-18T18:10:34.608Z",
+        "ageSeconds": 23.115,
+        "noAsk": null,
         "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "sourceAgeSeconds": 1599.312,
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 23.115,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:43.935Z",
-          "receivedAt": "2026-11-18T09:17:43.943Z",
-          "durationMs": 8,
-          "httpDate": "Wed, 18 Nov 2026 09:17:43 GMT",
-          "httpAge": "12",
+          "requestStartedAt": "2026-11-18T18:10:34.593Z",
+          "receivedAt": "2026-11-18T18:10:34.608Z",
+          "durationMs": 15,
+          "httpDate": "Wed, 18 Nov 2026 18:10:34 GMT",
+          "httpAge": "9",
           "cacheControl": "public, max-age=30"
         },
-        "topNoAsks": [
-          {
-            "priceU": 950000,
-            "qty": 9
-          },
-          {
-            "priceU": 960000,
-            "qty": 6
-          }
-        ]
+        "topNoAsks": []
       },
       "signal": null,
       "quoteCapacity": null
@@ -3995,12 +4262,10 @@
         "displayedNoContracts": 6,
         "noPriceWithinCap": false,
         "noPriceWithinCapAfterBuffer": false,
-        "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 1687.621,
-        "quoteReceiptAgeSeconds": 0.001,
-        "bookReasons": [
-          "Book timestamp too old for simulation"
-        ],
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 62.698,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
@@ -4009,22 +4274,20 @@
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T08:49:36.593Z",
-        "receivedAt": "2026-11-18T09:17:44.214Z",
-        "ageSeconds": 1687.621,
+        "asOf": "2026-11-18T18:09:32.162Z",
+        "receivedAt": "2026-11-18T18:10:34.860Z",
+        "ageSeconds": 62.698,
         "noAsk": 0.99,
         "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "sourceAgeSeconds": 1687.621,
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 62.698,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:44.185Z",
-          "receivedAt": "2026-11-18T09:17:44.214Z",
-          "durationMs": 29,
-          "httpDate": "Wed, 18 Nov 2026 09:17:44 GMT",
-          "httpAge": null,
+          "requestStartedAt": "2026-11-18T18:10:34.842Z",
+          "receivedAt": "2026-11-18T18:10:34.860Z",
+          "durationMs": 18,
+          "httpDate": "Wed, 18 Nov 2026 18:10:34 GMT",
+          "httpAge": "1",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
@@ -4058,12 +4321,10 @@
         "displayedNoContracts": 6,
         "noPriceWithinCap": false,
         "noPriceWithinCapAfterBuffer": false,
-        "sourceAgeOnlyBlocked": true,
-        "quoteSourceAgeSeconds": 1796.036,
-        "quoteReceiptAgeSeconds": 0.001,
-        "bookReasons": [
-          "Book timestamp too old for simulation"
-        ],
+        "sourceAgeOnlyBlocked": false,
+        "quoteSourceAgeSeconds": 51.701,
+        "quoteReceiptAgeSeconds": 0,
+        "bookReasons": [],
         "ruleIssues": [],
         "weatherFresh": false,
         "availablePaperBudgetU": 100000000,
@@ -4072,22 +4333,20 @@
       "evidence": null,
       "weatherConflict": false,
       "book": {
-        "asOf": "2026-11-18T08:47:48.406Z",
-        "receivedAt": "2026-11-18T09:17:44.442Z",
-        "ageSeconds": 1796.036,
+        "asOf": "2026-11-18T18:09:43.407Z",
+        "receivedAt": "2026-11-18T18:10:35.108Z",
+        "ageSeconds": 51.701,
         "noAsk": 0.99,
         "state": "MARKET_STATE_OPEN",
-        "valid": false,
-        "reasons": [
-          "Book timestamp too old for simulation"
-        ],
-        "sourceAgeSeconds": 1796.036,
+        "valid": true,
+        "reasons": [],
+        "sourceAgeSeconds": 51.701,
         "transport": {
-          "requestStartedAt": "2026-11-18T09:17:44.435Z",
-          "receivedAt": "2026-11-18T09:17:44.442Z",
-          "durationMs": 7,
-          "httpDate": "Wed, 18 Nov 2026 09:17:44 GMT",
-          "httpAge": "13",
+          "requestStartedAt": "2026-11-18T18:10:35.093Z",
+          "receivedAt": "2026-11-18T18:10:35.108Z",
+          "durationMs": 15,
+          "httpDate": "Wed, 18 Nov 2026 18:10:35 GMT",
+          "httpAge": "20",
           "cacheControl": "public, max-age=30"
         },
         "topNoAsks": [
@@ -4108,14 +4367,50 @@
     "Fee schedule review overdue; observations continue but paper entries paused"
   ],
   "discovery": {
-    "at": "2026-11-18T09:14:31.193Z",
+    "at": "2026-11-18T18:07:19.011Z",
     "ok": true,
     "complete": true,
-    "eventCount": 12,
+    "eventCount": 18,
     "matched": 60,
     "watched": 60,
-    "rejectedCount": 12,
+    "rejectedCount": 18,
     "rejections": [
+      {
+        "slug": "tc-temp-phlhigh-2026-11-20-lt64f",
+        "issues": [
+          "Exact supported station not unambiguously identified in rules"
+        ]
+      },
+      {
+        "slug": "tc-temp-phlhigh-2026-11-20-gte64lt65f",
+        "issues": [
+          "Exact supported station not unambiguously identified in rules"
+        ]
+      },
+      {
+        "slug": "tc-temp-phlhigh-2026-11-20-gte66lt67f",
+        "issues": [
+          "Exact supported station not unambiguously identified in rules"
+        ]
+      },
+      {
+        "slug": "tc-temp-phlhigh-2026-11-20-gte68lt69f",
+        "issues": [
+          "Exact supported station not unambiguously identified in rules"
+        ]
+      },
+      {
+        "slug": "tc-temp-phlhigh-2026-11-20-gte70lt71f",
+        "issues": [
+          "Exact supported station not unambiguously identified in rules"
+        ]
+      },
+      {
+        "slug": "tc-temp-phlhigh-2026-11-20-gte72f",
+        "issues": [
+          "Exact supported station not unambiguously identified in rules"
+        ]
+      },
       {
         "slug": "tc-temp-phlhigh-2026-11-19-lt62f",
         "issues": [
@@ -4298,29 +4593,32 @@
   "sourceChecks": {
     "aviation": {
       "ok": true,
-      "checkedAt": "2026-11-18T09:16:29.994Z",
+      "checkedAt": "2026-11-18T18:09:17.697Z",
       "evidenceIds": [
-        "3132bcdb1c7074d4d91bf85e5425f950c20b8945af149b5c81ca5fbff69caa5f",
-        "ece02c18de40b7588434cb100e9291e8e233cd1a3e23028b72963ad6b315c0ec",
-        "8ae1cc0beee17b2273b01f6b2446a800d86491ef9f4000194d40e84f5b2abe72",
-        "37422cc365956655140aefc661afae24eaaaca536128cbb175aca8a30e81bdfe",
-        "d34b92d98454ed182eab6a2fcac2acacf6271dce13c54aab9c13c5b1da1cd4d3",
-        "c089d1211b0e3e33afbd83db0dec361b4ee5a65d6a887bef4e73a11d66f616fc",
-        "5f9696048c0332855b1ffb69c88cf9d0ff3f7e383856443819b2bd4752a73b65",
-        "86d0d0edcbaab2e7774e68ec90ac25f4d5306562cabb3229cbef347456610ec2",
-        "f1c4d21acc527d0c4ce7fd99ba45c1a95bc94f4c2dc7feea37f8ea6d695e57cb",
-        "e275fd8c43e0e3e4b8e08a2f56bdefb3c8adcb90148d2f843807b07b9cee5d39",
-        "8704c3aee6192e833a2c60015599fb9c1e23a39f5ed9fa90498ffb11194f3695",
-        "6cd12d48a5695563a7593e47035a95550223d7c58a05b98dd54840ebde29ba0b",
-        "e71ceb1c8b5868c43ba3f91eeb46c244b2f8d7949a65218cf753c042ecd13866",
-        "8a9d55ed61f9183ddd3130295d6ff47d1e9758459791a9875cc9db90a8316d72"
+        "c9ac4c1fc0a8d57914fe458a40c9c1d6660ac8790ab8460a0c34bc099a270970",
+        "f2c20c763edf1dd2a55c95ff3d443128ed37e076afff56b79875cee26e7d0fef",
+        "073ba15f0d34267ab22d1a4efeef9b3d18ed2884d87556bb74c92fab13b4d863",
+        "0d9193cce008cfc5b7c7cfdc81a2f34af683635ee2a2fabf650a53fadbc6eca8",
+        "d96d940d8e03b87e120caa357f2d8e02812dccb5d0edf3deb11620b3c1d16f52",
+        "4fba094c29b4175f9c1d7dd05e54d26a78cf60001c5564037ffe6d6642eb7f6f",
+        "96427367d671360dada9557ff1951ae2a81ae0743402ad0ce18dcc736db47f7f",
+        "27e70617aa1fb7a8e40c8615da574e7e44bcc7f07b87a94dc66c1d033d207923",
+        "5193dc2e933ca5ce4a2f67fa49dbe39e3656d6fcaba23fabd215dddb2edd7231",
+        "32dee516f497c0a5841e0fe17056c878850a5f74fe3b09a32d38a4a0c83f7ce5",
+        "c6d07179c6e5da961c79d3a4190c2b5f9f12ccfe3bad0566963a8b3addf04fbe",
+        "93089b070953b259699b80a012449ebc85ea7a9286c59167913b71bbec698a4c",
+        "deb29c9f3f7d11e18199e8ccc260980bf102c30474a5fa19a560313bd8b26f0a",
+        "bce1296cc89ce5885b3f47eaf359ebcd6414e7e1a25530026c95a6e58fe32f83",
+        "30cfb9210b68521c26c8d54871d42c0eb958fd92f0a5e0577ec8357421645df1",
+        "f3186c71b877d1101ae5c307533c5c46fd6e5c6c8de695782c3e61cba7662392",
+        "d29a19442cc0b4c8bcbeba3c3197960a1d5d8acc630b54f8d1d677e4a8e55a04"
       ],
-      "records": 14,
+      "records": 17,
       "via": "shared observation collector"
     },
     "cli:KNYC": {
       "ok": true,
-      "checkedAt": "2026-11-18T09:16:30.150Z",
+      "checkedAt": "2026-11-18T18:09:17.834Z",
       "evidenceIds": [
         "2ea25460e030dec9331801518ca0b476bd670af23f70e1b3f66d794bf83b2f16",
         "7ac861b56912406d129fbea0a3fe297457495ed4ad6a0e554954c122d6a918bb",
@@ -4332,19 +4630,19 @@
     },
     "cli:KMIA": {
       "ok": true,
-      "checkedAt": "2026-11-18T09:16:30.376Z",
+      "checkedAt": "2026-11-18T18:09:18.010Z",
       "evidenceIds": [
-        "806b1c4eab4fb34d4019bfea1caccc0fa39c4d42f5fc2046320aabbdea58bb2f",
         "c9bbe5eb4f6f2e832daf92ca59401ab663a6e960ecfc77af9b1adb9bb1479b96",
         "6898c3c417873ad73b7856938b491c8a8d439b8c4b6f0fec9edad799e3fb0533",
-        "96b24e8774da60e3bb7c36e51ee1b3b64c1c5d47529d6cebaabadb15e33f6182"
+        "96b24e8774da60e3bb7c36e51ee1b3b64c1c5d47529d6cebaabadb15e33f6182",
+        "5a9ebc122fafc4ba1cd9fa5c1abaf39c5b05f5b08348dcf5f2716410266d057d"
       ],
       "records": 4,
       "via": "shared observation collector"
     },
     "cli:KMDW": {
       "ok": true,
-      "checkedAt": "2026-11-18T09:16:30.532Z",
+      "checkedAt": "2026-11-18T18:09:18.250Z",
       "evidenceIds": [
         "48f2a8f68b1caaf1e50762ee08a215ecdff630916f90eb53020ed5a7f1cb1ef5",
         "7fc4f03bb9e0d2861889969887e7d52284337bcca9f04376fcf4b1b704e60fb3",
@@ -4356,7 +4654,7 @@
     },
     "cli:KLAX": {
       "ok": true,
-      "checkedAt": "2026-11-18T09:16:30.804Z",
+      "checkedAt": "2026-11-18T18:09:18.477Z",
       "evidenceIds": [
         "e27a427cdf95ca03bf9fff426946940a1654ac7a51358bf966e576c43ac9a809",
         "015cde538c3356cf2a9398209ffcaf149c9ebb1020f1b0aa6fb89d35510af764",
@@ -4368,7 +4666,7 @@
     },
     "cli:KSFO": {
       "ok": true,
-      "checkedAt": "2026-11-18T09:16:31.042Z",
+      "checkedAt": "2026-11-18T18:09:18.791Z",
       "evidenceIds": [
         "28ab5face3dc992a2bb7ade573ea5caf1f59c1e5357f38313502d832fb1f25e3",
         "ef68fe8e00adf1681b61098c227fad7f46d320b9176850e960cfc523e0969a7b",
@@ -4382,23 +4680,23 @@
   "researchDiagnostics": {
     "version": "1.1.0",
     "since": "2026-11-18T01:46:54.123Z",
-    "observations": 480,
+    "observations": 720,
     "statusCounts": {
-      "FEE_REVIEW_REQUIRED": 480
+      "FEE_REVIEW_REQUIRED": 720
     },
-    "eliminatedChecks": 52,
-    "eliminatedWithoutNoAsks": 52,
-    "sourceAgeOnlyBlocks": 254
+    "eliminatedChecks": 100,
+    "eliminatedWithoutNoAsks": 100,
+    "sourceAgeOnlyBlocks": 327
   },
   "sampling": {
     "since": "2026-09-22T23:36:20.036Z",
-    "cycles": 9038,
-    "gapCount": 9038,
-    "totalGapSeconds": 4873591.488999961,
+    "cycles": 9042,
+    "gapCount": 9042,
+    "totalGapSeconds": 4905559.16199996,
     "maxGapSeconds": 75294.17,
-    "gapsOver180": 2259,
-    "gapsOver300": 2199
+    "gapsOver180": 2260,
+    "gapsOver300": 2200
   },
-  "lastCycleGapSeconds": 60.034,
+  "lastCycleGapSeconds": 60.023,
   "caveat": "Hypothetical fills and conditional returns only. Published evidence can be corrected. Book liquidity may disappear. CLI check is not exchange settlement."
 }
