@@ -2,7 +2,11 @@
 
 // Research mathematics and a paper ledger only. No account or order API exists here.
 const crypto = require('node:crypto');
-const VERSION = 'crypto-research-0.1.0';
+const VERSION = 'crypto-research-0.2.0';
+const ASSETS = Object.freeze({
+  btc: {symbol: 'btc', name: 'Bitcoin', indexSymbol: 'BRTI', instrumentPrefix: 'cpc'},
+  eth: {symbol: 'eth', name: 'Ethereum', indexSymbol: 'ETHUSD_RTI', instrumentPrefix: 'cpceth'}
+});
 const iso = ms => new Date(ms).toISOString();
 const finite = x => x !== null && x !== undefined && x !== '' && Number.isFinite(Number(x));
 const mean = xs => xs.reduce((a, b) => a + b, 0) / xs.length;
@@ -12,6 +16,9 @@ function amount(x) {
 }
 function validateConfig(c) {
   if (c.venue !== 'POLYMARKET_US' || c.liveTradingEnabled !== false) throw new Error('This collector supports paper research only');
+  if (!Array.isArray(c.assets) || !c.assets.length || c.assets.some(a => !ASSETS[a]) || new Set(c.assets).size !== c.assets.length) throw new Error('Invalid research assets');
+  if (!Array.isArray(c.horizons) || c.horizons.length !== 2 || !c.horizons.includes(5) || !c.horizons.includes(15)) throw new Error('Both 5m and 15m horizons are required');
+  if (c.maximumMarkets < c.assets.length * c.horizons.length) throw new Error('Market limit must cover every configured stream');
   for (const [key, lo, hi] of [
     ['paperBankrollUsd', 100, 1e6], ['paperContractsPerOrder', 1, 100],
     ['paperMaxExposureUsd', 1, 1000], ['minimumEdge', .01, .3], ['slippageReserve', .001, .05],
@@ -24,30 +31,33 @@ function validateConfig(c) {
 }
 function parseMarket(raw) {
   const t = raw?.assetPriceTerms;
+  const asset = t?.asset?.symbol?.toLowerCase(), spec = ASSETS[asset];
   const start = Date.parse(t?.windowStart), end = Date.parse(t?.windowEnd);
   if (!/^[a-z0-9-]{1,160}$/.test(raw?.slug || '') ||
       t?.marketType !== 'ASSET_PRICE_MARKET_TYPE_UP_DOWN' ||
-      t?.asset?.assetClass !== 'ASSET_CLASS_CRYPTO' || t?.asset?.symbol?.toLowerCase() !== 'btc' ||
-      t?.indexSymbol !== 'BRTI' || ![300000, 900000].includes(end - start)) return null;
+      t?.asset?.assetClass !== 'ASSET_CLASS_CRYPTO' || !spec ||
+      t?.indexSymbol !== spec.indexSymbol || ![300000, 900000].includes(end - start)) return null;
   const rules = String(raw.description || '');
   // Typed terms establish identity; rules must also confirm the settlement statistic.
-  const verified = /60\s+BRTI\s+prices/i.test(rules) && /simple average/i.test(rules) && /greater than or equal/i.test(rules);
+  const verified = new RegExp('60\\s+' + spec.indexSymbol + '\\s+prices', 'i').test(rules) && /simple average/i.test(rules) && /greater than or equal/i.test(rules);
   const fee = finite(raw.feeCoefficient) && Number(raw.feeCoefficient) >= 0 && Number(raw.feeCoefficient) <= 1 ? Number(raw.feeCoefficient) : null;
   const strike = amount(t.priceToBeat);
   return {
-    slug: raw.slug, eventSlug: raw.events?.[0]?.slug || raw.slug.replace(/^cpc-/, ''),
-    title: String(raw.question || 'BTC Up or Down'), horizon: (end - start) / 60000 + 'm',
+    asset, assetName: spec.name, indexSymbol: spec.indexSymbol,
+    slug: raw.slug, eventSlug: raw.events?.[0]?.slug || raw.slug.replace(new RegExp('^' + spec.instrumentPrefix + '-'), ''),
+    title: String(raw.question || asset.toUpperCase() + ' Up or Down'), horizon: (end - start) / 60000 + 'm',
     startAt: iso(start), endAt: iso(end), referencePrice: strike > 0 ? strike : null,
     priceDecimals: Number.isInteger(t.priceDecimals) ? t.priceDecimals : 2,
     rulesVerified: verified, rulesHash: crypto.createHash('sha256').update(rules).digest('hex'),
     description: rules, feeCoefficient: fee, status: raw.status || 'UNKNOWN',
     active: raw.active === true && raw.closed !== true,
-    url: 'https://polymarket.us/event/' + (raw.events?.[0]?.slug || raw.slug.replace(/^cpc-/, ''))
+    url: 'https://polymarket.us/event/' + (raw.events?.[0]?.slug || raw.slug.replace(new RegExp('^' + spec.instrumentPrefix + '-'), ''))
   };
 }
-function parseCandles(payload, bucket, now) {
-  const series = payload?.series?.find(s => s.asset?.assetClass === 'ASSET_CLASS_CRYPTO' && s.asset.symbol?.toLowerCase() === 'btc');
-  if (!series || series.currency !== 'USD' || series.bucket !== bucket || !Array.isArray(series.candles)) throw new Error('Unexpected BRTI history schema');
+function parseCandles(payload, bucket, now, asset = 'btc') {
+  if (!ASSETS[asset]) throw new Error('Unsupported price asset');
+  const series = payload?.series?.find(s => s.asset?.assetClass === 'ASSET_CLASS_CRYPTO' && s.asset.symbol?.toLowerCase() === asset);
+  if (!series || series.currency !== 'USD' || series.bucket !== bucket || !Array.isArray(series.candles)) throw new Error('Unexpected ' + asset.toUpperCase() + ' reference history schema');
   const step = bucket === 'ASSET_PRICE_BUCKET_1M' ? 60 : 1;
   const seen = new Map();
   for (const r of series.candles) {
@@ -139,11 +149,12 @@ function fitVariance(candles, cfg, now) {
     trainingFrom: iso(candles[0].at * 1000), trainingThrough: iso((candles.at(-1).at + 60) * 1000),
     samples: rows.length, coefficients, smearing, minuteVariance: bounded ? null : raw,
     baselineVariance, degreesOfFreedom: cfg.studentDegreesOfFreedom,
-    method: 'HAR-style regression on squared one-minute BRTI close returns; fixed Student-t tails; zero drift',
+    method: 'HAR-style regression on squared one-minute reference-index close returns; fixed Student-t tails; zero drift',
     calibration: 'Unvalidated. Minute returns are a realized-variance proxy, not tick-level HAR RV.'
   };
 }
 function valueMarket(m, model, seconds, now, variance = model.minuteVariance) {
+  if (model.asset && model.asset !== m.asset) return null;
   const last = seconds.at(-1), t = now / 1000, end = Date.parse(m.endAt) / 1000;
   if (!last || !(variance > 0) || !(m.referencePrice > 0) || t >= end || t < Date.parse(m.startAt) / 1000) return null;
   const averagingStart = end - 60;
@@ -207,12 +218,12 @@ function decision(m, book, valuation, model, now, cfg) {
   if (!m.rulesVerified) reasons.push('Settlement rules unverified');
   if (m.feeCoefficient === null) reasons.push('Fee coefficient missing');
   if (model.status !== 'PROVISIONAL') reasons.push('Volatility model unavailable');
-  if (!valuation) reasons.push('Reference price or complete BRTI samples unavailable');
+  if (!valuation) reasons.push('Reference price or complete index samples unavailable');
   if (!m.active || m.status !== 'MARKET_STATUS_OPEN') reasons.push('Market not open');
   if (Date.parse(m.startAt) > now) reasons.push('Window has not started');
   if (Date.parse(m.endAt) - now < cfg.minimumRemainingSeconds * 1000) reasons.push('Too close to expiry');
   if (!book?.usable) reasons.push('Usable order book unavailable');
-  for (const [label, stamp] of [['Book', book?.sourceAt], ['BRTI', valuation?.sourceAt]]) {
+  for (const [label, stamp] of [['Book', book?.sourceAt], [m.indexSymbol || 'Reference index', valuation?.sourceAt]]) {
     const age = (now - Date.parse(stamp || '')) / 1000;
     if (!Number.isFinite(age) || age < -1 || age > cfg.maxSourceAgeSeconds) reasons.push(label + ' timestamp stale or missing');
   }
@@ -226,7 +237,7 @@ function openPaperTrade(state, m, d, now, cfg, signalAt) {
   const realized = state.trades.filter(t => t.status === 'SETTLED').reduce((s, t) => s + t.pnl, 0);
   const exposure = state.trades.filter(t => t.status === 'OPEN').reduce((s, t) => s + t.totalCost, 0);
   if (exposure + c.totalCost > cfg.paperMaxExposureUsd || exposure + c.totalCost > cfg.paperBankrollUsd + realized) return null;
-  const trade = {...c, id: m.slug + ':paper-v1', market: m.slug, horizon: m.horizon, endAt: m.endAt,
+  const trade = {...c, id: m.slug + ':paper-v1', market: m.slug, asset: m.asset || 'btc', horizon: m.horizon, endAt: m.endAt,
     enteredAt: iso(now), signalAt, modelVersion: VERSION, feeCoefficient: m.feeCoefficient,
     status: 'OPEN', payout: null, pnl: null, simulation: 'Later observed book, full depth, fee rounding and adverse-price reserve; no queue-fill claim'};
   state.trades.push(trade); return trade;
@@ -249,11 +260,21 @@ function stats(state, cfg) {
     const rows = scores.filter(m => Math.min(4, Math.floor(m.forecast.pUp * 5)) === i);
     return {low: i * .2, high: (i + 1) * .2, n: rows.length, predicted: rows.length ? mean(rows.map(m => m.forecast.pUp)) : null, actual: rows.length ? mean(rows.map(m => m.result)) : null};
   });
+  const streams = [];
+  for (const asset of cfg.assets || ['btc']) for (const h of cfg.horizons || [5, 15]) {
+    const horizon = h + 'm', records = Object.values(state.markets).filter(m => (m.asset || 'btc') === asset && m.horizon === horizon);
+    const graded = records.filter(m => m.forecast && [0, 1].includes(m.result));
+    const trades = state.trades.filter(t => (t.asset || 'btc') === asset && t.horizon === horizon), done = trades.filter(t => t.status === 'SETTLED');
+    streams.push({asset, horizon, observedWindows: records.length, forecastWindows: records.filter(m => m.forecast).length,
+      scoredMarkets: graded.length, brier: graded.length ? mean(graded.map(m => (m.forecast.pUp - m.result) ** 2)) : null,
+      baselineBrier: graded.length ? mean(graded.map(m => (m.forecast.baselinePUp - m.result) ** 2)) : null,
+      paperTrades: trades.length, settledTrades: done.length, realizedPnl: done.reduce((s, t) => s + t.pnl, 0)});
+  }
   return {startingBankroll: cfg.paperBankrollUsd, realizedPnl: pnl, equity: cfg.paperBankrollUsd + pnl,
     availableCash: cfg.paperBankrollUsd + pnl - exposure, openExposure: exposure, openTrades: open.length,
     settledTrades: settled.length, wins: settled.filter(t => t.pnl > 0).length,
     winRate: settled.length ? settled.filter(t => t.pnl > 0).length / settled.length : null,
-    maxDrawdown, equityCurve, scoredMarkets: scores.length, brier, baselineBrier, calibration: bins};
+    maxDrawdown, equityCurve, scoredMarkets: scores.length, brier, baselineBrier, calibration: bins, streams};
 }
-module.exports = {VERSION, iso, amount, validateConfig, parseMarket, parseCandles, studentCDF,
+module.exports = {VERSION, ASSETS, iso, amount, validateConfig, parseMarket, parseCandles, studentCDF,
   fitVariance, valueMarket, parseBook, sweep, decision, openPaperTrade, settleRecord, stats};

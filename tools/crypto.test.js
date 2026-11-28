@@ -6,7 +6,8 @@ const os = require('node:os');
 const path = require('node:path');
 const zlib = require('node:zlib');
 const C = require('../scripts/crypto/core');
-const {collect, createReader} = require('../scripts/crypto/collector');
+const {collect, createReader, migrateState} = require('../scripts/crypto/collector');
+const {needsCollection} = require('../scripts/crypto-freshness');
 const cfg = require('../scripts/crypto/config.json');
 const at = Date.parse('2026-11-28T03:41:02Z');
 function rawMarket() {
@@ -20,12 +21,13 @@ function book(now = at, bid = .19, ask = .2) {
   return C.parseBook({marketData: {marketSlug: rawMarket().slug, state: 'MARKET_STATE_OPEN', transactTime: C.iso(now),
     bids: [{px: {value: bid, currency: 'USD'}, qty: '100'}], offers: [{px: {value: ask, currency: 'USD'}, qty: '100'}]}}, rawMarket().slug, C.iso(now));
 }
-function history(bucket, now = at) {
+function history(bucket, now = at, asset = 'btc') {
   const step = bucket === 'ASSET_PRICE_BUCKET_1M' ? 60 : 1, count = step === 60 ? 1000 : 3600;
   const end = Math.floor(now / 1000 / step) * step;
-  return {series: [{asset: {assetClass: 'ASSET_CLASS_CRYPTO', symbol: 'btc'}, currency: 'USD', bucket,
+  const base = asset === 'btc' ? 60000 : 1660, volatility = asset === 'btc' ? .0004 : .0008;
+  return {series: [{asset: {assetClass: 'ASSET_CLASS_CRYPTO', symbol: asset}, currency: 'USD', bucket,
     candles: Array.from({length: count}, (_, i) => ({timestamp: end - (count - i) * step,
-      close: String(step === 60 ? 60000 * Math.exp(.0004 * Math.sin(i / 7) + i * .000001) : 60000 + Math.sin(i / 7)), tickCount: 60}))}]};
+      close: String(step === 60 ? base * Math.exp(volatility * Math.sin(i / 7) + i * .000001) : base + Math.sin(i / 7) * (asset === 'btc' ? 1 : .01)), tickCount: 60}))}]};
 }
 test('Student-t probabilities match known values, symmetry and tails', () => {
   assert.equal(C.studentCDF(0, 5), .5);
@@ -126,13 +128,13 @@ test('collector preserves later-book fills, idempotency, price archives and offi
     else throw new Error('Unexpected mock endpoint ' + route);
     return {data, startedAt: C.iso(now), receivedAt: C.iso(now), url: 'https://gateway.polymarket.us' + route};
   };
-  const opts = {read, clock: () => now, pause: async ms => {now += ms;}};
-  const first = await collect(root, cfg, opts);
+  const opts = {read, clock: () => now, pause: async ms => {now += ms;}}, btcCfg = {...cfg, assets: ['btc']};
+  const first = await collect(root, btcCfg, opts);
   assert.equal(first.stats.openTrades, 1); assert.ok(bookRequests >= 2);
   assert.ok(Math.abs(first.recentTrades[0].averagePrice - .21) < 1e-12);
-  const second = await collect(root, cfg, opts); assert.equal(second.stats.openTrades, 1);
+  const second = await collect(root, btcCfg, opts); assert.equal(second.stats.openTrades, 1);
   resolved = true; now = Date.parse(raw.assetPriceTerms.windowEnd) + 60000;
-  const third = await collect(root, cfg, opts);
+  const third = await collect(root, btcCfg, opts);
   assert.equal(third.stats.settledTrades, 1); assert.equal(third.stats.scoredMarkets, 1);
   assert.ok(third.stats.realizedPnl > 0); assert.equal(third.stats.openExposure, 0);
   const log = zlib.gunzipSync(fs.readFileSync(path.join(root, 'docs/data/crypto/history/2026-11-28.jsonl.gz'))).toString().trim().split('\n').map(JSON.parse);
@@ -145,4 +147,104 @@ test('malformed persisted state is not reset and the collector releases its lock
   const out = path.join(root, 'docs/data/crypto'); fs.mkdirSync(out, {recursive: true}); fs.writeFileSync(path.join(out, 'state.json'), '{');
   await assert.rejects(collect(root, cfg));
   assert.equal(fs.readFileSync(path.join(out, 'state.json'), 'utf8'), '{'); assert.ok(!fs.existsSync(path.join(out, '.collector.lock')));
+});
+
+function streamMarket(asset, horizon, now = at) {
+  const r = rawMarket(), spec = C.ASSETS[asset], start = Math.floor(now / (horizon * 60000)) * horizon * 60000;
+  const stamp = C.iso(start);
+  r.slug = `${spec.instrumentPrefix}-${asset}-updown-${horizon}m-${stamp.slice(0, 10)}-${stamp.slice(11, 13)}${stamp.slice(14, 16)}z`;
+  r.question = asset.toUpperCase() + ' Up or Down ' + horizon + 'm';
+  r.description = `60 ${spec.indexSymbol} prices are collected. The simple average is used; Up if greater than or equal to the opening value.`;
+  r.assetPriceTerms = {...r.assetPriceTerms, indexSymbol: spec.indexSymbol, asset: {assetClass: 'ASSET_CLASS_CRYPTO', symbol: asset},
+    windowStart: C.iso(start), windowEnd: C.iso(start + horizon * 60000), priceToBeat: {value: asset === 'btc' ? '60000' : '1660', currency: 'USD'}};
+  return r;
+}
+test('ETH uses its own verified index and cannot consume BTC candles or a BTC model', () => {
+  const raw = streamMarket('eth', 5), m = C.parseMarket(raw);
+  assert.equal(m.asset, 'eth'); assert.equal(m.indexSymbol, 'ETHUSD_RTI'); assert.equal(m.rulesVerified, true);
+  assert.match(m.url, /\/event\/eth-updown/);
+  assert.equal(C.parseMarket({...raw, assetPriceTerms: {...raw.assetPriceTerms, indexSymbol: 'BRTI'}}), null);
+  assert.throws(() => C.parseCandles(history('ASSET_PRICE_BUCKET_1M'), 'ASSET_PRICE_BUCKET_1M', at, 'eth'), /ETH reference history/);
+  const btcModel = {asset: 'btc', minuteVariance: .001, degreesOfFreedom: 5};
+  assert.equal(C.valueMarket(m, btcModel, [{at: at / 1000 - 1, price: 1660}], at), null);
+  assert.throws(() => C.validateConfig({...cfg, assets: ['btc', 'unknown']}), /Invalid research assets/);
+  assert.throws(() => C.validateConfig({...cfg, maximumMarkets: 3}), /every configured stream/);
+});
+test('legacy BTC forecasts, trades and archive watermarks migrate without resetting', () => {
+  const legacy = {schemaVersion: 1, lastArchivedSecond: 123, lastArchivedMinute: 120,
+    markets: {old: {slug: 'old', horizon: '5m', forecast: {pUp: .8}, result: 1}},
+    trades: [{market: 'old', status: 'OPEN', totalCost: 3}]};
+  const state = migrateState(legacy);
+  assert.equal(state.markets.old.asset, 'btc'); assert.equal(state.markets.old.forecast.pUp, .8);
+  assert.equal(state.trades[0].asset, 'btc'); assert.equal(state.trades[0].totalCost, 3);
+  assert.deepEqual(state.archivedByAsset.btc, {second: 123, minute: 120}); assert.equal(state.archivedByAsset.eth, undefined);
+});
+test('recovery retries overdue or failed collection and skips fresh four-stream data', () => {
+  const s = {collectedAt: C.iso(at), health: 'OK', assets: {btc: {}, eth: {}}};
+  assert.equal(needsCollection(s, null, at + 1000, 'workflow_run'), false);
+  assert.equal(needsCollection(s, null, at + 240000, 'workflow_run'), true);
+  assert.equal(needsCollection(s, {health: 'FAILED'}, at + 1000, 'workflow_run'), true);
+  assert.equal(needsCollection(s, null, at + 1000, 'push'), true);
+  assert.equal(needsCollection({...s, assets: undefined}, null, at + 1000, 'schedule'), true);
+  assert.equal(needsCollection(s, null, at - 1000, 'schedule'), true);
+});
+test('BTC and ETH 5m/15m collect, trade and settle independently under one paper account', async t => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'crypto-four-streams-')); t.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  let now = at, resolved = false;
+  const raw = cfg.assets.flatMap(a => cfg.horizons.map(h => streamMarket(a, h))), bySlug = new Map(raw.map(m => [m.slug, m]));
+  const priceRequests = [], detailRequests = [];
+  const read = async (route, query) => {
+    now += 10; let data;
+    if (route === '/v1/search') {
+      const asset = query.query.split(' ')[0].toLowerCase();
+      // Omit BTC 15m to exercise the verified current-window fallback.
+      data = {events: raw.filter(m => m.assetPriceTerms.asset.symbol === asset && !(asset === 'btc' && C.parseMarket(m).horizon === '15m')).map(m => ({slug: C.parseMarket(m).eventSlug, markets: [m]}))};
+    } else if (route === '/v1/asset-prices/history') {
+      const asset = query.assets.split(':')[1]; priceRequests.push(asset); data = history(query.bucket, now, asset);
+    } else if (route.startsWith('/v1/market/slug/')) {
+      const slug = route.split('/').at(-1), m = bySlug.get(slug); detailRequests.push(slug);
+      if (!m) {const e = new Error('Not listed'); e.status = 404; throw e;}
+      data = {market: {...m, status: resolved ? 'MARKET_STATUS_RESOLVED' : m.status}};
+    } else {
+      const slug = route.split('/')[3], m = bySlug.get(slug);
+      if (!m) throw new Error('Unexpected market ' + slug);
+      if (route.endsWith('/settlement')) data = {slug, settlement: 1};
+      else data = {marketData: {marketSlug: slug, state: 'MARKET_STATE_OPEN', transactTime: C.iso(now),
+        bids: [{px: {value: .19, currency: 'USD'}, qty: '100'}], offers: [{px: {value: .2, currency: 'USD'}, qty: '100'}]}};
+    }
+    return {data, startedAt: C.iso(now), receivedAt: C.iso(now), url: 'https://gateway.polymarket.us' + route};
+  };
+  const opts = {read, clock: () => now, pause: async ms => {now += ms;}};
+  const first = await collect(root, cfg, opts);
+  assert.equal(first.markets.length, 4); assert.equal(first.stats.openTrades, 4);
+  assert.equal(first.stats.streams.length, 4); assert.ok(first.stats.openExposure <= cfg.paperMaxExposureUsd);
+  assert.equal(first.assets.btc.model.asset, 'btc'); assert.equal(first.assets.eth.model.asset, 'eth');
+  assert.ok(first.assets.eth.model.minuteVariance > first.assets.btc.model.minuteVariance * 2);
+  assert.ok(detailRequests.some(slug => slug.includes('btc-updown-15m')));
+  assert.ok(priceRequests.includes('eth') && priceRequests.includes('btc'));
+  for (const a of cfg.assets) assert.ok(fs.readdirSync(path.join(root, 'docs/data/crypto/prices', a)).some(p => p.endsWith('-1S.jsonl.gz')));
+  await collect(root, cfg, opts);
+  resolved = true; now = Date.parse('2026-11-28T03:46:00Z');
+  const settled = await collect(root, cfg, opts);
+  assert.equal(settled.stats.settledTrades, 4); assert.equal(settled.stats.scoredMarkets, 4);
+  assert.ok(settled.stats.streams.every(s => s.scoredMarkets === 1 && s.settledTrades === 1));
+});
+test('ETH failure is reported without substituting BTC prices or stopping BTC records', async t => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'crypto-partial-')); t.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  let now = at;
+  const raws = [streamMarket('btc', 5), streamMarket('btc', 15)];
+  const read = async (route, query) => {
+    now += 5; let data;
+    if (query?.assets === 'crypto:eth') throw new Error('ETH unavailable');
+    if (route === '/v1/search') data = {events: raws.map(m => ({slug: C.parseMarket(m).eventSlug, markets: [m]}))};
+    else if (route === '/v1/asset-prices/history') data = history(query.bucket, now);
+    else if (route.startsWith('/v1/market/slug/')) {const e = new Error('Not found'); e.status = 404; throw e;}
+    else {const slug = route.split('/')[3]; data = {marketData: {marketSlug: slug, state: 'MARKET_STATE_OPEN', transactTime: C.iso(now),
+      bids: [{px: {value: .49, currency: 'USD'}, qty: '100'}], offers: [{px: {value: .51, currency: 'USD'}, qty: '100'}]}};}
+    return {data, startedAt: C.iso(now), receivedAt: C.iso(now), url: 'https://gateway.polymarket.us' + route};
+  };
+  const s = await collect(root, cfg, {read, clock: () => now, pause: async ms => {now += ms;}});
+  assert.equal(s.assets.eth.spot, null); assert.equal(s.assets.eth.model.status, 'UNAVAILABLE');
+  assert.equal(s.markets.filter(m => m.asset === 'btc').length, 2); assert.ok(s.errors.some(e => e.startsWith('ETH:')));
+  assert.ok(s.stats.streams.filter(s => s.asset === 'btc').every(s => s.forecastWindows === 1));
 });

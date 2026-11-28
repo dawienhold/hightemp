@@ -5,11 +5,16 @@ on:
     # Observe about a minute into five-minute windows. Actual gaps are archived.
     - cron: '1-59/5 * * * *'
   workflow_dispatch:
+  workflow_run:
+    workflows: [forecast-pass, market-openings, shadow-observer, contract-consistency]
+    types: [completed]
+    branches: [main]
   push:
     branches: [main]
     paths:
       - '.github/workflows/crypto.yml'
       - 'scripts/crypto.js'
+      - 'scripts/crypto-freshness.js'
       - 'scripts/crypto/**'
       - 'tools/crypto.test.js'
 
@@ -22,7 +27,7 @@ concurrency:
 
 jobs:
   collect:
-    if: ${{ github.event.repository.private == false }}
+    if: ${{ github.event.repository.private == false && (github.event_name != 'workflow_run' || github.event.workflow_run.head_repository.full_name == github.repository) }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -33,18 +38,26 @@ jobs:
           sparse-checkout-cone-mode: false
           sparse-checkout: |
             /scripts/crypto.js
+            /scripts/crypto-freshness.js
             /scripts/crypto/
             /tools/crypto.test.js
             /docs/data/crypto/
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Check crypto snapshot freshness
+        id: freshness
+        env:
+          CRYPTO_TRIGGER: ${{ github.event_name }}
+        run: node scripts/crypto-freshness.js
       - name: Verify crypto models and paper accounting
+        if: steps.freshness.outputs.needed == 'true'
         run: node --test tools/crypto.test.js
-      - name: Collect public BTC markets and paper observations
+      - name: Collect BTC and ETH five- and fifteen-minute markets
+        if: steps.freshness.outputs.needed == 'true'
         run: node scripts/crypto.js
       - name: Publish crypto research archive
-        if: always()
+        if: ${{ always() && steps.freshness.outputs.needed == 'true' }}
         run: |
           set -eu
           if [ ! -d docs/data/crypto ]; then exit 0; fi
