@@ -2,7 +2,7 @@
 
 // Research mathematics and a paper ledger only. No account or order API exists here.
 const crypto = require('node:crypto');
-const VERSION = 'crypto-research-0.2.0';
+const VERSION = 'crypto-research-0.3.0';
 const ASSETS = Object.freeze({
   btc: {symbol: 'btc', name: 'Bitcoin', indexSymbol: 'BRTI', instrumentPrefix: 'cpc'},
   eth: {symbol: 'eth', name: 'Ethereum', indexSymbol: 'ETHUSD_RTI', instrumentPrefix: 'cpceth'}
@@ -25,6 +25,7 @@ function validateConfig(c) {
     ['simulatedLatencyMs', 1000, 5000], ['maxSourceAgeSeconds', 2, 30],
     ['minimumRemainingSeconds', 10, 120], ['studentDegreesOfFreedom', 3, 30],
     ['minimumTrainingSamples', 120, 3000], ['historyHours', 24, 60],
+    ['ewmaHalfLifeMinutes', 2, 60], ['ewmaLookbackMinutes', 60, 720],
     ['requestTimeoutMs', 2000, 15000], ['maximumMarkets', 1, 6], ['settlementChecksPerRun', 1, 20]
   ]) if (!Number.isFinite(c[key]) || c[key] < lo || c[key] > hi) throw new Error('Invalid ' + key);
   return c;
@@ -113,6 +114,22 @@ function solve(a, b) {
   }
   return m.map(r => r[b.length]);
 }
+function ewmaVariance(candles, halfLifeMinutes = 10, lookbackMinutes = 180) {
+  if (!(halfLifeMinutes > 0) || !Number.isInteger(lookbackMinutes) || lookbackMinutes < 60) throw new Error('Invalid EWMA settings');
+  const rows = candles.slice(-(lookbackMinutes + 1));
+  if (rows.length < 61) return {status: 'WARMING_UP', samples: Math.max(0, rows.length - 1)};
+  const lambda = Math.exp(-Math.LN2 / halfLifeMinutes);
+  let variance = null;
+  for (let i = 1; i < rows.length; i++) {
+    if (rows[i].at - rows[i - 1].at !== 60) return {status: 'DATA_GAP', samples: i - 1};
+    const squaredReturn = Math.log(rows[i].price / rows[i - 1].price) ** 2;
+    if (!Number.isFinite(squaredReturn)) return {status: 'INVALID_DATA', samples: i - 1};
+    variance = variance === null ? squaredReturn : lambda * variance + (1 - lambda) * squaredReturn;
+  }
+  return {status: variance > 0 ? 'READY' : 'NO_VARIANCE', minuteVariance: variance, lambda,
+    halfLifeMinutes, lookbackMinutes, samples: rows.length - 1,
+    trainingFrom: iso(rows[0].at * 1000), trainingThrough: iso((rows.at(-1).at + 60) * 1000)};
+}
 function fitVariance(candles, cfg, now) {
   const returns = candles.map((c, i) => i && c.at - candles[i - 1].at === 60 ? Math.log(c.price / candles[i - 1].price) ** 2 : null);
   const valid = returns.filter(Number.isFinite), scale = mean(valid);
@@ -194,6 +211,15 @@ function parseBook(payload, slug, receivedAt) {
     bids, asks, yesBid: bids[0]?.price ?? null, yesAsk: asks[0]?.price ?? null,
     noAsk: bids[0] ? 1 - bids[0].price : null, spread: bids.length && asks.length ? asks[0].price - bids[0].price : null};
 }
+function modelDiagnostics(m, model, seconds, now, har, baseline) {
+  const ewma = model.ewma?.status === 'READY' && model.status === 'PROVISIONAL' ? valueMarket(m, model, seconds, now, model.ewma.minuteVariance) : null;
+  const probabilities = [har?.pUp, baseline?.pUp, ewma?.pUp].filter(p => typeof p === 'number' && Number.isFinite(p));
+  const spread = probabilities.length >= 2 ? Math.max(...probabilities) - Math.min(...probabilities) : null;
+  return {ewma, probabilitySpread: spread,
+    directionDisagreement: probabilities.length >= 2 ? probabilities.some(p => p > .5) && probabilities.some(p => p < .5) : null,
+    fastToHarVolatilityRatio: model.ewma?.minuteVariance > 0 && model.minuteVariance > 0 ? Math.sqrt(model.ewma.minuteVariance / model.minuteVariance) : null,
+    use: 'Research comparison only; HAR remains the entry probability'};
+}
 function sweep(book, side, probability, fee, cfg) {
   if (!finite(fee) || fee < 0 || fee > 1 || !book?.usable || !finite(probability)) return null;
   const levels = side === 'UP' ? book.asks : book.bids.map(l => ({price: 1 - l.price, quantity: l.quantity}));
@@ -211,7 +237,10 @@ function sweep(book, side, probability, fee, cfg) {
   if (quantity < .01) return null;
   fees = Math.ceil((fees - 1e-10) * 100) / 100;
   const totalCost = cost + fees + reserve, edge = probability - totalCost / quantity;
-  return edge >= cfg.minimumEdge ? {side, quantity, totalCost, fees, slippageReserve: reserve, averagePrice: cost / quantity, edge, fills, partial: remaining >= .01} : null;
+  return edge >= cfg.minimumEdge ? {side, quantity, totalCost, fees, slippageReserve: reserve, averagePrice: cost / quantity, edge, fills, partial: remaining >= .01,
+    probabilityAtSignal: probability, breakevenProbability: totalCost / quantity,
+    expectedProfit: probability * quantity - totalCost,
+    expectedReturnOnCost: totalCost > 0 ? (probability * quantity - totalCost) / totalCost : null} : null;
 }
 function decision(m, book, valuation, model, now, cfg) {
   const reasons = [];
@@ -239,6 +268,7 @@ function openPaperTrade(state, m, d, now, cfg, signalAt) {
   if (exposure + c.totalCost > cfg.paperMaxExposureUsd || exposure + c.totalCost > cfg.paperBankrollUsd + realized) return null;
   const trade = {...c, id: m.slug + ':paper-v1', market: m.slug, asset: m.asset || 'btc', horizon: m.horizon, endAt: m.endAt,
     enteredAt: iso(now), signalAt, modelVersion: VERSION, feeCoefficient: m.feeCoefficient,
+    entryMinimumEdge: cfg.minimumEdge, entryPolicyVersion: VERSION,
     status: 'OPEN', payout: null, pnl: null, simulation: 'Later observed book, full depth, fee rounding and adverse-price reserve; no queue-fill claim'};
   state.trades.push(trade); return trade;
 }
@@ -246,6 +276,38 @@ function settleRecord(record, response, now) {
   if (response?.slug !== record.slug || ![0, 1].includes(response.settlement)) return false;
   if (record.status !== 'MARKET_STATUS_RESOLVED') return false;
   record.result = response.settlement; record.resolvedAt = iso(now); return true;
+}
+function comparisonScores(records) {
+  const rows = records.filter(m => m.forecast && [0, 1].includes(m.result) &&
+    ['pUp', 'baselinePUp', 'ewmaPUp'].every(key => typeof m.forecast[key] === 'number' && Number.isFinite(m.forecast[key])));
+  const score = key => ({
+    brier: rows.length ? mean(rows.map(m => (m.forecast[key] - m.result) ** 2)) : null,
+    logLoss: rows.length ? mean(rows.map(m => {
+      const p = clamp(m.forecast[key], 1e-12, 1 - 1e-12);
+      return -m.result * Math.log(p) - (1 - m.result) * Math.log1p(-p);
+    })) : null
+  });
+  return {samples: rows.length, har: score('pUp'), baseline: score('baselinePUp'), ewma: score('ewmaPUp'),
+    cohort: 'Same prospectively captured windows with all three forecasts; overlapping windows are correlated'};
+}
+function edgeBucketStats(trades) {
+  const definitions = [
+    {id: 'below2', label: 'Below 2¢', low: -Infinity, high: .02},
+    {id: '2to3', label: '2–3¢', low: .02, high: .03},
+    {id: '3to5', label: '3–5¢', low: .03, high: .05},
+    {id: '5plus', label: '5¢ or more', low: .05, high: Infinity},
+    {id: 'unknown', label: 'Edge not recorded', low: null, high: null}
+  ];
+  return definitions.map(d => {
+    const rows = trades.filter(t => typeof t.edge === 'number' && Number.isFinite(t.edge) ? d.id !== 'unknown' && t.edge >= d.low && t.edge < d.high : d.id === 'unknown');
+    const settled = rows.filter(t => t.status === 'SETTLED');
+    const cost = settled.reduce((s, t) => s + t.totalCost, 0), pnl = settled.reduce((s, t) => s + t.pnl, 0);
+    return {id: d.id, label: d.label, totalTrades: rows.length, openTrades: rows.filter(t => t.status === 'OPEN').length,
+      settledTrades: settled.length, wins: settled.filter(t => t.pnl > 0).length,
+      winRate: settled.length ? settled.filter(t => t.pnl > 0).length / settled.length : null,
+      realizedPnl: pnl, investedSettled: cost, returnOnSettledCost: cost > 0 ? pnl / cost : null,
+      averageModeledEdge: rows.length && d.id !== 'unknown' ? mean(rows.map(t => t.edge)) : null};
+  });
 }
 function stats(state, cfg) {
   const settled = state.trades.filter(t => t.status === 'SETTLED'), open = state.trades.filter(t => t.status === 'OPEN');
@@ -268,13 +330,15 @@ function stats(state, cfg) {
     streams.push({asset, horizon, observedWindows: records.length, forecastWindows: records.filter(m => m.forecast).length,
       scoredMarkets: graded.length, brier: graded.length ? mean(graded.map(m => (m.forecast.pUp - m.result) ** 2)) : null,
       baselineBrier: graded.length ? mean(graded.map(m => (m.forecast.baselinePUp - m.result) ** 2)) : null,
-      paperTrades: trades.length, settledTrades: done.length, realizedPnl: done.reduce((s, t) => s + t.pnl, 0)});
+      paperTrades: trades.length, settledTrades: done.length, realizedPnl: done.reduce((s, t) => s + t.pnl, 0), comparison: comparisonScores(records)});
   }
   return {startingBankroll: cfg.paperBankrollUsd, realizedPnl: pnl, equity: cfg.paperBankrollUsd + pnl,
     availableCash: cfg.paperBankrollUsd + pnl - exposure, openExposure: exposure, openTrades: open.length,
     settledTrades: settled.length, wins: settled.filter(t => t.pnl > 0).length,
     winRate: settled.length ? settled.filter(t => t.pnl > 0).length / settled.length : null,
-    maxDrawdown, equityCurve, scoredMarkets: scores.length, brier, baselineBrier, calibration: bins, streams};
+    maxDrawdown, equityCurve, scoredMarkets: scores.length, brier, baselineBrier, calibration: bins, streams,
+    comparison: comparisonScores(Object.values(state.markets)), entryEdgeBuckets: edgeBucketStats(state.trades)};
 }
 module.exports = {VERSION, ASSETS, iso, amount, validateConfig, parseMarket, parseCandles, studentCDF,
-  fitVariance, valueMarket, parseBook, sweep, decision, openPaperTrade, settleRecord, stats};
+  ewmaVariance, fitVariance, valueMarket, parseBook, modelDiagnostics, sweep, decision, openPaperTrade, settleRecord,
+  comparisonScores, edgeBucketStats, stats};

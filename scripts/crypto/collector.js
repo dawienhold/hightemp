@@ -73,7 +73,11 @@ async function collect(root, config, options = {}) {
       };
       g.discovery = result(0, 'Market discovery'); g.minuteResponse = result(1, 'Minute history'); g.secondResponse = result(2, 'Reference history');
       if (g.minuteResponse) {
-        try {g.minutes = C.parseCandles(g.minuteResponse.data, 'ASSET_PRICE_BUCKET_1M', to * 1000, asset); g.model = {...C.fitVariance(g.minutes, cfg, clock()), asset};}
+        try {
+          g.minutes = C.parseCandles(g.minuteResponse.data, 'ASSET_PRICE_BUCKET_1M', to * 1000, asset);
+          g.model = {...C.fitVariance(g.minutes, cfg, clock()), asset,
+            ewma: C.ewmaVariance(g.minutes, cfg.ewmaHalfLifeMinutes, cfg.ewmaLookbackMinutes)};
+        }
         catch (e) {g.errors.push('Volatility fit: ' + e.message);}
       }
       if (g.secondResponse) {
@@ -109,7 +113,7 @@ async function collect(root, config, options = {}) {
     // window cannot crowd a newly opened stream out of the collection limit.
     for (const m of markets.filter(m => Date.parse(m.endAt) > clock()).slice(0, cfg.maximumMarkets)) {
       const g = groups[m.asset];
-      const row = {...m, book: null, valuation: null, baseline: null, decision: {status: 'WAIT', reasons: ['Waiting for observations'], candidate: null}};
+      const row = {...m, book: null, valuation: null, baseline: null, diagnostics: null, decision: {status: 'WAIT', reasons: ['Waiting for observations'], candidate: null}};
       const saved = state.markets[m.slug] || {...m, firstObservedAt: C.iso(clock())};
       Object.assign(saved, m, {lastObservedAt: C.iso(clock())}); state.markets[m.slug] = saved;
       try {
@@ -121,11 +125,13 @@ async function collect(root, config, options = {}) {
         const at = Date.parse(first.receivedAt), book = C.parseBook(first.data, m.slug, first.receivedAt);
         if (Number(first.httpAge) > cfg.maxSourceAgeSeconds) book.usable = false;
         const value = C.valueMarket(m, g.model, g.seconds, at), baseline = C.valueMarket(m, g.model, g.seconds, at, g.model.baselineVariance);
-        Object.assign(row, {book, valuation: value, baseline, decision: C.decision(m, book, value, g.model, at, cfg), sampledAt: first.receivedAt});
+        const diagnostics = C.modelDiagnostics(m, g.model, g.seconds, at, value, baseline);
+        Object.assign(row, {book, valuation: value, baseline, diagnostics, decision: C.decision(m, book, value, g.model, at, cfg), sampledAt: first.receivedAt});
         Object.assign(saved, m, {lastObservedAt: first.receivedAt});
         if (!saved.forecast && value && baseline && m.active && m.status === 'MARKET_STATUS_OPEN' && g.model.status === 'PROVISIONAL' &&
             at - Date.parse(value.sourceAt) <= cfg.maxSourceAgeSeconds * 1000 && m.rulesVerified) {
-          saved.forecast = {asset: m.asset, pUp: value.pUp, baselinePUp: baseline.pUp, at: value.calculatedAt, sourceAt: value.sourceAt,
+          saved.forecast = {asset: m.asset, pUp: value.pUp, baselinePUp: baseline.pUp, ewmaPUp: diagnostics.ewma?.pUp ?? null,
+            probabilitySpread: diagnostics.probabilitySpread, at: value.calculatedAt, sourceAt: value.sourceAt,
             modelVersion: C.VERSION, minutesRemaining: (Date.parse(m.endAt) - at) / 60000};
         }
         state.markets[m.slug] = saved;
@@ -137,6 +143,10 @@ async function collect(root, config, options = {}) {
           const d = C.decision(m, nextBook, value, g.model, nextAt, cfg);
           if (d.candidate?.side !== row.decision.candidate.side) d.candidate = null;
           const trade = C.openPaperTrade(state, m, d, nextAt, cfg, first.receivedAt);
+          if (trade) {
+            trade.modelComparisonAtSignal = {harPUp: value.pUp, baselinePUp: baseline?.pUp ?? null, ewmaPUp: diagnostics.ewma?.pUp ?? null,
+              probabilitySpread: diagnostics.probabilitySpread, directionDisagreement: diagnostics.directionDisagreement};
+          }
           row.paperAction = trade ? 'SIMULATED_FILL' : 'NO_FILL';
           if (!trade) row.paperNote = d.candidate ? 'Aggregate exposure cap or available paper cash prevented an entry' : 'The later quote did not preserve the original qualifying edge or freshness';
           events.push({kind: row.paperAction, asset: m.asset, market: m.slug, at: next.receivedAt, laterBook: nextBook, decision: d, trade});

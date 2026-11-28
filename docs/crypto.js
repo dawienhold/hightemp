@@ -136,6 +136,7 @@
   function render(s) {
     snapshot = s;
     const stats = s.stats || {}, model = s.model || {}, cfg = s.config || {};
+    set('entry-threshold', cents(cfg.minimumEdge));
     set('btc-price', usd(s.spot?.price)); set('price-stamp', s.spot ? 'BRTI observed ' + time(s.spot.at) : 'Reference feed unavailable');
     set('volatility', valid(model.minuteVariance) && s.spot ? usd(s.spot.price * Math.sqrt(model.minuteVariance)) : '—');
     set('model-label', model.status === 'PROVISIONAL' ? '1 SD · provisional HAR-style model' : model.status || 'Unavailable');
@@ -162,13 +163,30 @@
       table.append(row([name, usd(m.referencePrice), modelPct(m.valuation?.pUp), cents(m.book?.yesAsk), cents(m.book?.noAsk), edges, status]));
     }
     if (!(s.markets || []).length) emptyTable('markets-body', 7, 'No eligible markets in this collection. See collection health below.');
+    $('model-comparison-body').replaceChildren(...(s.markets || []).map(m => row([
+      (m.asset || 'btc').toUpperCase() + ' ' + m.horizon + ' · ' + time(m.endAt), modelPct(m.valuation?.pUp),
+      modelPct(m.diagnostics?.ewma?.pUp), modelPct(m.baseline?.pUp),
+      valid(m.diagnostics?.probabilitySpread) ? (100 * m.diagnostics.probabilitySpread).toFixed(1) + ' pp' : '—',
+      valid(m.diagnostics?.fastToHarVolatilityRatio) ? m.diagnostics.fastToHarVolatilityRatio.toFixed(2) + '×' : '—'
+    ])));
+    if (!(s.markets || []).length) emptyTable('model-comparison-body', 6, 'Waiting for new diagnostic snapshots.');
+    const comparison = stats.comparison || {}, n = comparison.samples || 0;
+    set('comparison-cohort', n + ' common settled windows with all three prospective forecasts. Earlier missing EWMA forecasts are excluded from this comparison.');
+    $('comparison-scores-body').replaceChildren(...[['HAR', 'har'], ['EWMA', 'ewma'], ['60-minute baseline', 'baseline']].map(([label, key]) => row([
+      label, n, score(comparison[key]?.brier), score(comparison[key]?.logLoss)
+    ])));
     $('calibration-body').replaceChildren(...(stats.calibration || []).map(b => row([Math.round(b.low * 100) + '–' + Math.round(b.high * 100) + '%', b.n, pct(b.predicted), pct(b.actual)])));
     $('ledger-body').replaceChildren();
     for (const t of s.recentTrades || []) {
       const pnl = el('span', usd(t.pnl), t.pnl > 0 ? 'positive' : t.pnl < 0 ? 'negative' : '');
-      $('ledger-body').append(row([dateTime(t.enteredAt), (t.asset || 'btc').toUpperCase() + ' ' + t.horizon + ' · ' + time(t.endAt), t.side, Number(t.quantity).toFixed(2), usd(t.totalCost), cents(t.edge), t.status === 'SETTLED' ? 'Settled' : 'Awaiting settlement', pnl]));
+      const ev = el('span', usd(t.expectedProfit)); ev.append(el('small', 'Model ROI ' + pct(t.expectedReturnOnCost)));
+      $('ledger-body').append(row([dateTime(t.enteredAt), (t.asset || 'btc').toUpperCase() + ' ' + t.horizon + ' · ' + time(t.endAt), t.side, Number(t.quantity).toFixed(2), usd(t.totalCost), cents(t.edge), ev, pct(t.breakevenProbability), cents(t.entryMinimumEdge), t.status === 'SETTLED' ? 'Settled' : 'Awaiting settlement', pnl]));
     }
-    if (!(s.recentTrades || []).length) emptyTable('ledger-body', 8, 'No paper fills yet. A signal requires a fresh model, verified rules, known fees, sufficient depth, and a qualifying later quote.');
+    if (!(s.recentTrades || []).length) emptyTable('ledger-body', 11, 'No paper fills yet. A signal requires a fresh model, verified rules, known fees, sufficient depth, and a qualifying later quote.');
+    $('edge-groups-body').replaceChildren(...(stats.entryEdgeBuckets || []).map(b => row([
+      b.label, b.totalTrades, b.openTrades, b.settledTrades, pct(b.winRate), usd(b.realizedPnl), pct(b.returnOnSettledCost), cents(b.averageModeledEdge)
+    ])));
+    if (!stats.entryEdgeBuckets?.length) emptyTable('edge-groups-body', 8, 'Waiting for the new entry-edge summaries.');
     $('export-csv').disabled = false;
     $('streams-body').replaceChildren(...(stats.streams || []).map(r => row([
       r.asset.toUpperCase() + ' ' + r.horizon, r.observedWindows, r.forecastWindows, r.paperTrades,
@@ -183,6 +201,7 @@
       ['Last successful collection', s.lastSuccessAt ? dateTime(s.lastSuccessAt) : 'No fully healthy collection yet'],
       ['Paper entry settings', cfg.paperContractsPerOrder + ' contracts maximum; ' + cents(cfg.minimumEdge) + ' minimum net edge; ' + usd(cfg.paperMaxExposureUsd) + ' aggregate exposure cap.'],
       ['Execution assumptions', cfg.simulatedLatencyMs / 1000 + 's minimum re-quote delay; ' + cents(cfg.slippageReserve) + ' adverse-price reserve per contract; fees from each market.'],
+      ['EWMA comparison settings', cfg.ewmaHalfLifeMinutes ? cfg.ewmaHalfLifeMinutes + '-minute half-life; up to ' + cfg.ewmaLookbackMinutes + ' minute returns. Diagnostic probabilities are recorded alongside HAR.' : 'Available after the next diagnostic collector run.'],
       ['Settlement', 'Official resolved status plus final binary payout. No local spot-price grading.'],
       ['Archive', 'Daily compressed price and quote history; complete paper ledger; source and receipt timestamps retained.']
     ];
@@ -210,9 +229,13 @@
     const b = $('export-csv'); b.disabled = true;
     try {
       const ledger = await getJSON('data/crypto/ledger.json');
-      const columns = ['id', 'market', 'asset', 'horizon', 'signalAt', 'enteredAt', 'endAt', 'side', 'quantity', 'averagePrice', 'fees', 'slippageReserve', 'totalCost', 'edge', 'feeCoefficient', 'status', 'settledAt', 'payout', 'pnl'];
+      const columns = ['id', 'market', 'asset', 'horizon', 'signalAt', 'enteredAt', 'endAt', 'side', 'quantity', 'averagePrice', 'fees', 'slippageReserve', 'totalCost', 'edge', 'entryMinimumEdge', 'entryPolicyVersion', 'probabilityAtSignal', 'breakevenProbability', 'expectedProfit', 'expectedReturnOnCost', 'harPUpAtSignal', 'ewmaPUpAtSignal', 'baselinePUpAtSignal', 'modelSpreadAtSignal', 'feeCoefficient', 'status', 'settledAt', 'payout', 'pnl'];
       const quote = x => '"' + String(x ?? '').replace(/"/g, '""') + '"';
-      const csv = [columns.join(','), ...(ledger.trades || []).map(t => columns.map(k => quote(t[k])).join(','))].join('\r\n');
+      const csv = [columns.join(','), ...(ledger.trades || []).map(t => {
+        const r = {...t, harPUpAtSignal: t.modelComparisonAtSignal?.harPUp, ewmaPUpAtSignal: t.modelComparisonAtSignal?.ewmaPUp,
+          baselinePUpAtSignal: t.modelComparisonAtSignal?.baselinePUp, modelSpreadAtSignal: t.modelComparisonAtSignal?.probabilitySpread};
+        return columns.map(k => quote(r[k])).join(',');
+      })].join('\r\n');
       const url = URL.createObjectURL(new Blob([csv], {type: 'text/csv;charset=utf-8'}));
       const a = el('a'); a.href = url; a.download = 'crypto-paper-trades.csv'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
     } catch (e) {set('notice', 'Could not export the paper ledger: ' + e.message);}

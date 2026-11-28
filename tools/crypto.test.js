@@ -241,6 +241,8 @@ test('BTC and ETH 5m/15m collect, trade and settle independently under one paper
   const settled = await collect(root, cfg, opts);
   assert.equal(settled.stats.settledTrades, 4); assert.equal(settled.stats.scoredMarkets, 4);
   assert.ok(settled.stats.streams.every(s => s.scoredMarkets === 1 && s.settledTrades === 1));
+  assert.equal(settled.stats.comparison.samples, 4);
+  assert.ok(settled.recentTrades.every(t => t.entryMinimumEdge === .02 && Number.isFinite(t.expectedProfit) && Number.isFinite(t.modelComparisonAtSignal.ewmaPUp)));
 });
 test('ETH failure is reported without substituting BTC prices or stopping BTC records', async t => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'crypto-partial-')); t.after(() => fs.rmSync(root, {recursive: true, force: true}));
@@ -260,4 +262,64 @@ test('ETH failure is reported without substituting BTC prices or stopping BTC re
   assert.equal(s.assets.eth.spot, null); assert.equal(s.assets.eth.model.status, 'UNAVAILABLE');
   assert.equal(s.markets.filter(m => m.asset === 'btc').length, 2); assert.ok(s.errors.some(e => e.startsWith('ETH:')));
   assert.ok(s.stats.streams.filter(s => s.asset === 'btc').every(s => s.forecastWindows === 1));
+});
+
+test('a 2.5-cent net edge now qualifies while the former 5-cent rule rejects it', () => {
+  assert.equal(cfg.minimumEdge, .02);
+  const b = book(at, .49, .50), p = .535;
+  const entry = C.sweep(b, 'UP', p, 0, cfg);
+  assert.ok(entry); assert.ok(Math.abs(entry.edge - .025) < 1e-12);
+  assert.equal(C.sweep(b, 'UP', p, 0, {...cfg, minimumEdge: .05}), null);
+  assert.equal(C.sweep(b, 'UP', .525, 0, cfg), null); // Only 1.5 cents after reserve.
+  assert.ok(Math.abs(entry.breakevenProbability - .51) < 1e-12);
+  assert.ok(Math.abs(entry.expectedProfit - .25) < 1e-12);
+  assert.ok(Math.abs(entry.expectedReturnOnCost - .25 / 5.1) < 1e-12);
+  const state = {trades: []}, m = C.parseMarket(rawMarket());
+  const t = C.openPaperTrade(state, m, {candidate: entry}, at, cfg, C.iso(at));
+  assert.equal(t.entryMinimumEdge, .02); assert.equal(t.probabilityAtSignal, p);
+});
+test('EWMA recurrence emphasizes a recent shock and rejects a missing minute', () => {
+  let price = 100;
+  const rows = [{at: 0, price}];
+  for (let i = 1; i <= 60; i++) {price *= Math.exp(i === 60 ? .01 : .001); rows.push({at: i * 60, price});}
+  const fast = C.ewmaVariance(rows, 1, 60);
+  assert.equal(fast.status, 'READY'); assert.ok(Math.abs(fast.lambda - .5) < 1e-12);
+  assert.ok(Math.abs(fast.minuteVariance - (.5 * 1e-6 + .5 * 1e-4)) < 1e-12);
+  const gap = rows.map(r => ({...r})); gap[20].at += 60;
+  assert.equal(C.ewmaVariance(gap, 10, 60).status, 'DATA_GAP');
+  assert.equal(C.ewmaVariance(rows.slice(0, 50), 10, 60).status, 'WARMING_UP');
+});
+test('model disagreement is descriptive and preserves the HAR entry probability', () => {
+  const m = C.parseMarket(rawMarket()), model = {asset: 'btc', status: 'PROVISIONAL', minuteVariance: 1e-5, baselineVariance: 2e-5,
+    degreesOfFreedom: 5, ewma: {status: 'READY', minuteVariance: 4e-5}};
+  const seconds = [{at: at / 1000 - 1, price: 60010}];
+  const har = C.valueMarket(m, model, seconds, at), baseline = C.valueMarket(m, model, seconds, at, model.baselineVariance);
+  const before = har.pUp, d = C.modelDiagnostics(m, model, seconds, at, har, baseline);
+  assert.equal(d.fastToHarVolatilityRatio, 2); assert.ok(d.probabilitySpread > 0);
+  assert.equal(har.pUp, before); assert.ok(d.ewma.pUp < har.pUp);
+});
+test('EWMA comparisons use the same newly observed windows and never backfill legacy probabilities', () => {
+  const legacy = {result: 1, forecast: {pUp: .99, baselinePUp: .99}};
+  const records = [legacy,
+    {result: 1, forecast: {pUp: .75, baselinePUp: .5, ewmaPUp: .6}},
+    {result: 0, forecast: {pUp: .25, baselinePUp: .5, ewmaPUp: .4}}];
+  const s = C.comparisonScores(records);
+  assert.equal(s.samples, 2); assert.equal(s.har.brier, .0625); assert.ok(Math.abs(s.ewma.brier - .16) < 1e-12);
+  assert.equal(s.baseline.brier, .25); assert.ok(Math.abs(s.har.logLoss + Math.log(.75)) < 1e-12);
+  assert.equal(legacy.forecast.ewmaPUp, undefined);
+  const clipped = C.comparisonScores([{result: 0, forecast: {pUp: 1, baselinePUp: .5, ewmaPUp: .5}}]);
+  assert.ok(Number.isFinite(clipped.har.logLoss) && clipped.har.logLoss > 20);
+});
+test('entry-edge groups have nonoverlapping boundaries and exclude open trades from realized returns', () => {
+  const buckets = C.edgeBucketStats([
+    {edge: .02, status: 'SETTLED', totalCost: 1, pnl: .1},
+    {edge: .03, status: 'SETTLED', totalCost: 2, pnl: -.5},
+    {edge: .05, status: 'OPEN', totalCost: 3, pnl: null},
+    {status: 'SETTLED', totalCost: 2, pnl: -.2}
+  ]);
+  const get = id => buckets.find(b => b.id === id);
+  assert.equal(get('2to3').totalTrades, 1); assert.equal(get('2to3').returnOnSettledCost, .1);
+  assert.equal(get('3to5').totalTrades, 1); assert.equal(get('3to5').returnOnSettledCost, -.25);
+  assert.equal(get('5plus').openTrades, 1); assert.equal(get('5plus').settledTrades, 0); assert.equal(get('5plus').returnOnSettledCost, null);
+  assert.equal(get('unknown').settledTrades, 1); assert.equal(get('unknown').averageModeledEdge, null);
 });

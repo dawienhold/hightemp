@@ -39,8 +39,9 @@ and empty, carried-forward buckets are excluded. Training data are not counted
 as historical simulated trades or evidence of profitability.
 
 Paper entries require fresh reference data and books, verified rules, a known
-fee coefficient, and at least 5 cents estimated net edge per contract. Quote
-requests use unique timestamped URLs to avoid cached public quote responses;
+fee coefficient, and at least **2 cents estimated net edge per contract**. The
+paper research threshold was lowered from 5 cents in v0.3 to collect more entries.
+Quote requests use unique timestamped URLs to avoid cached public quote responses;
 the 15-second source freshness gate is still enforced. A second
 book is fetched after at least 2.5 seconds before a fill can be simulated. The
 simulation uses available depth, a maximum of 10 contracts, fees rounded upward
@@ -62,6 +63,34 @@ including markets without a paper trade. Brier scores compare the HAR-style
 forecast with a 60-minute constant-volatility baseline. Overlapping five- and
 15-minute windows are correlated; neither sample counts nor model estimates
 establish an independent trading edge. All model probabilities are provisional.
+
+### Additional diagnostics in v0.3
+
+Each asset now has a separate exponentially weighted moving-average (EWMA)
+variance estimate alongside HAR and the 60-minute baseline. Its recurrence is
+`v_next = lambda * v_previous + (1 - lambda) * return_squared`, with
+`lambda = exp(-ln(2) / halfLifeMinutes)`. The research settings use a 10-minute
+half-life and up to 180 contiguous, complete minute returns. Missing minutes
+make the diagnostic unavailable; an absent EWMA does not substitute another
+asset's data or change the HAR entry forecast. Probability spread and the ratio
+of EWMA to HAR volatility are archived as diagnostics, not confidence intervals.
+
+EWMA probabilities are stored only on first forecasts captured after this
+upgrade. The new comparison computes Brier score and clipped log loss for HAR,
+EWMA and the baseline on the exact same settled-window cohort. Historical
+forecasts without EWMA remain missing; they are not reconstructed. Log-loss
+probabilities are clipped at 1e-12 and 1-1e-12 for numerical stability. Existing
+overall HAR/baseline scores retain their original cohort.
+
+New paper entries retain the active minimum edge and policy version, signal
+probability, all-in break-even probability, expected profit, expected return on
+cost, and the three forecasts at the signal time. Expected values are model
+estimates; they are not realized P&L. CSV export includes these fields.
+The entry-edge summary groups recorded entries into below 2c, 2-3c, 3-5c, 5c or
+more, and missing-edge records. Bands have inclusive lower and exclusive upper
+bounds. Open trades are excluded from realized win rates and returns; returns
+use total realized P&L divided by total settled entry cost. These are descriptive
+summaries of actual paper entries, not counterfactual threshold backtests.
 
 | Crypto file | Contents |
 |---|---|
