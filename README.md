@@ -39,7 +39,9 @@ and empty, carried-forward buckets are excluded. Training data are not counted
 as historical simulated trades or evidence of profitability.
 
 Paper entries require fresh reference data and books, verified rules, a known
-fee coefficient, and at least 5 cents estimated net edge per contract. A second
+fee coefficient, and at least 5 cents estimated net edge per contract. Quote
+requests use unique timestamped URLs to avoid cached public quote responses;
+the 15-second source freshness gate is still enforced. A second
 book is fetched after at least 2.5 seconds before a fill can be simulated. The
 simulation uses available depth, a maximum of 10 contracts, fees rounded upward
 to cents, and a 1-cent adverse-price reserve per contract. One entry per market

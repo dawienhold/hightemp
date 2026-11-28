@@ -23,6 +23,10 @@ function createReader(cfg, transport = global.fetch, clock = Date.now) {
     if (!/^\/v1\/(search|asset-prices\/history|market\/slug\/[a-z0-9-]+|markets\/[a-z0-9-]+\/(book|settlement))$/.test(route)) throw new Error('Non-research endpoint rejected');
     const url = new URL(route, BASE);
     for (const [k, v] of Object.entries(query)) url.searchParams.set(k, String(v));
+    // The public book endpoint is CDN-cached for about 30 seconds even with
+    // Cache-Control: no-cache. A unique quote URL requests a current snapshot;
+    // source-time and HTTP-age checks still apply without relaxing the gate.
+    if (route.endsWith('/book')) url.searchParams.set('_t', String(clock()));
     const startedAt = C.iso(clock());
     const r = await transport(url, {method: 'GET', redirect: 'error', signal: AbortSignal.timeout(cfg.requestTimeoutMs),
       headers: {Accept: 'application/json', 'Cache-Control': 'no-cache', 'User-Agent': 'hightemp-crypto-research/0.2 (github.com/dawienhold/hightemp)'}});

@@ -110,6 +110,19 @@ test('reader refuses trading endpoints before performing any network request', a
   await assert.rejects(read('/v1/orders'), /Non-research endpoint/); assert.equal(count, 0);
   await assert.rejects(read('/v1/markets/slug/invalid-plural-route'), /Non-research endpoint/); assert.equal(count, 0);
 });
+test('each book read gets a unique cache key and preserves source/receipt metadata', async () => {
+  let now = at; const requests = [];
+  const transport = async (url, options) => {
+    requests.push({url: new URL(url), method: options.method});
+    return {ok: true, headers: {get: () => null}, text: async () => JSON.stringify({marketData: {transactTime: C.iso(now - 1000)}})};
+  };
+  const read = createReader(cfg, transport, () => now), route = '/v1/markets/' + rawMarket().slug + '/book';
+  const first = await read(route); now += cfg.simulatedLatencyMs; const second = await read(route);
+  assert.notEqual(requests[0].url.searchParams.get('_t'), requests[1].url.searchParams.get('_t'));
+  assert.ok(requests.every(r => r.method === 'GET'));
+  assert.equal(first.data.marketData.transactTime, C.iso(at - 1000));
+  assert.equal(second.receivedAt, C.iso(now));
+});
 test('collector preserves later-book fills, idempotency, price archives and official settlement', async t => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'crypto-collector-')); t.after(() => fs.rmSync(root, {recursive: true, force: true}));
   let now = at, resolved = false, bookRequests = 0;
