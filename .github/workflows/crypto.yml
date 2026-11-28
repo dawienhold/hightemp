@@ -29,6 +29,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
+          # Keep the large weather archive out of each five-minute checkout.
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/crypto.js
+            /scripts/crypto/
+            /tools/crypto.test.js
+            /docs/data/crypto/
       - uses: actions/setup-node@v4
         with:
           node-version: '22'

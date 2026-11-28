@@ -4,6 +4,7 @@
   const valid = n => n !== null && n !== undefined && Number.isFinite(Number(n));
   const usd = n => valid(n) ? new Intl.NumberFormat(undefined, {style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2}).format(n) : '—';
   const pct = n => valid(n) ? (n * 100).toFixed(1) + '%' : '—';
+  const modelPct = n => !valid(n) ? '—' : n >= .9995 ? '>99.9%' : n <= .0005 ? '<0.1%' : pct(n);
   const cents = n => valid(n) ? (n * 100).toFixed(1) + '¢' : '—';
   const time = at => Number.isFinite(Date.parse(at)) ? new Date(at).toLocaleTimeString([], {hour: 'numeric', minute: '2-digit', second: '2-digit'}) : '—';
   const dateTime = at => Number.isFinite(Date.parse(at)) ? new Date(at).toLocaleString([], {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}) : '—';
@@ -87,7 +88,7 @@
     const m = currentMarket();
     set('window-title', m ? 'BTC Up or Down · ' + m.horizon : 'BTC reference price');
     set('reference', usd(m?.referencePrice)); set('snapshot-time', time(m?.sampledAt || snapshot.collectedAt));
-    set('up-probability', pct(m?.valuation?.pUp)); set('down-probability', pct(m?.valuation?.pDown));
+    set('up-probability', modelPct(m?.valuation?.pUp)); set('down-probability', modelPct(m?.valuation?.pDown));
     $('up-bar').style.width = (valid(m?.valuation?.pUp) ? Math.max(0, Math.min(100, m.valuation.pUp * 100)) : 0) + '%';
     $('down-bar').style.width = (valid(m?.valuation?.pDown) ? Math.max(0, Math.min(100, m.valuation.pDown * 100)) : 0) + '%';
     set('up-cost', 'Buy ask ' + cents(m?.book?.yesAsk) + ' · before fees');
@@ -144,7 +145,7 @@
       const upEdge = edge(m.valuation?.pUp, m.book?.yesAsk), downEdge = edge(m.valuation?.pDown, m.book?.noAsk);
       const edgeLabel = v => (v > 0 ? '+' : '') + cents(v);
       const edges = el('div', 'Up ' + edgeLabel(upEdge)); edges.append(el('small', 'Down ' + edgeLabel(downEdge)));
-      table.append(row([name, usd(m.referencePrice), pct(m.valuation?.pUp), cents(m.book?.yesAsk), cents(m.book?.noAsk), edges, status]));
+      table.append(row([name, usd(m.referencePrice), modelPct(m.valuation?.pUp), cents(m.book?.yesAsk), cents(m.book?.noAsk), edges, status]));
     }
     if (!(s.markets || []).length) emptyTable('markets-body', 7, 'No eligible markets in this collection. See collection health below.');
     $('calibration-body').replaceChildren(...(stats.calibration || []).map(b => row([Math.round(b.low * 100) + '–' + Math.round(b.high * 100) + '%', b.n, pct(b.predicted), pct(b.actual)])));
