@@ -12,6 +12,7 @@ const pages = [
   ['consistency.html', 'Contract Consistency', null, false],
   ['edge.html', '10 AM Market Edge'],
   ['openings.html', 'Market Openings'],
+  ['crypto.html', 'Crypto Lab'],
   ['shadow.html', 'Shadow Trader', null, false],
   ['nfl.html', 'NFL Rain Watch'],
   ['mlb.html', 'MLB'],
@@ -41,4 +42,5 @@ for (const [file] of pages) {
 }
 if (stale) process.exitCode = 1;
 else console.log(`${pages.length} pages share the complete navigation menu.`);
+
 

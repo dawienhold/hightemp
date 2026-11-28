@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="BTC volatility forecasts, Polymarket US quotes, and a transparent paper-trading research ledger.">
+<title>Crypto Lab · High-Temp Desk</title>
+<link rel="stylesheet" href="nav.css">
+<link rel="stylesheet" href="crypto.css">
+<script src="crypto.js" defer></script>
+</head>
+<body>
+<main class="wrap">
+<nav class="site-nav" aria-label="Pages">
+  <a href="./">High-Temp Desk</a>
+  <a href="bands.html">2°F Bands</a>
+  <a href="lows.html">Low-Temp Desk</a>
+  <a href="observations.html">Data inputs</a>
+  <a href="edge.html">10 AM Market Edge</a>
+  <a href="openings.html">Market Openings</a>
+  <a href="crypto.html" aria-current="page">Crypto Lab</a>
+  <a href="nfl.html">NFL Rain Watch</a>
+  <a href="mlb.html">MLB</a>
+</nav>
+<header class="masthead">
+  <div><p class="eyebrow">POLYMARKET US / BITCOIN RESEARCH</p><h1>Crypto Lab<span class="beta">EARLY RESEARCH</span></h1><p class="subtitle">A volatility forecast. The market’s price. A record of what happened next.</p></div>
+  <div class="mode"><span class="pill">PAPER ONLY</span><span>No wallet connected</span></div>
+</header>
+<div class="statusbar"><div><span id="health-label">Waiting for the first collection</span><span id="stamp" class="muted"></span></div><button id="refresh" type="button">Reload archive</button></div>
+<div id="notice" class="notice" role="status">This research page is ready. Quotes, forecasts, and paper results appear after the first collector run.</div>
+<section class="metrics" aria-label="Research overview">
+  <article class="metric"><span class="label">BTC · BRTI INDEX</span><strong id="btc-price">—</strong><span id="price-stamp" class="muted">Official reference feed</span></article>
+  <article class="metric"><span class="label">1-MINUTE VOLATILITY</span><strong id="volatility">—</strong><span id="model-label" class="muted">Model warming up</span></article>
+  <article class="metric"><span class="label">REALIZED PAPER P&amp;L</span><strong id="paper-pnl">—</strong><span id="paper-count" class="muted">No settled simulated trades</span></article>
+  <article class="metric"><span class="label">MODEL BRIER SCORE</span><strong id="brier">—</strong><span id="brier-count" class="muted">Awaiting official outcomes</span></article>
+</section>
+<div class="research-grid">
+<section class="card chart-card" aria-labelledby="window-title">
+  <div class="cardhead"><div><p class="eyebrow">THE CURRENT WINDOW</p><h2 id="window-title">BTC reference price</h2></div><label class="select-label">Contract<select id="market-select" aria-label="Select BTC contract"><option value="">Awaiting markets</option></select></label></div>
+  <div class="window-facts"><div><span class="label">PRICE TO BEAT</span><strong id="reference">—</strong></div><div><span class="label">TIME TO CLOSE</span><strong id="countdown">—</strong></div><div><span class="label">SNAPSHOT TAKEN</span><strong id="snapshot-time">—</strong></div></div>
+  <div id="price-chart" class="chart"><div class="empty">The BTC chart will use recorded BRTI prices. No example prices are shown.</div></div>
+  <div class="chart-key"><span><i class="key-line"></i>BRTI reference price</span><span><i class="key-dash"></i>Price to beat</span><span class="muted">Recorded observations · times shown in your time zone</span></div>
+  <div class="probability-grid">
+    <div class="probability up"><span class="label">MODEL · UP</span><strong id="up-probability">—</strong><div class="prob-track"><div id="up-bar"></div></div><span id="up-cost" class="muted">Buy ask unavailable</span></div>
+    <div class="probability down"><span class="label">MODEL · DOWN</span><strong id="down-probability">—</strong><div class="prob-track"><div id="down-bar"></div></div><span id="down-cost" class="muted">Buy ask unavailable</span></div>
+  </div>
+  <p id="signal" class="signal">Waiting for a complete reference price, model, and usable book.</p>
+  <p id="model-note" class="small muted">Probabilities are provisional estimates at the saved snapshot time.</p>
+</section>
+<aside class="sidebar">
+  <section class="card" aria-labelledby="paper-title"><div class="cardhead"><h2 id="paper-title">Paper account</h2><span class="tag">SIMULATED</span></div><dl class="facts"><div><dt>Starting balance</dt><dd id="starting-balance">—</dd></div><div><dt>Equity after settled trades</dt><dd id="equity">—</dd></div><div><dt>Cash available</dt><dd id="cash">—</dd></div><div><dt>Open exposure at cost</dt><dd id="exposure">—</dd></div><div><dt>Largest realized drawdown</dt><dd id="drawdown">—</dd></div><div><dt>Settled trade win rate</dt><dd id="win-rate">—</dd></div></dl><p class="small muted">Open positions are carried at cost. Equity is not marked to market.</p></section>
+  <section class="card method"><p class="eyebrow">WHAT IS BEING TESTED</p><h2>Volatility, then value</h2><ol><li>Fit a HAR-style model to one-minute BRTI returns.</li><li>Estimate the final-minute average using a Student-t approximation.</li><li>Compare probability with fillable asks, fees, and a slippage reserve.</li><li>Simulate a later fill, then wait for official settlement.</li></ol><p class="small muted">This first version uses minute returns as a variance proxy, zero drift, and fixed Student-t tails. It does not reproduce the tweet’s private model.</p><a href="https://docs.polymarket.us/trader-guide/crypto-schema" target="_blank" rel="noopener">Read the settlement method</a></section>
+</aside>
+</div>
+<section class="card" aria-labelledby="markets-title"><div class="cardhead"><div><p class="eyebrow">MODEL VERSUS THE BOOK</p><h2 id="markets-title">Observed contracts</h2></div><span class="muted small">Prices in cents per $1 payout</span></div><div class="tablewrap"><table><thead><tr><th>Window</th><th>Reference</th><th>Model Up</th><th>Up ask</th><th>Down ask</th><th>Indicative net edge</th><th>Research status at snapshot</th></tr></thead><tbody id="markets-body"><tr><td colspan="7" class="empty">No contracts collected yet.</td></tr></tbody></table></div><p class="small muted">Edge estimates use the top ask, each market’s fee coefficient, and the adverse-price reserve. Paper fills additionally check depth and rounded fees.</p></section>
+<section class="card" aria-labelledby="performance-title"><div class="cardhead"><div><p class="eyebrow">EVIDENCE BEFORE CONFIDENCE</p><h2 id="performance-title">Forecast performance</h2></div><span id="score-count" class="tag">ACCUMULATING</span></div><div class="performance-grid"><div><dl class="facts"><div><dt>HAR-style Brier score</dt><dd id="model-score">—</dd></div><div><dt>60-minute volatility baseline</dt><dd id="baseline-score">—</dd></div><div><dt>Officially resolved forecasts</dt><dd id="resolved-count">0</dd></div></dl><p class="small muted">Lower Brier scores are better. One first eligible forecast per observed market is scored, including markets without a paper trade. Overlapping windows are correlated; the model has not established a trading edge.</p></div><div class="tablewrap"><table class="calibration"><thead><tr><th>Predicted Up band</th><th>Windows</th><th>Mean prediction</th><th>Actual Up</th></tr></thead><tbody id="calibration-body"><tr><td colspan="4" class="empty">Waiting for settled forecasts.</td></tr></tbody></table></div></div></section>
+<section class="card" aria-labelledby="ledger-title"><div class="cardhead"><div><p class="eyebrow">EVERY SIMULATED POSITION</p><h2 id="ledger-title">Paper trade ledger</h2></div><button id="export-csv" type="button" disabled>Export paper CSV</button></div><p class="small muted">Later observed book prices, available depth, per-market taker fees, and an adverse-price reserve. These are hypothetical fills, not executed trades.</p><div class="tablewrap"><table><thead><tr><th>Entry time</th><th>Contract</th><th>Side</th><th>Contracts</th><th>Total cost</th><th>Estimated edge</th><th>Status</th><th>Realized P&amp;L</th></tr></thead><tbody id="ledger-body"><tr><td colspan="8" class="empty">No simulated trades yet. The collector can abstain when prices or data do not qualify.</td></tr></tbody></table></div></section>
+<section class="card" aria-labelledby="coverage-title"><div class="cardhead"><div><p class="eyebrow">HOW COMPLETE IS THE RECORD?</p><h2 id="coverage-title">Collection &amp; model health</h2></div><a href="data/crypto/latest.json" download>Download snapshot JSON</a></div><dl id="coverage" class="coverage"><div><dt>Collection</dt><dd>Scheduled snapshots every five minutes; GitHub may delay or skip starts.</dd></div><div><dt>Scope</dt><dd>Public market data only. No account credentials or real orders.</dd></div></dl><details><summary>Research assumptions and limits</summary><p>Five-minute scheduled collection is not continuous trading. Missed windows and missing ticks are never filled retrospectively. Historical prices fetched at installation train the first volatility model; they are not a historical trading backtest.</p><p>The price to beat is the market’s official opening reference. The closing reference is a rounded average of 60 BRTI samples in the final minute. A partial final minute requires every elapsed sample; otherwise the model abstains.</p><p>Student-t tails are fixed at five degrees of freedom; drift is zero. The forecast for the arithmetic average uses a local Brownian covariance approximation. The regression forecasts one-minute variance and holds that rate constant over the remaining window. Binary calibration and net performance must be measured prospectively.</p><p>Paper positions are capped across markets, with one entry per market. Settlement requires the exchange’s final resolved status and a confirmed binary settlement. Unresolved trades remain pending.</p></details></section>
+<footer><span>High-Temp Desk / Crypto Lab</span><span id="version">Research v0.1 · Live execution disabled</span></footer>
+</main>
+</body>
+</html>

@@ -5,6 +5,71 @@ NWS Daily Climate Report (CLI) — the number the markets settle on.
 
 Dashboard: **https://dawienhold.github.io/hightemp/**
 
+## Crypto Lab · BTC paper research
+
+**https://dawienhold.github.io/hightemp/crypto.html** adds a separate BTC research
+desk to the shared navigation. It uses public **Polymarket US** market discovery,
+typed BTC/BRTI contract terms, full order books, the market-specific fee coefficient,
+and BRTI reference-price history. No API key, wallet or exchange account is accessed.
+The collector only permits GET requests to explicitly listed research endpoints;
+there is no live-order implementation or browser-side secret entry.
+
+The independent `crypto-research` workflow collects every five minutes, offset
+about a minute into each window. GitHub may delay or skip starts. Collection gaps,
+source times, receipt times, quotes, and unavailable inputs are recorded. This is
+a scheduled research collector, not a continuous trading service. It does not
+alter weather forecasting, weather data collection, or existing trading research.
+
+The provisional model fits a regularized HAR-style log-variance regression to
+one-minute BRTI close returns over the last 60 hours. Squared minute returns are
+a variance proxy, not tick-level realized variance. Log-variance predictions use
+a smearing adjustment. The model assumes zero drift, fixed Student-t tails
+(five degrees of freedom), and constant forecast variance over the remaining
+window. It approximates the contract's closing-minute arithmetic average using
+discrete Brownian covariance weights, incorporates already observed closing
+samples, and abstains if any required elapsed second is missing. Partial candles
+and empty, carried-forward buckets are excluded. Training data are not counted
+as historical simulated trades or evidence of profitability.
+
+Paper entries require fresh reference data and books, verified rules, a known
+fee coefficient, and at least 5 cents estimated net edge per contract. A second
+book is fetched after at least 2.5 seconds before a fill can be simulated. The
+simulation uses available depth, a maximum of 10 contracts, fees rounded upward
+to cents, and a 1-cent adverse-price reserve per contract. One entry per market
+is permitted, with a $30 aggregate open-cost cap in a $1,000 simulated account.
+These settings are research assumptions in `scripts/crypto/config.json`.
+No maker queue fills are assumed. Paper exposure is carried at cost, not marked
+to market. Drawdown is calculated from realized settlement P&L only.
+
+Official resolved status and a confirmed binary settlement endpoint response
+are both required to grade a window or trade. Pending settlement remains pending.
+One first eligible, prospectively captured forecast per market is scored,
+including markets without a paper trade. Brier scores compare the HAR-style
+forecast with a 60-minute constant-volatility baseline. Overlapping five- and
+15-minute windows are correlated; neither sample counts nor model estimates
+establish an independent trading edge. All model probabilities are provisional.
+
+| Crypto file | Contents |
+|---|---|
+| `docs/data/crypto/latest.json` | Dashboard snapshot, recent windows and paper trades, model and scorecard |
+| `docs/data/crypto/status.json` | Health, last successful collection, errors |
+| `docs/data/crypto/state.json` | Forecasts awaiting official outcomes and the complete paper state |
+| `docs/data/crypto/ledger.json` | Complete simulated-trade ledger for CSV export |
+| `docs/data/crypto/history/YYYY-MM-DD.jsonl.gz` | Timestamped quote depth, model, settings, decisions and settlement events |
+| `docs/data/crypto/prices/YYYY-MM-DD-1S.jsonl.gz` | Newly observed BRTI seconds; fetched history never becomes retrospective trades |
+| `docs/data/crypto/prices/YYYY-MM-DD-1M.jsonl.gz` | Newly received minute training prices |
+
+The gzip files contain concatenated gzip members, one per appended JSON line;
+standard gzip readers and Node's `gunzipSync` decode all members. Repeated source
+price timestamps are not appended again. Each collector run is locked and JSON
+files are atomically replaced. The workflow stages only `docs/data/crypto` and
+rebases unrelated data commits; it never force pushes or discards a real conflict.
+
+Run locally with `npm run crypto`; verify with `npm run test:crypto` and
+`node tools/sync-nav.js --check`. On GitHub, use **Actions → crypto-research →
+Run workflow**. The workflow also starts after relevant source changes. Core
+collection and statistics use Node 22 and require no third-party dependencies.
+
 Daily lows for **KNYC (Central Park)** and **KMDW (Midway)**:
 **https://dawienhold.github.io/hightemp/lows.html**. Today and tomorrow cover
 the full NWS local-standard-time climate day, including evening cooling and
@@ -180,4 +245,5 @@ logs are not deleted.
 
 The shared navigation list in `tools/sync-nav.js` keeps Contract Consistency and
 Shadow Trader hidden (`visible = false`), without changing their pages or jobs.
+
 
